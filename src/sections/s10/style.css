@@ -1,0 +1,183 @@
+/* s10 — pinned zoom-through: camera dives INTO the motion-blurred "every",
+   fluid gradient wash, then the Birdbath Clarity headline settles */
+
+.s10-bg {
+  position: absolute;
+  inset: 0;
+}
+/* Mobile: the 1920-wide composition is centered on the 375 stage */
+.s10-bgwrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% + 0.5px);
+  width: 1920px;
+  transform: translateX(-50%);
+}
+
+/* fluid.css lowers this to rgba so the global ambient (VIVID_ORANGE family)
+   reads through and carries the gradient wash under the whole section */
+.s10-fill {
+  position: absolute;
+  inset: 0;
+  background: #ff692c;
+}
+
+.s10-ellipse {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8000px;
+}
+.s10-ellipse--a {
+  top: -72.87%;
+  bottom: -9.49%;
+}
+.s10-ellipse--b {
+  top: -78.98%;
+  bottom: -3.38%;
+  opacity: 0;
+}
+.s10-ellipse-in {
+  position: absolute;
+  inset: -10.15% -2.5%;
+}
+.stage--m .s10-ellipse-in {
+  inset: -13.51% -2.5%;
+}
+.s10-ellipse-in img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Perf: the glow is authored 1920px wide with blur(150px); rendering it at
+   half size and compositing with scale(2) looks identical for a glow this
+   soft but rasterizes 4x fewer pixels with half the blur radius. Only
+   opacity is ever animated; will-change keeps the blurred result cached on
+   its own GPU layer so the scrub never re-runs the blur. */
+.s10-glow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scale(2);
+  transform-origin: 50% 0;
+  width: 960px;
+  filter: blur(75px);
+  mix-blend-mode: plus-lighter;
+  will-change: opacity;
+}
+.s10-glow--a {
+  top: 63.33%;
+  bottom: -13.33%;
+}
+.s10-glow--b {
+  top: 70.37%;
+  bottom: -20.37%;
+  opacity: 0;
+}
+.s10-glow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* warm gradient veil — breathes over the zoom→headline handoff. Plain alpha
+   radial gradient (no filter, no blend): opacity+transform only, so it costs
+   one cached layer. */
+.s10-veil {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    115% 85% at 50% 96%,
+    rgba(255, 190, 120, 0.95) 0%,
+    rgba(255, 122, 54, 0.62) 38%,
+    rgba(122, 32, 6, 0.28) 62%,
+    rgba(12, 4, 2, 0) 82%
+  );
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+}
+
+/* motion-blurred "every" pre-rendered word art */
+.s10-every {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.stage--d .s10-every {
+  width: 4096px;
+  height: 1080px;
+}
+.stage--m .s10-every {
+  left: calc(50% + 0.5px);
+  top: calc(50% + 0.5px);
+  width: 1892px;
+  height: 499px;
+}
+/* the camera: exponential scale toward the letter stroke sitting at the
+   stage centre (the clip is centred on the stage, so 50% 50% IS the centre).
+   will-change keeps the big word-art crop on its own composited layer so
+   the zoom is a pure GPU transform — the 1920² source never repaints. */
+.s10-every-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+.s10-img {
+  position: absolute;
+  left: 0;
+  top: -139.63%;
+  width: 100%;
+  height: 379.26%;
+}
+/* pre-baked defocused variant — cross-faded in as the camera passes
+   through focus (never a runtime blur animation) */
+.s10-img--soft {
+  opacity: 0;
+  will-change: opacity;
+}
+/* WebKit magnifies the cached word-art texture instead of re-rastering, so
+   the sharp strokes contour under high zoom. A small STATIC blur (applied
+   once at raster time, never animated) smooths the texels; the extra
+   softness at high zoom just reads as more defocus. */
+.safari .s10-img--sharp {
+  filter: blur(1.5px);
+}
+.safari .s10-img--soft {
+  filter: blur(3px);
+}
+
+/* state-b gradient headline */
+.s10-head {
+  position: absolute;
+}
+.stage--d .s10-head {
+  left: 26.15%;
+  right: 26.15%;
+  top: calc(50% + 0.5px);
+  transform: translateY(-50%);
+}
+.stage--m .s10-head {
+  /* Figma says 285px, but Season Sans renders a touch wider in-browser and
+     pushes "Clarity" to line 2; 300px keeps the designed two-line break. */
+  left: 50%;
+  top: 389px;
+  width: 300px;
+  transform: translate(-50%, -50%);
+}
+.s10-head-in {
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.stage--d .s10-head-in {
+  font-size: 92px;
+}
+.stage--m .s10-head-in {
+  font-size: 32px;
+}

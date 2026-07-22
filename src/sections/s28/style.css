@@ -1,0 +1,361 @@
+/* s28 — final dark screen "Five years in the making…" (1920_Screen-28-01 / 375_Screen-27-01b) */
+
+#s28 {
+  background: #020202;
+}
+
+/* ----- desktop ----- */
+/* The harvest code carries blur(30px) on this still, but the design export
+   (harvest/shots/1920_Screen-28-01.png) shows it sharp — the effect is
+   disabled in the design, so no filter here. */
+.s28-still {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+}
+
+.s28-title {
+  position: absolute;
+  left: 20.73%;
+  right: 20.68%;
+  top: 269.5px;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.s28-title b {
+  font-weight: 700;
+}
+
+.s28-bottom {
+  position: absolute;
+  left: 10.1%;
+  right: 10.1%;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 54px; /* 60 design gap minus cap-trim slack */
+  align-items: center;
+}
+
+.s28-specs {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  text-align: center;
+  width: 100%;
+}
+
+/* offer block — frosted glass (client r5): backdrop blur + saturation frost,
+   brighter hairline border, diagonal sheen and a soft drop shadow so the bar
+   reads as glass, not translucent black (same treatment as s27) */
+.s28-block {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 60px;
+  padding: 40px 154px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* inner gradient sheen — painted after the tint image (tree order), under
+   the content (which is lifted to z-index: 1) */
+.s28-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 38%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.s28-block-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 60px;
+  pointer-events: none;
+  backdrop-filter: blur(50px) saturate(1.3);
+  -webkit-backdrop-filter: blur(50px) saturate(1.3);
+}
+
+/* Safari/WebKit: cheaper backdrop radius, visually equivalent over the
+   dark still (html.safari is set by main.ts) */
+html.safari .s28-block-bg {
+  backdrop-filter: blur(28px) saturate(1.3);
+  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+}
+
+.s28-left {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* 16 design gap minus cap-trim slack */
+  justify-content: center;
+}
+
+.s28-offer-title {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.s28-offer-sub {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.s28-right {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex: none;
+}
+
+.s28-off {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.s28-price {
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s28-offword {
+  width: 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s28-offword span {
+  display: block;
+  transform: rotate(-90deg);
+  color: #ff5f34;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.s28-vline {
+  width: 1px;
+  height: 89px;
+  background: rgba(255, 255, 255, 0.1);
+  flex: none;
+}
+
+/* the final CTA — hover: scale 1.04 + brightness */
+.s28-btn {
+  width: 200px;
+  height: 62px;
+  border-radius: 54px;
+  background: #ff5f34;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.16px;
+  color: #fff;
+  white-space: nowrap;
+  flex: none;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+  will-change: transform;
+}
+
+.s28-btn:hover {
+  transform: scale(1.04);
+  filter: brightness(1.12);
+}
+
+/* ----- mobile 375×812 ----- */
+.s28-still-m {
+  position: absolute;
+  left: -22.93%;
+  width: 146.13%;
+  aspect-ratio: 1920 / 1080;
+  height: auto;
+  top: calc(50% - 107.5px);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.s28-title-m {
+  position: absolute;
+  left: 10.67%;
+  right: 10.67%;
+  top: 158.5px;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.s28-title-m b {
+  font-weight: 700;
+}
+
+.s28-bottom-m {
+  position: absolute;
+  left: 10.67%;
+  right: 10.67%;
+  bottom: 106px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* 32 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+.s28-specs-m {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  text-align: center;
+  width: 100%;
+}
+
+.s28-block-m {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 48px;
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 25px 32px 32px; /* 32 design padding minus cap-trim slack */
+  display: flex;
+  flex-direction: column;
+  gap: 39px; /* 44 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+.s28-block-m .s28-block-bg {
+  border-radius: 48px;
+}
+
+/* inner gradient sheen — same glass treatment as desktop */
+.s28-block-m::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 38%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.s28-left-m {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 24 design gap minus cap-trim slack */
+  justify-content: center;
+  width: 100%;
+}
+
+.s28-offer-title-m {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.s28-offer-sub-m {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.s28-right-m {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.s28-off--m {
+  align-items: center;
+  gap: 12px;
+}
+
+.s28-price-m {
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s28-offword--m {
+  width: 12px;
+  height: 30px;
+}
+
+.s28-offword--m span {
+  font-size: 16px;
+}
+
+.s28-vline--m {
+  height: 45px;
+}
+
+.s28-btn--m {
+  width: 109px;
+  height: 46px;
+  padding: 0 32px;
+  font-size: 14px;
+  line-height: normal;
+  letter-spacing: 0;
+}

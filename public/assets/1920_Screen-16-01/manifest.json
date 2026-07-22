@@ -1,0 +1,56 @@
+{
+    "frame": "1920__Screen-16-01",
+    "nodeId": "17683:9060",
+    "constants": {
+        "imgPaginator": {
+            "file": "imgPaginator.svg",
+            "url": "https://www.figma.com/api/mcp/asset/e9983dd7-d230-4cf5-b9c7-e628bada70bf"
+        },
+        "imgLogo": {
+            "file": "imgLogo.svg",
+            "url": "https://www.figma.com/api/mcp/asset/089e94fa-fc02-4ca2-b3e7-08c151aa790f"
+        },
+        "imgSearch": {
+            "file": "imgSearch.svg",
+            "url": "https://www.figma.com/api/mcp/asset/5b077ee5-b689-46d8-a6fb-1c17b846f5bb"
+        },
+        "imgShopping": {
+            "file": "imgShopping.svg",
+            "url": "https://www.figma.com/api/mcp/asset/329e230f-5710-417e-8b2a-748a4b4872ba"
+        },
+        "imgGlasses": {
+            "file": "imgGlasses.svg",
+            "url": "https://www.figma.com/api/mcp/asset/fac67a76-b8e9-48ae-9e52-b7b553857b9e"
+        },
+        "imgGlasses1": {
+            "file": "imgGlasses1.png",
+            "url": "https://www.figma.com/api/mcp/asset/90615958-3457-456e-b9cf-a2361aede01d"
+        },
+        "imgEllipse1329130924": {
+            "file": "imgEllipse1329130924.svg",
+            "url": "https://www.figma.com/api/mcp/asset/81b8095d-0b33-40e9-be9d-43e1857e1091"
+        },
+        "imgLine": {
+            "file": "imgLine.svg",
+            "url": "https://www.figma.com/api/mcp/asset/5430cd64-fb23-45f7-addd-450fbff5f8f9"
+        }
+    },
+    "rawImages": [
+        {
+            "file": "raw_image_1.png",
+            "url": "https://www.figma.com/api/mcp/asset/e32d716c-c4d5-4fd7-811b-9697795ab576"
+        },
+        {
+            "file": "raw_image_2.png",
+            "url": "https://www.figma.com/api/mcp/asset/edea3059-17bd-41da-89fe-1ddae44b746e"
+        },
+        {
+            "file": "raw_image_3.png",
+            "url": "https://www.figma.com/api/mcp/asset/da66cd0b-3821-4e54-8425-aee1a08b9825"
+        },
+        {
+            "file": "raw_image_4.png",
+            "url": "https://www.figma.com/api/mcp/asset/85438d37-228f-4ab9-a181-7004dc7720fe"
+        }
+    ]
+}

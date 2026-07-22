@@ -1,0 +1,51 @@
+/* s25 — "Same Ecosystem" typography screen (1920_Screen-25-01 / 375_Screen-25-01) */
+
+#s25 {
+  background: #010101;
+}
+
+.s25-wrap {
+  position: absolute;
+  left: 26.46%;
+  right: 26.41%;
+  /* design centers the cap-trimmed text box; CSS line boxes differ, so the
+     equivalent absolute offsets are computed from Season Sans font metrics */
+  top: 375px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  align-items: center;
+  text-align: center;
+}
+
+.s25-label {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  width: 100%;
+}
+
+.s25-title {
+  font-size: 92px;
+  font-weight: 400;
+  line-height: 1.1;
+  width: 100%;
+}
+
+/* ----- mobile 375×812 ----- */
+.s25-wrap--m {
+  left: 10.67%;
+  right: 10.67%;
+  top: 287px;
+  gap: 49px;
+}
+
+.s25-wrap--m .s25-label {
+  font-size: 16px;
+}
+
+.s25-wrap--m .s25-title {
+  font-size: 32px;
+}

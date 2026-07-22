@@ -1,0 +1,24 @@
+{
+  "frame": "375_Screen-26-01",
+  "nodeId": "17683:9549",
+  "assets": [
+    { "constant": "imgReload", "filename": "imgReload.svg", "url": "https://www.figma.com/api/mcp/asset/9ecec18c-1217-40f8-a9d4-073f1dd667bb" },
+    { "constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "url": "https://www.figma.com/api/mcp/asset/d1e6e05a-406a-42ec-aaf0-f263d64db3d3" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/4fbe178c-b609-4127-9f52-38b61967a827" },
+    { "constant": "imgSearchSm", "filename": "imgSearchSm.svg", "url": "https://www.figma.com/api/mcp/asset/892d7b25-a1cd-4604-8007-11ef61135912" },
+    { "constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "url": "https://www.figma.com/api/mcp/asset/50404cb9-d273-4929-814e-499e2abf8a7b" },
+    { "constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "url": "https://www.figma.com/api/mcp/asset/12084f61-50bd-4f09-8201-7a279c522b59" },
+    { "constant": "img1", "filename": "img1.png", "url": "https://www.figma.com/api/mcp/asset/014aa7c3-4f35-4d89-beda-58e90639b02d" },
+    { "constant": "imgRectangle1329135002", "filename": "imgRectangle1329135002.png", "url": "https://www.figma.com/api/mcp/asset/b8a7b997-d601-493d-b836-016e9b1f3920" },
+    { "constant": "img619965685Jpg1", "filename": "img619965685Jpg1.png", "url": "https://www.figma.com/api/mcp/asset/80e3f622-3bd9-43cd-8260-9949ccb63502" },
+    { "constant": "img3", "filename": "img3.png", "url": "https://www.figma.com/api/mcp/asset/17b5f098-34ba-4f04-9d0b-afb998aaacaa" },
+    { "constant": "img4", "filename": "img4.png", "url": "https://www.figma.com/api/mcp/asset/f9715055-eb58-4099-a559-34919ec36dac" },
+    { "constant": "img5", "filename": "img5.png", "url": "https://www.figma.com/api/mcp/asset/22effcd1-d4c1-4b2c-88e3-e4e4ceab6b5c" },
+    { "constant": "img6", "filename": "img6.png", "url": "https://www.figma.com/api/mcp/asset/280db40f-bb1b-4439-b814-337b8801f061" },
+    { "constant": "img7", "filename": "img7.png", "url": "https://www.figma.com/api/mcp/asset/f687d96a-d8ea-483a-a126-4b8819d78004" },
+    { "constant": "imgRectangle1329135003", "filename": "imgRectangle1329135003.png", "url": "https://www.figma.com/api/mcp/asset/44f0a0fd-d01b-4ae5-a904-bf3ba9897990" },
+    { "constant": "imgFrameB58B197E42F144EcB33FDd8658Bc6F83Jpg1", "filename": "imgFrameB58B197E42F144EcB33FDd8658Bc6F83Jpg1.png", "url": "https://www.figma.com/api/mcp/asset/7099366f-7564-4643-b520-3b167aad0995" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/73968a9a-6648-4b5b-8926-b159b7309549" },
+    { "constant": "raw_image_1..20", "filename": "raw_image_N.png", "note": "20 raw source images from download_assets (rawImagesTruncated: true — subtree has more than 20 source images)" }
+  ]
+}

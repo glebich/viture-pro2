@@ -1,0 +1,58 @@
+/* s17 — "Sleek On Every Face" hero with blurred glasses photo */
+
+.s17-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* Desktop */
+.s17-glasses-d {
+  position: absolute;
+  left: 0;
+  bottom: -166px;
+  width: 1920px;
+  height: 1080px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.s17-title {
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.s17-title-d {
+  position: absolute;
+  left: 588px;
+  right: 588px;
+  top: 301px; /* 314 design cap-top minus line-box trim */
+  font-size: 72px;
+}
+
+/* Mobile */
+.s17-glasses-m {
+  position: absolute;
+  left: -67px;
+  bottom: 87px;
+  width: 509px;
+  height: 338px;
+  pointer-events: none;
+}
+
+.s17-glasses-m img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 508px;
+  height: 286px;
+}
+
+.s17-title-m {
+  position: absolute;
+  left: calc(50% - 150px);
+  top: 226px; /* 232 design cap-top minus line-box trim */
+  width: 300px;
+  font-size: 32px;
+}

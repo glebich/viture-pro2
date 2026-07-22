@@ -1,0 +1,13 @@
+{
+  "frame": "375_Screen-25-01",
+  "nodeId": "17683:9543",
+  "assets": [
+    { "constant": "imgReload", "filename": "imgReload.svg", "url": "https://www.figma.com/api/mcp/asset/817b1719-f84c-46eb-9ee4-6841a930ed65" },
+    { "constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "url": "https://www.figma.com/api/mcp/asset/fa41a2d0-88d1-4218-af19-e230221d28a0" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/fd8b5230-41c8-43bb-bf03-bbc96a254344" },
+    { "constant": "imgSearchSm", "filename": "imgSearchSm.svg", "url": "https://www.figma.com/api/mcp/asset/1c5426e4-59d7-4800-ad53-817785d58ab6" },
+    { "constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "url": "https://www.figma.com/api/mcp/asset/2103b146-e238-4dd7-90d5-47ef9b8f187e" },
+    { "constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "url": "https://www.figma.com/api/mcp/asset/fd587121-5d95-4eca-84e1-648385fbcbf8" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/36cc9a12-2419-4a1a-a7f8-63d3cef66426" }
+  ]
+}

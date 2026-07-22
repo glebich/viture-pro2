@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 111 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="line" clip-path="url(#clip0_0_47)">
+<ellipse id="Ellipse 1329130915" cx="17" cy="16" rx="16" ry="16" fill="var(--fill-0, white)" fill-opacity="0.02"/>
+<path id="Line 342" d="M14.3333 16C14.3333 17.4728 15.5272 18.6667 17 18.6667C18.4728 18.6667 19.6667 17.4728 19.6667 16C19.6667 14.5272 18.4728 13.3333 17 13.3333C15.5272 13.3333 14.3333 14.5272 14.3333 16ZM17 16L17 16.5L166 16.5L166 16L166 15.5L17 15.5L17 16Z" fill="var(--stroke-0, white)"/>
+</g>
+<defs>
+<clipPath id="clip0_0_47">
+<rect width="111" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

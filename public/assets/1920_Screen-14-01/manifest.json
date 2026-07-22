@@ -1,0 +1,44 @@
+{
+    "frame": "1920__Screen-14-01",
+    "nodeId": "17683:8837",
+    "constants": {
+        "imgPaginator": {
+            "file": "imgPaginator.svg",
+            "url": "https://www.figma.com/api/mcp/asset/dc236103-7413-49b7-b4e5-909ad550cd16"
+        },
+        "imgLogo": {
+            "file": "imgLogo.svg",
+            "url": "https://www.figma.com/api/mcp/asset/313ea959-dc0b-426d-834e-27dd9f3f98f6"
+        },
+        "imgSearch": {
+            "file": "imgSearch.svg",
+            "url": "https://www.figma.com/api/mcp/asset/06636418-2e1b-45f9-8c95-a0f3b4d9655c"
+        },
+        "imgShopping": {
+            "file": "imgShopping.svg",
+            "url": "https://www.figma.com/api/mcp/asset/b57df749-f796-40e3-8907-be3f6e7f4c1b"
+        },
+        "imgGlasses": {
+            "file": "imgGlasses.svg",
+            "url": "https://www.figma.com/api/mcp/asset/9d6c61ad-99d3-4520-bace-49fa51fd9d76"
+        },
+        "imgBg": {
+            "file": "imgBg.png",
+            "url": "https://www.figma.com/api/mcp/asset/219166c0-4cab-4e84-9a4a-7e0281d311d2"
+        },
+        "imgLine": {
+            "file": "imgLine.svg",
+            "url": "https://www.figma.com/api/mcp/asset/9f9abb60-d402-4ae1-8349-0f04b5254e68"
+        }
+    },
+    "rawImages": [
+        {
+            "file": "raw_image_1.png",
+            "url": "https://www.figma.com/api/mcp/asset/ffc85f81-488f-45d6-a9eb-f13d49140d4b"
+        },
+        {
+            "file": "raw_image_2.png",
+            "url": "https://www.figma.com/api/mcp/asset/b601d4a1-8378-4c4f-a05b-c1c21648c474"
+        }
+    ]
+}

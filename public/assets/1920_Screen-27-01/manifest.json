@@ -1,0 +1,17 @@
+{
+  "frame": "1920_Screen-27-01",
+  "nodeId": "17683:10343",
+  "assets": [
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/9c8854be-b755-45fd-bd94-3aa82bd68033" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/45e01aee-820b-40d4-a1ae-303779fe5bd5" },
+    { "constant": "imgSearch", "filename": "imgSearch.svg", "url": "https://www.figma.com/api/mcp/asset/2ed1ca26-fe2f-41d8-a1d3-6c6b0d6b5d0b" },
+    { "constant": "imgShopping", "filename": "imgShopping.svg", "url": "https://www.figma.com/api/mcp/asset/f62273e8-9f7c-4f48-98a3-523a3c103b4d" },
+    { "constant": "imgGlasses", "filename": "imgGlasses.svg", "url": "https://www.figma.com/api/mcp/asset/3012de0e-fe14-46cd-a639-567bec417dc6" },
+    { "constant": "img1920Screen2701", "filename": "img1920Screen2701.png", "url": "https://www.figma.com/api/mcp/asset/b9b4342f-1404-4186-8be4-73f3f3036083", "note": "full-bleed hero background photo, 19.9 MB" },
+    { "constant": "imgBlock", "filename": "imgBlock.png", "url": "https://www.figma.com/api/mcp/asset/db041dda-6eba-4b64-afee-a17a5e95755b" },
+    { "constant": "imgLine", "filename": "imgLine.svg", "url": "https://www.figma.com/api/mcp/asset/e1c1269a-e736-401b-b931-9bef31aa024e" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/3f10cfb6-4549-4565-868c-3e7277bba1ea" },
+    { "constant": "raw_image_1", "filename": "raw_image_1.png", "url": "https://www.figma.com/api/mcp/asset/03488d5b-f7ad-4e2b-97bf-9781bbc56ef4", "note": "same as img1920Screen2701" },
+    { "constant": "raw_image_2", "filename": "raw_image_2.png", "url": "https://www.figma.com/api/mcp/asset/fc092608-4f4b-406e-b39e-89ff210fef2c" }
+  ]
+}

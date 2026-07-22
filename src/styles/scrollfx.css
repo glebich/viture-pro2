@@ -1,0 +1,13 @@
+/* ---------- Scroll FX (owned by src/lib/scrollfx.ts) ----------
+   `.fx-on` is toggled by scrollfx.ts on the `.stage` elements of sections
+   near the viewport while the velocity parallax is live. It promotes the
+   stage to its own compositor layer so the per-frame lag update is
+   composite-only (no 1920x1080 repaint of blur-heavy stage content).
+   Membership is bounded (~2-4 stages) so layer memory stays small.
+   The lag itself is an INLINE transform written by scrollfx.ts that
+   prepends a screen-px translateY to base.css's cover-transform:
+   translateY(…px) translate(-50%,-50%) scale(var(--s)) — removing the
+   inline style returns the stage to the untouched base.css rule. */
+.stage.fx-on {
+  will-change: transform;
+}

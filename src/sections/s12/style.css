@@ -1,0 +1,195 @@
+/* s12 — Built-in Diopter, diopter stat + SGS certification state */
+
+.s12-bg {
+  position: absolute;
+  inset: 0;
+  background: #ff692c;
+}
+
+.s12-glow {
+  position: absolute;
+  inset: -47.87% -158.33% 36.76% -158.33%;
+}
+.s12-glow-in {
+  position: absolute;
+  inset: -16.67% -2.5%;
+}
+.s12-glow--m .s12-glow-in {
+  inset: -22.17% -12.8%;
+}
+.s12-glow-in img {
+  width: 100%;
+  height: 100%;
+}
+
+.s12-still {
+  /* perf: authored full-size with blur(150px); rendered at half size and
+     composited with scale(2) — same softness, 4x fewer blurred pixels.
+     Opacity-only entrance; will-change caches the blurred layer. */
+  position: absolute;
+  inset: 52.78% auto -2.78% 0;
+  width: 50%;
+  transform: scale(2);
+  transform-origin: 0 0;
+  filter: blur(75px);
+  mix-blend-mode: plus-lighter;
+  will-change: opacity;
+}
+.stage--m .s12-still {
+  inset: 63.33% auto -13.33% 0;
+}
+.s12-still img,
+.s12-video img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.s12-video {
+  /* Figma node carries blur-[20px], but the rendered frame shows the asset's
+     baked DOF only — a 20px CSS blur wipes out the "-5D" dial markings. */
+  position: absolute;
+  inset: 5.56% -5.73% -11.3% 0;
+}
+.s12-video--m {
+  inset: 3.2% -10.67% -13.79% 0;
+}
+
+.s12-text {
+  position: absolute;
+  left: 194px;
+  top: 184px;
+  width: 935px;
+  color: #fff;
+}
+.s12-eyebrow {
+  font-size: 20px;
+  line-height: 1.4;
+}
+.s12-title {
+  /* margins compensate for Figma's text-box-trim (cap-trimmed blocks) */
+  font-size: 72px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin-top: 26px;
+}
+.s12-sub {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-top: 14px;
+}
+
+/* callout line from the diopter dial to the stat */
+.s12-line {
+  position: absolute;
+  left: 1066px;
+  top: 621px;
+  width: 166px;
+  height: 33px;
+}
+.s12-line img {
+  width: 100%;
+  height: 100%;
+}
+
+.s12-info {
+  position: absolute;
+  left: 1273px;
+  top: 593px;
+  width: 484px;
+  color: #fff;
+}
+.s12-stat {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+.s12-sgs {
+  margin-top: 42px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.s12-sgs-logo {
+  width: 81px;
+  height: 81px;
+  flex-shrink: 0;
+}
+.s12-sgs-text {
+  width: 387px;
+}
+.s12-sgs-title {
+  font-size: 32px;
+  line-height: 1.4;
+}
+.s12-sgs-sub {
+  font-size: 20px;
+  line-height: 1.4;
+  opacity: 0.6;
+  margin-top: 20px;
+}
+
+/* mobile (375×812) */
+.s12-text--m {
+  left: 40px;
+  top: 112px;
+  width: 295px;
+}
+.s12-text--m .s12-eyebrow {
+  font-size: 16px;
+}
+.s12-text--m .s12-title {
+  font-size: 32px;
+  margin-top: 48px;
+}
+.s12-text--m .s12-sub {
+  font-size: 16px;
+  width: 270px;
+}
+
+/* vertical callout line (rotated 111×32 line asset) */
+.s12-vline {
+  position: absolute;
+  left: 188px;
+  top: 467px;
+  width: 32px;
+  height: 111px;
+}
+.s12-vline img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 111px;
+  height: 32px;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.s12-info--m {
+  left: 40px;
+  top: 555px;
+  width: 295px;
+}
+.s12-info--m .s12-stat {
+  font-size: 32px;
+}
+.s12-info--m .s12-sgs {
+  margin-top: 32px;
+  align-items: flex-start;
+}
+.s12-info--m .s12-sgs-logo {
+  width: 40px;
+  height: 40px;
+}
+.s12-info--m .s12-sgs-text {
+  width: 231px;
+}
+.s12-info--m .s12-sgs-title {
+  font-size: 20px;
+}
+.s12-info--m .s12-sgs-sub {
+  font-size: 16px;
+  margin-top: 16px;
+}

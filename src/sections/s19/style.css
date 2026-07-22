@@ -1,0 +1,113 @@
+/* s19 — 360 viewer: pinned scrub cross-fading 3/4 Right -> Profile Right */
+
+.s19-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* Photo stack (aspect 1792/2400) */
+.s19-photos-d {
+  position: absolute;
+  left: 210px;
+  top: -136px;
+  width: 1500px;
+  height: 2009px;
+}
+
+.s19-photos-m {
+  position: absolute;
+  left: -107px;
+  top: 244px;
+  width: 590px;
+  height: 790px;
+}
+
+.s19-photos img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.s19-photo-b {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* Angle labels */
+.s19-label h3 {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s19-label p {
+  margin-top: 9px; /* 24px design gap minus cap-trim slack */
+  font-size: 20px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.s19-label-d {
+  position: absolute;
+  left: 194px;
+  top: 499px;
+  width: 210px;
+}
+
+.s19-label-m {
+  position: absolute;
+  left: 40px;
+  top: 128px;
+  width: 210px;
+}
+
+.s19-label-m h3 {
+  font-size: 24px;
+}
+
+.s19-label-m p {
+  font-size: 16px;
+  margin-top: 12px;
+}
+
+/* Turntable dial + drag hint */
+.s19-dial-d {
+  position: absolute;
+  left: 271px;
+  top: 713px;
+  width: 1383px;
+  height: 150px;
+  pointer-events: none;
+}
+
+.s19-hand-d {
+  position: absolute;
+  left: 1416px;
+  top: 708px;
+  width: 24px;
+  height: 24px;
+}
+
+.s19-dial-m {
+  position: absolute;
+  left: 24px;
+  top: 547px;
+  width: 327px;
+  height: 94px;
+  pointer-events: none;
+}
+
+.s19-hand-m {
+  position: absolute;
+  left: 291px;
+  top: 548px;
+  width: 24px;
+  height: 24px;
+}

@@ -1,0 +1,15 @@
+{
+  "frame": "375__Screen-19-01", "nodeId": "17683:9193", "assets": [
+    { "constant": "imgReload", "filename": "imgReload.svg", "url": "https://www.figma.com/api/mcp/asset/0c8c5398-4b36-4f21-a720-5764f9957691" },
+    { "constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "url": "https://www.figma.com/api/mcp/asset/c2166beb-5e3e-4da7-8402-4a332bdd7972" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/ef9e9bb7-3887-4be5-b6f0-f78b49b83e82" },
+    { "constant": "imgSearchSm", "filename": "imgSearchSm.svg", "url": "https://www.figma.com/api/mcp/asset/fc1ec4e2-5fef-46d8-98b4-5902d98fa575" },
+    { "constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "url": "https://www.figma.com/api/mcp/asset/a2feb340-43af-45fa-8c82-db8a87d0f450" },
+    { "constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "url": "https://www.figma.com/api/mcp/asset/5dab978f-5ba1-4fec-8fe1-c4fc17fcf3f8" },
+    { "constant": "imgGeminiGeneratedImageIsyp6Risyp6Risyp1", "filename": "imgGeminiGeneratedImageIsyp6Risyp6Risyp1.png", "url": "https://www.figma.com/api/mcp/asset/af5dc25d-5aaa-4110-94f5-013f710cf37b" },
+    { "constant": "imgCircleLine", "filename": "imgCircleLine.svg", "url": "https://www.figma.com/api/mcp/asset/d2894e10-4b36-4331-8552-95b0e90365af" },
+    { "constant": "imgHandDrag", "filename": "imgHandDrag.svg", "url": "https://www.figma.com/api/mcp/asset/2c7c2eac-198d-48c9-9fc7-792acbb2836d" },
+    { "constant": "raw_image_1", "filename": "raw_image_1.png", "url": "https://www.figma.com/api/mcp/asset/46bd92c6-a03a-43a7-86d5-36a4406ebb5b" },
+    { "constant": "raw_image_2", "filename": "raw_image_2.png", "url": "https://www.figma.com/api/mcp/asset/b21541e7-8940-4db0-9667-c79b368796ae" }
+  ]
+}

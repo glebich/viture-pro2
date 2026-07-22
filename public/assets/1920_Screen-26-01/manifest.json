@@ -1,0 +1,22 @@
+{
+  "frame": "1920_Screen-26-01",
+  "nodeId": "17683:9609",
+  "assets": [
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/a65f0f50-aada-446e-a36d-57022280e4a7" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/11b61707-42a5-4526-9fbc-ea03ff680ef9" },
+    { "constant": "imgSearch", "filename": "imgSearch.svg", "url": "https://www.figma.com/api/mcp/asset/47856acf-e412-41e8-a009-844f4a4267d8" },
+    { "constant": "imgShopping", "filename": "imgShopping.svg", "url": "https://www.figma.com/api/mcp/asset/27ad113d-1c2e-4c41-9943-1aa818e8e4a5" },
+    { "constant": "imgGlasses", "filename": "imgGlasses.svg", "url": "https://www.figma.com/api/mcp/asset/cb187e16-a096-402a-b809-8a120b5323af" },
+    { "constant": "img1", "filename": "img1.png", "url": "https://www.figma.com/api/mcp/asset/8f860495-4a22-4e21-a20c-f85af558ce85" },
+    { "constant": "imgRectangle1329135002", "filename": "imgRectangle1329135002.png", "url": "https://www.figma.com/api/mcp/asset/13b1fa96-11af-4668-a750-77667233a245" },
+    { "constant": "img619965685Jpg1", "filename": "img619965685Jpg1.png", "url": "https://www.figma.com/api/mcp/asset/4893b5a2-b73d-4566-84f5-1f5844543f27" },
+    { "constant": "img3", "filename": "img3.png", "url": "https://www.figma.com/api/mcp/asset/25d4bf44-731b-4934-86a4-f174f9d3ba45" },
+    { "constant": "img4", "filename": "img4.png", "url": "https://www.figma.com/api/mcp/asset/4c84d134-eeb5-4ab5-b5dd-a30b2fa001e0" },
+    { "constant": "img5", "filename": "img5.png", "url": "https://www.figma.com/api/mcp/asset/64558612-c659-401e-9434-2ebc88eae2b6" },
+    { "constant": "img6", "filename": "img6.png", "url": "https://www.figma.com/api/mcp/asset/526d2bbd-f575-4e64-ada1-4a1676b904a5" },
+    { "constant": "img7", "filename": "img7.png", "url": "https://www.figma.com/api/mcp/asset/2955809d-5a44-42ef-b3d8-8588068970f6" },
+    { "constant": "imgFrameB58B197E42F144EcB33FDd8658Bc6F83Jpg1", "filename": "imgFrameB58B197E42F144EcB33FDd8658Bc6F83Jpg1.png", "url": "https://www.figma.com/api/mcp/asset/6fbb03cd-2f10-4388-99e3-ad6a2c06554e" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/7f1cf8c1-4b5d-44b1-81f0-2f0f5dad6cd2" },
+    { "constant": "raw_image_1..20", "filename": "raw_image_N.png", "note": "20 raw source images from download_assets (rawImagesTruncated: true — subtree has more than 20 source images)" }
+  ]
+}

@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 8320 2289.51" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="bg">
+<rect id="Rectangle 1329135000" x="3200" y="780" width="1920" height="1080" fill="var(--fill-0, #CEDAE3)"/>
+<g id="Ellipse 1329130913" filter="url(#filter0_f_0_70)">
+<path d="M8160 1732.33C8160 2600.7 5364.5 1774.5 4160 1774.5C2955.5 1774.5 160 2600.7 160 1732.33C160 863.954 1950.86 160 4160 160C6369.14 160 8160 863.954 8160 1732.33Z" fill="var(--fill-0, #080911)"/>
+<path d="M4160 200C5260.86 200 6255.67 375.469 6973.79 657.751C7332.98 798.94 7620.94 966.067 7818.43 1149.61C8015.87 1333.09 8120 1530.04 8120 1732.33C8120 1828.17 8082.32 1898.62 8013.16 1951.73C7942 2006.39 7835.69 2043.88 7698.1 2065.76C7423.1 2109.48 7040.82 2088.3 6616.27 2039.32C6192.4 1990.41 5731.4 1914.48 5299.01 1850.46C4867.9 1786.62 4464.51 1734.5 4160 1734.5C3855.49 1734.5 3452.1 1786.62 3020.99 1850.46C2588.6 1914.48 2127.6 1990.41 1703.73 2039.32C1279.18 2088.3 896.901 2109.48 621.897 2065.76C484.313 2043.88 377.999 2006.39 306.836 1951.73C237.682 1898.62 200 1828.17 200 1732.33C200 1530.04 304.133 1333.09 501.57 1149.61C699.062 966.067 987.022 798.94 1346.21 657.751C2064.33 375.469 3059.14 200 4160 200Z" stroke="var(--stroke-0, #0046D1)" stroke-width="80"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_70" x="0" y="0" width="8320" height="2289.51" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="80" result="effect1_foregroundBlur_0_70"/>
+</filter>
+</defs>
+</svg>

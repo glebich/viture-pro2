@@ -1,0 +1,117 @@
+/* s21 — light #CEDAE3 SVG-gradient interstitial "Pro Mobile Dock, Gone Mini." */
+
+/* Underlay matched to the baked art's own vertical profile (near-black
+   #080911 upper half → ice #cedae3 foot). It only shows while the art is
+   still fading in (entrance from opacity 0), and a flat light #cedae3 there
+   put a wrong light-gray slab against s20's black bottom at the fold —
+   with this gradient every entrance frame stays in the art's own tones. */
+.s21-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #080911 0%,
+    #080911 45%,
+    #0a0b16 55%,
+    #52547d 65%,
+    #adb6ce 75%,
+    #cedae3 88%,
+    #cedae3 100%
+  );
+}
+
+.s21-bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Oversized gradient art; inner 1920x1080 (375x812) window lands on the stage */
+.s21-bg-d {
+  position: absolute;
+  left: -3195px;
+  right: -3195px;
+  top: -604px;
+  bottom: 0;
+}
+
+.s21-bg-m {
+  position: absolute;
+  left: -748px;
+  right: -748px;
+  top: -492px;
+  bottom: 0;
+}
+
+.s21-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.s21-text-d {
+  position: absolute;
+  left: 398px;
+  right: 397px;
+  top: 419px;
+  gap: 36px; /* 56 design gap minus cap-trim slack */
+}
+
+.s21-text-m {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 201px;
+  gap: 46px; /* 56 design gap minus cap-trim slack */
+}
+
+.s21-kicker {
+  font-size: 20px;
+  line-height: 1;
+  color: #fff;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.s21-text-m .s21-kicker {
+  font-size: 16px;
+}
+
+.s21-title {
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.s21-title-d {
+  font-size: 92px;
+}
+
+.s21-title-m {
+  font-size: 32px;
+}
+
+/* Scroll cue: horizontal arrow SVG (dot at start) rotated -90 -> dot at bottom */
+.s21-arrow img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.s21-arrow-d {
+  position: absolute;
+  left: 884px;
+  top: 922px;
+  width: 150px;
+  height: 6px;
+  transform: rotate(-90deg);
+}
+
+.s21-arrow-m {
+  position: absolute;
+  left: 127px;
+  top: 547px;
+  width: 120px;
+  height: 6px;
+  transform: rotate(-90deg);
+}

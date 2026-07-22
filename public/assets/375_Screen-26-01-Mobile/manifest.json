@@ -1,0 +1,12 @@
+{
+  "frame": "375_Screen-26-01-Mobile",
+  "nodeId": "17683:9731",
+  "assets": [
+    { "constant": "imgReload", "filename": "imgReload.svg", "url": "https://www.figma.com/api/mcp/asset/5c05de17-0130-42bf-8d5e-09167c199822" },
+    { "constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "url": "https://www.figma.com/api/mcp/asset/e6f15593-05b3-40e0-902b-cf070946b6f6" },
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/6ed0362f-22a5-4dd6-9499-b7ae078e6a7d" },
+    { "constant": "imgBg11", "filename": "imgBg11.png", "url": "https://www.figma.com/api/mcp/asset/462d9e82-48c0-4280-9e65-55090213c7cb", "note": "wide background image, cropped to 375px column in design (same as raw_image_7)" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/cd9a9d45-b060-426d-bded-45085ec93110" },
+    { "constant": "raw_image_1..8", "filename": "raw_image_N.png", "note": "8 raw source images from download_assets" }
+  ]
+}

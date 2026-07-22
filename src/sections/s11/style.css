@@ -1,0 +1,225 @@
+/* s11 — Built-in Diopter / Edge-to-Edge Sharpness.
+   Merged page (former s11 + s12; unpinned round 8): the hero scene persists
+   while a time-based auto build draws the diopter callout line and raises
+   the stat + SGS block. .s11-a layers are the Screen-11-01 scene, .s11-b
+   the Screen-12-01 scene (cross-faded by the auto build; b starts hidden). */
+
+.s11-bg {
+  position: absolute;
+  inset: 0;
+  background: #ff692c;
+}
+
+.s11-glow {
+  position: absolute;
+  inset: -47.87% -158.33% 36.76% -158.33%;
+}
+.s11-glow-in {
+  position: absolute;
+  inset: -16.67% -2.5%;
+}
+.s11-glow--m .s11-glow-in {
+  inset: -22.17% -12.8%;
+}
+.s11-glow-in img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* state-b layers rest hidden until the auto build cross-fades them in */
+img.s11-b,
+.s11-still.s11-b {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.s11-still {
+  /* perf: authored full-size with blur(150px); rendered at half size and
+     composited with scale(2) — same softness, 4x fewer blurred pixels.
+     Opacity-only cross-fade; will-change caches the blurred layer. */
+  position: absolute;
+  width: 50%;
+  transform: scale(2);
+  transform-origin: 0 0;
+  filter: blur(75px);
+  mix-blend-mode: plus-lighter;
+  will-change: opacity;
+}
+.s11-still--a {
+  inset: 63.33% auto -13.33% 0;
+}
+.s11-still--b {
+  inset: 52.78% auto -2.78% 0;
+}
+.s11-still--m {
+  inset: 63.33% auto -13.33% 0;
+}
+.s11-still img,
+.s11-video img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.s11-video {
+  /* Figma node carries blur-[20px], but the rendered frame shows the asset's
+     baked DOF only — a 20px CSS blur wipes out the diopter-dial detail. */
+  position: absolute;
+  inset: 5.56% -5.73% -11.3% 0;
+}
+.s11-video--m {
+  /* state-a framing; the auto build pans it up 138.04px to the state-b
+     framing (inset-top 3.2%) while the dial frame cross-fades */
+  inset: 20.2% -10.67% -30.79% 0;
+}
+
+.s11-text {
+  position: absolute;
+  left: 194px;
+  top: 184px;
+  width: 935px;
+  color: #fff;
+}
+.s11-eyebrow {
+  font-size: 20px;
+  line-height: 1.4;
+}
+.s11-title {
+  /* margins compensate for Figma's text-box-trim (cap-trimmed blocks) */
+  font-size: 72px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin-top: 26px;
+}
+.s11-sub {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-top: 14px;
+}
+
+/* callout line from the diopter dial to the stat (drawn by the auto build) */
+.s11-line {
+  position: absolute;
+  left: 1066px;
+  top: 621px;
+  width: 166px;
+  height: 33px;
+  opacity: 0;
+  visibility: hidden;
+}
+.s11-line img {
+  width: 100%;
+  height: 100%;
+}
+
+.s11-info {
+  position: absolute;
+  left: 1273px;
+  top: 593px;
+  width: 484px;
+  color: #fff;
+}
+.s11-stat {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+.s11-sgs {
+  margin-top: 42px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+/* stat + SGS rest hidden until the auto build raises them */
+.s11-stat,
+.s11-sgs {
+  opacity: 0;
+  visibility: hidden;
+}
+.s11-sgs-logo {
+  width: 81px;
+  height: 81px;
+  flex-shrink: 0;
+}
+.s11-sgs-text {
+  width: 387px;
+}
+.s11-sgs-title {
+  font-size: 32px;
+  line-height: 1.4;
+}
+.s11-sgs-sub {
+  font-size: 20px;
+  line-height: 1.4;
+  opacity: 0.6;
+  margin-top: 20px;
+}
+
+/* mobile (375×812) */
+.s11-text--m {
+  left: 40px;
+  top: 112px;
+  width: 295px;
+}
+.s11-text--m .s11-eyebrow {
+  font-size: 16px;
+}
+.s11-text--m .s11-title {
+  font-size: 32px;
+  margin-top: 48px;
+}
+.s11-text--m .s11-sub {
+  font-size: 16px;
+  width: 270px;
+}
+
+/* vertical callout line (rotated 111×32 asset), drawn by the auto build */
+.s11-vline {
+  position: absolute;
+  left: 188px;
+  top: 467px;
+  width: 32px;
+  height: 111px;
+  opacity: 0;
+  visibility: hidden;
+}
+.s11-vline img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 111px;
+  height: 32px;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.s11-info--m {
+  left: 40px;
+  top: 555px;
+  width: 295px;
+}
+.s11-info--m .s11-stat {
+  font-size: 32px;
+}
+.s11-info--m .s11-sgs {
+  margin-top: 32px;
+  align-items: flex-start;
+}
+.s11-info--m .s11-sgs-logo {
+  width: 40px;
+  height: 40px;
+}
+.s11-info--m .s11-sgs-text {
+  width: 231px;
+}
+.s11-info--m .s11-sgs-title {
+  font-size: 20px;
+}
+.s11-info--m .s11-sgs-sub {
+  font-size: 16px;
+  margin-top: 16px;
+}

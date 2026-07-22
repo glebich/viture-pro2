@@ -1,0 +1,17 @@
+{
+  "frame": "Screen-05-01",
+  "nodeId": "17683:8787",
+  "assets": [
+    {"constant": "imgPaginator", "filename": "imgPaginator.svg", "source": "https://www.figma.com/api/mcp/asset/5259014f-be16-4374-8303-73dc7340de74"},
+    {"constant": "imgLogo", "filename": "imgLogo.svg", "source": "https://www.figma.com/api/mcp/asset/ba6ff016-3e74-46fe-8c48-dce985acab82"},
+    {"constant": "imgSearch", "filename": "imgSearch.svg", "source": "https://www.figma.com/api/mcp/asset/b8d24692-6e7a-4bc6-8d49-e8bfa13c39e0"},
+    {"constant": "imgShopping", "filename": "imgShopping.svg", "source": "https://www.figma.com/api/mcp/asset/939f5444-eaf0-4df8-b3c3-37c1c9249f87"},
+    {"constant": "imgGlasses", "filename": "imgGlasses.svg", "source": "https://www.figma.com/api/mcp/asset/7ccbaafa-d85d-41f0-986d-f0d0049e18a3"},
+    {"constant": "img1920Screen0501", "filename": "img1920Screen0501.png", "source": "https://www.figma.com/api/mcp/asset/87ba2f7e-cf11-44af-98c4-d809edb5e6a7"},
+    {"constant": "imgEllipse1329130913", "filename": "imgEllipse1329130913.svg", "source": "https://www.figma.com/api/mcp/asset/5bcd39a4-c823-40ad-9c72-87bd1deae6ae"}
+  ],
+  "rawImages": [
+    {"filename": "raw_image_1.png", "format": "png", "source": "https://www.figma.com/api/mcp/asset/b369d06d-1b8d-40ab-8deb-e4ea3d4c88b9", "note": "3840x2160 full-res"},
+    {"filename": "raw_image_2.png", "format": "png", "source": "https://www.figma.com/api/mcp/asset/b800b553-e3f8-45c2-90f9-6f49c95e3dc3", "note": "480x270 preview"}
+  ]
+}

@@ -1,0 +1,183 @@
+/* ---------- s03 — "Five Years" glass journey (glasses → Mobile Dock) ---------- */
+
+#s03 .stage {
+  background: #0a0d16;
+  overflow: hidden;
+}
+
+/* full-stage wrapper: veil + products + glass canvas + exit dissolve */
+.s03-inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* round-9 veil: the top opens on a TALL, BRIGHT ice-blue bloom — light
+   #b8cdea at the very top edge (sky light entering the frame; the fixed
+   header's own scrim keeps the white nav legible over it), saturating
+   down through mid-blue and royal blue, fading through deep navy into the
+   near-black body by ~35% height → luminous blue-white bloom at the
+   bottom. Round 8's dark-top version read as a thin dim royal-blue strip
+   hugging the top edge — the design is a soft luminous bloom, not a band.
+   Plain full-bleed gradients whose stops EXACTLY match BG_GLASSES_* /
+   BG_DOCK_* in index.ts (the glass shader's refraction source). The dock
+   variant (taller bottom bloom) sits on top and cross-fades in with the
+   product swap. */
+.s03-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #b8cdea 0%,
+    #96aede 4%,
+    #6e88d4 8%,
+    #4560c0 13%,
+    #2a3f97 20%,
+    #1b2868 25.5%,
+    #0f1531 30%,
+    #0a0d16 35%,
+    #0a0d16 72%,
+    #22315c 79%,
+    #6883b4 86%,
+    #aec2e2 93%,
+    #d9e5f6 100%
+  );
+}
+
+.s03-veil--dock {
+  background: linear-gradient(
+    180deg,
+    #b8cdea 0%,
+    #96aede 4%,
+    #6e88d4 8%,
+    #4560c0 13%,
+    #2a3f97 20%,
+    #1b2868 25.5%,
+    #0f1531 30%,
+    #0a0d16 35%,
+    #0a0d16 58%,
+    #23345f 66%,
+    #4f6a9f 74%,
+    #8aa3cc 83%,
+    #c3d2ec 92%,
+    #d9e5f6 100%
+  );
+  opacity: 0;
+}
+
+.s03-veil--m {
+  background: linear-gradient(
+    180deg,
+    #b8cdea 0%,
+    #96aede 3.5%,
+    #6e88d4 7%,
+    #4560c0 11%,
+    #2a3f97 17%,
+    #1b2868 22%,
+    #0f1531 26%,
+    #0a0d16 30%,
+    #0a0d16 70%,
+    #22315c 77%,
+    #6883b4 85%,
+    #aec2e2 93%,
+    #d9e5f6 100%
+  );
+}
+
+.s03-veil--dock-m {
+  background: linear-gradient(
+    180deg,
+    #b8cdea 0%,
+    #96aede 3.5%,
+    #6e88d4 7%,
+    #4560c0 11%,
+    #2a3f97 17%,
+    #1b2868 22%,
+    #0f1531 26%,
+    #0a0d16 30%,
+    #0a0d16 55%,
+    #23345f 63%,
+    #4f6a9f 72%,
+    #8aa3cc 82%,
+    #c3d2ec 91%,
+    #d9e5f6 100%
+  );
+  opacity: 0;
+}
+
+/* product renders — explicit left/top (no CSS transforms: GSAP drives
+   x/y/scale and the glass shader mirrors the exact same offsets) */
+.s03-prod {
+  position: absolute;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* hero glasses render (2560×1440, derived from the 3840×2160 Figma raw;
+   16:9 = box aspect, so cover never crops) — DOF is baked into the asset */
+.s03-prod--glasses {
+  left: 245.35px;
+  top: 156px;
+  width: 1365.3px;
+  height: 768px;
+}
+
+/* Mobile Dock render — 2418×1779, pre-cropped from the 4096² Figma raw to
+   the design box's 745:548 aspect so it maps 1:1 (the old square export
+   under object-fit:cover chopped ~120px off the device top and bottom) */
+.s03-prod--dock {
+  left: 510.9px;
+  top: 241.9px;
+  width: 907px;
+  height: 667.2px;
+}
+
+.s03-prod--glasses-m {
+  left: -199.15px;
+  top: 150px;
+  width: 661.3px;
+  height: 372px;
+}
+
+.s03-prod--dock-m {
+  left: -33px;
+  top: 244px;
+  width: 441px;
+  height: 324px;
+}
+
+/* giant watermark — CSS fallback; the WebGL glass canvas replaces it */
+.s03-big {
+  position: absolute;
+  left: 1631px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 400px;
+  font-weight: 400;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+  text-align: center;
+  z-index: 2;
+}
+
+.s03-big--m {
+  left: 549.5px;
+  top: calc(50% + 0.5px);
+  font-size: 240px;
+}
+
+.s03-inner .glasstext-canvas {
+  z-index: 3;
+}
+
+/* release dissolve — matches s05's dark field so the unpin is seamless */
+.s03-exit {
+  position: absolute;
+  inset: 0;
+  background: #080911;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 5;
+}

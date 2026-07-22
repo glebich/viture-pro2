@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 8320 1757" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="bg">
+<rect id="Rectangle 1329135000" x="3200" y="677" width="1920" height="1080" fill="var(--fill-0, #CEDAE3)"/>
+<g id="Ellipse 1329130912" filter="url(#filter0_f_0_77)">
+<ellipse cx="4160" cy="760" rx="4000" ry="600" fill="var(--fill-0, #080911)"/>
+<path d="M4160 200C5263.22 200 6261.14 267.09 6982.49 375.293C7343.48 429.441 7633.44 493.633 7832.29 564.152C7931.96 599.499 8006.36 635.623 8055.09 671.34C8104.91 707.86 8120 737.903 8120 760C8120 782.097 8104.91 812.14 8055.09 848.66C8006.36 884.377 7931.96 920.501 7832.29 955.848C7633.44 1026.37 7343.48 1090.56 6982.49 1144.71C6261.14 1252.91 5263.22 1320 4160 1320C3056.78 1320 2058.86 1252.91 1337.51 1144.71C976.523 1090.56 686.559 1026.37 487.71 955.848C388.041 920.501 313.639 884.377 264.914 848.66C215.093 812.14 200 782.097 200 760C200 737.903 215.093 707.86 264.914 671.34C313.639 635.623 388.041 599.499 487.71 564.152C686.559 493.633 976.523 429.441 1337.51 375.293C2058.86 267.09 3056.78 200 4160 200Z" stroke="var(--stroke-0, #0046D1)" stroke-width="80"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_0_77" x="0" y="0" width="8320" height="1520" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="80" result="effect1_foregroundBlur_0_77"/>
+</filter>
+</defs>
+</svg>

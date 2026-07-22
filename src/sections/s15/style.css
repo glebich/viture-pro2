@@ -1,0 +1,200 @@
+/* s15 — Slimmer Than Pro / Thin Enough to Disappear.
+   Merged page (former s15 + s16; unpinned in round 7): copy + stats persist
+   while the glasses render camera-pans automatically (a gentle time-based
+   loop, no scroll input) between the two harvest crops. The crop window is
+   the union of both design windows; .s15-cam is authored at the Screen-15
+   img rect and the loop transforms it to the Screen-16 rect (see index.ts
+   for the rect math). */
+
+.s15-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* bottom feather (pattern from s01/s02, formerly on #s16): eases s15's
+   #020202 field and the glow's lower spill into the exact tone of s16b's
+   top row (#030303 desktop, #010101 mobile) so the section fold has no
+   hard tonal step now that s15 folds straight into s16b */
+#s15::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 3, 3, 0) 0%,
+    rgba(3, 3, 3, 0.2) 40%,
+    rgba(3, 3, 3, 0.6) 75%,
+    rgb(3, 3, 3) 100%
+  );
+}
+@media (max-width: 640px) {
+  #s15::after {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 1, 1, 0) 0%,
+      rgba(1, 1, 1, 0.2) 40%,
+      rgba(1, 1, 1, 0.6) 75%,
+      rgb(1, 1, 1) 100%
+    );
+  }
+}
+
+.s15-glow {
+  position: absolute;
+  left: 883px;
+  top: 779px;
+  width: 800px;
+  height: 800px;
+}
+.s15-glow-in {
+  position: absolute;
+  inset: -37.5%;
+}
+.s15-glow--m {
+  left: -212px;
+  top: 715px;
+  width: 800px;
+  height: 601px;
+}
+.s15-glow--m .s15-glow-in {
+  inset: -49.88% -37.5%;
+}
+.s15-glow-in img {
+  width: 100%;
+  height: 100%;
+}
+
+/* crop window: union of the Screen-15 (957,163,670×751) and Screen-16
+   (955,211,680×713) design windows — the 2–10px of extra reveal is
+   near-black render field, invisible against the #020202 bg */
+.s15-glasses {
+  position: absolute;
+  left: 955px;
+  top: 163px;
+  width: 680px;
+  height: 761px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.s15-cam {
+  /* Screen-15 img rect, relative to the union window */
+  position: absolute;
+  left: -332.13px;
+  top: -268.86px;
+  width: 2266.81px;
+  height: 1276.25px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.s15-cam img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* the Screen-16 export rests hidden until the loop cross-fades it in */
+.s15-img-b {
+  opacity: 0;
+  visibility: hidden;
+}
+.s15-glasses--m {
+  left: 44px;
+  top: 409px;
+  width: 287px;
+  height: 322px;
+}
+.s15-glasses--m .s15-cam {
+  left: -143.13px;
+  top: -115.28px;
+  width: 971.01px;
+  height: 547.21px;
+}
+
+.s15-content {
+  position: absolute;
+  left: 194px;
+  top: 440px;
+  width: 800px;
+  color: #fff;
+}
+/* margins compensate for Figma text-box-trim (cap/alphabetic) vs CSS line boxes */
+.s15-eyebrow {
+  font-size: 20px;
+  line-height: 1.4;
+  opacity: 0.7;
+  margin-top: -7px;
+}
+.s15-title {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+  margin-top: 36px;
+  width: 447px;
+}
+.s15-line {
+  margin-top: 85px;
+  width: 800px;
+  height: 1px;
+}
+.s15-line img {
+  width: 100%;
+  height: 1px;
+}
+.s15-benefits {
+  margin-top: 77px;
+  display: flex;
+  justify-content: space-between;
+  width: 453px;
+}
+.s15-stat {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+.s15-label {
+  font-size: 20px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 7px;
+}
+
+/* mobile (375×812) */
+.s15-content--m {
+  left: 40px;
+  top: 136px;
+  width: 295px;
+}
+.s15-content--m .s15-eyebrow {
+  font-size: 16px;
+  margin-top: -5px;
+}
+.s15-content--m .s15-title {
+  font-size: 32px;
+  margin-top: 29px;
+  width: 193px;
+}
+.s15-content--m .s15-line {
+  margin-top: 54px;
+  width: 244px;
+}
+.s15-content--m .s15-benefits {
+  margin-top: 46px;
+  justify-content: flex-start;
+  gap: 10px;
+  width: auto;
+}
+.s15-content--m .s15-benefit {
+  width: 92px;
+}
+.s15-content--m .s15-stat {
+  font-size: 32px;
+}
+.s15-content--m .s15-label {
+  font-size: 16px;
+  margin-top: 15px;
+}

@@ -1,0 +1,47 @@
+/* ---------- Paginator (owned by src/lib/paginator.ts) ----------
+   Interactive since client round 8. The container keeps the old 8px design
+   column (left is placed by paginator.ts); each slot is a 19x19 button
+   centred on the old svg dot centres, so hit areas are generous while the
+   visual stays identical. Hover growth is transform-only — zero layout
+   shift. Hidden on mobile by paginator.ts (inline display). */
+#paginator {
+  position: fixed;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  width: 8px;
+  height: 116px;
+}
+
+.pg-slot {
+  position: absolute;
+  left: 50%;
+  width: 19px;
+  height: 19px;
+  margin-left: -9.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pg-dot {
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.6;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+.pg-slot:hover .pg-dot {
+  transform: scale(1.6);
+  opacity: 1;
+}
+
+.pg-dash {
+  width: 8px;
+  height: 4px;
+  border-radius: 2px;
+  background: #ff5f34;
+}

@@ -1,0 +1,93 @@
+/* s18 — full-bleed product portrait, no copy */
+
+/* Client round 15: the video backdrop is gone ("video never needs to be
+   there") — the portrait sits on this flat near-black again. */
+.s18-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* Top feather from s19v (mirror of the bottom-feather junction pattern):
+   the laser slide's foot is feathered to near-black, so dissolving the
+   loop's top edge from the same tone makes the fold read as one shadow. */
+#s18::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgba(2, 2, 2, 0) 0%,
+    rgba(2, 2, 2, 0.5) 55%,
+    rgb(2, 2, 2) 100%
+  );
+}
+
+.s18-photo {
+  /* client round 11 ("image is stretched, lost objects"): the old
+     img1111 export was the 1665×2135 Figma layer squashed into a
+     1024×1024 square (face widened ×1.28), papered over with a
+     contain + object-position hack that also shrank/dropped the
+     design's tight head crop. The asset is now re-derived from the
+     4096² harvest raw at the exact Figma fill crop (uniform scale,
+     offset −264,−82 in box space), so it matches the placement box
+     aspect 1:1 — plain cover, no repositioning tricks. */
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Desktop: 1665×2135 image centered at x = 50% + 20.5px, top -27.78% */
+.s18-photo-d {
+  position: absolute;
+  left: 148px;
+  top: -300px;
+  width: 1665px;
+  height: 2135px;
+}
+
+/* Bottom feather (round 10 restore): s18 now folds into s20, whose top
+   feather dissolves from near-black (#030303 desktop / #010101 mobile) —
+   but the portrait's brightly lit jacket used to cut hard at the fold.
+   Same pattern as s01/s02: darken the photo's foot into the exact tone the
+   next section's feather expects, so the junction reads as one shadow. */
+#s18::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 3, 3, 0) 0%,
+    rgba(3, 3, 3, 0.55) 55%,
+    rgb(3, 3, 3) 100%
+  );
+}
+@media (max-width: 640px) {
+  #s18::after {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 1, 1, 0) 0%,
+      rgba(1, 1, 1, 0.55) 55%,
+      rgb(1, 1, 1) 100%
+    );
+  }
+}
+
+/* Mobile: same art, aspect 1665/2135, centered at x = 50% + 0.5px */
+.s18-photo-m {
+  position: absolute;
+  left: -147px;
+  top: 205px;
+  width: 671px;
+  height: 861px;
+}

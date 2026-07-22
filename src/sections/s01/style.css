@@ -1,0 +1,178 @@
+/* ---------- s01 — hero-photo loader (client round 10) ---------- */
+
+/* stage fill is transparent: the photo stage sits at the bottom, the warm
+   fluid veil dissolves above it, and the counter/line-art stages stay on
+   top so the count is always readable */
+#s01 .stage {
+  background: transparent;
+}
+
+/* hero photo — the design's composed model portrait (Figma 224:3905 ==
+   the original harvest hero, public/assets/1920_Screen-01-01/imgBg11.webp).
+   Lives inside a stage per breakpoint so it scales with the same cover
+   math as the line art above it; center cover gives the mobile crop. */
+.s01-photo {
+  position: absolute;
+  inset: -2px;
+  background: url("/assets/1920_Screen-01-01/imgBg11.webp") center / cover
+    no-repeat;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* full-bleed loader fluid veil (above the photo, below the counter) */
+.s01-veil {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.s01-fluid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* the buffer now renders at full res (fluid.ts round 5) — only a hair of
+     softening is needed to melt the film grain; 1px ate the fine detail */
+  filter: blur(0.5px);
+}
+/* slow-breathing warm glow accent over the fluid */
+.s01-glowfx {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 72vmax;
+  height: 72vmax;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 150, 80, 0.42),
+    rgba(255, 105, 44, 0.12) 55%,
+    transparent 75%
+  );
+  mix-blend-mode: plus-lighter;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* settle-lock wrapper: fills its stage exactly and receives the SAME
+   scale-1.06→1 settle tween as .s01-photo (see s01/index.ts), with the same
+   center origin — so the line art tracks the photo's glasses on every frame
+   of the draw instead of only registering at rest */
+.s01-gscale {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* glasses line-art — the official 474×158 outline art (see s01/index.ts)
+   mapped onto the photo's glasses in the 1920×1080 design space: box
+   660,318 → 1232,509 keeps the source aspect (572 × 190.7).
+   The scale(0.98) is a deliberate registration bias (client round: outline
+   "feels too big"): the trace sits ~2% INSIDE the frame edge, which reads
+   tighter against the photo's soft frame highlight. */
+.s01-glasses {
+  position: absolute;
+  left: 681px;
+  top: 331px;
+  width: 534px;
+  height: 175px;
+  transform: scale(0.98);
+  transform-origin: center center;
+  pointer-events: none;
+  overflow: visible;
+}
+.s01-draw {
+  stroke: rgba(255, 244, 232, 0.95);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  filter: drop-shadow(0 0 5px rgba(255, 200, 150, 0.8))
+    drop-shadow(0 0 18px rgba(255, 160, 90, 0.45));
+}
+/* stroke weights: the source art's 1.5 / 1 / 0.5 hierarchy scaled ×1.5 so
+   the frame reads ~2-3 display px once the 474-unit viewBox stretches to
+   the 572-design-px box */
+.s01-draw--outer,
+.s01-draw--rim {
+  stroke-width: 2.25;
+}
+.s01-draw--bridge,
+.s01-draw--detail {
+  stroke-width: 1.5;
+}
+.s01-draw--hair {
+  stroke-width: 0.75;
+}
+/* VITURE V logomark inside the right lens — a solid fill (per reference),
+   not a stroke; it condenses in near the end of the count */
+.s01-logo {
+  opacity: 0;
+}
+.s01-logo path {
+  fill: rgba(255, 244, 232, 0.95);
+}
+
+/* mobile: the same design-space art mapped onto the photo's center-crop
+   (image cover scale 0.7505, x offset −533 — see s01/index.ts note) */
+.s01-glasses--m {
+  left: -22px;
+  top: 248px;
+  width: 401px;
+  height: 131px;
+}
+
+/* bottom feather: fades in late so s01's photo foot darkens into the exact
+   tone of s02's opaque artwork top (#080911) — no step at the section fold */
+.s01-feather {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34vh;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 9, 17, 0) 0%,
+    rgba(8, 9, 17, 0.45) 55%,
+    rgba(8, 9, 17, 1) 100%
+  );
+}
+
+/* counter: "24" (warm gradient) + "%" (ice gradient, 20%) near the bottom */
+.s01-loader {
+  position: absolute;
+  bottom: 102px;
+  left: calc(50% + 0.5px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.s01-count {
+  font-size: 80px;
+  font-weight: 300;
+}
+
+.s01-pct {
+  font-size: 40px;
+  font-weight: 300;
+  opacity: 0.2;
+}
+
+/* mobile variant — counter at 32px near the bottom */
+.s01-loader--m {
+  bottom: 32px;
+  gap: 5px;
+}
+.s01-loader--m .s01-count {
+  font-size: 32px;
+}
+.s01-loader--m .s01-pct {
+  font-size: 18px;
+}

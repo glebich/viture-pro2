@@ -1,0 +1,418 @@
+/* s06 — merged pinned sequence (former s06 + s07 + s08):
+   wordmark travel -> mask-zoom reveal -> UltraClarity card -> card morph */
+
+/* bottom feather (round 6, s10 removed): s06's final frame is the bright
+   full-bleed fluid photo, and the page now folds straight into s11 whose
+   top row is near-black (#05050b — the diopter hero video's dark edge).
+   Same color-true ::after ramp as s02/s15 so the fold has no hard line. */
+#s06::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 11, 0) 0%,
+    rgba(5, 5, 11, 0.16) 42%,
+    rgba(5, 5, 11, 0.55) 76%,
+    rgba(5, 5, 11, 0.96) 100%
+  );
+}
+
+/* ---------- dark glow background (first beat) ---------- */
+.s06-bg {
+  position: absolute;
+}
+.s06-bg--d {
+  inset: -72.22% -166.67% -39.77% -166.67%;
+}
+.s06-bg--m {
+  inset: -78.13% -201% -43.64% -201%;
+}
+.s06-bg img {
+  width: 100%;
+  height: 100%;
+}
+
+/* black veils used for all bg fades — the bg svg's internal blend modes
+   flash purple if its own opacity is animated (Chromium isolation).
+   Two layers so the entrance (--in) and the pinned zoom (--out) never
+   fight over one element's opacity on fast scrolls. */
+.s06-dim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- shared full-bleed scene (former s07 hero) ----------
+   The same markup is used twice: as the reveal target (.s06-photo) and
+   screen-locked inside the mask layer — so the handoff has zero seam. */
+/* NOTE: scenes and tex use explicit stage-px boxes (not inset percentages) —
+   inside .s06-maskwrap the parent is WIDER than the stage (the wrap box must
+   cover the whole wordmark travel range because mask-clip is border-box),
+   so %-based sizing would break the framing. */
+.s06-scene {
+  position: absolute;
+  pointer-events: none;
+}
+.s06-scene--d {
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+}
+.s06-scene--d img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.s06-scene--m {
+  /* was: inset: 0 -191.73% 0 -91.73% of the 375 stage */
+  left: -343.99px;
+  top: 0;
+  width: 1437.98px;
+  height: 812px;
+}
+.s06-pclip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.s06-pclip img {
+  position: absolute;
+  top: 0;
+  left: -0.3%;
+  width: 100.39%;
+  height: 100%;
+}
+.s06-photo {
+  opacity: 0; /* bloomed in by the scrub as the mask-zoom lands */
+}
+
+/* ---------- wordmark mask layers ----------
+   .s06-maskenter  entrance only (opacity/y)
+   .s06-maskwrap   CSS mask = wordmark bitmap; scrub scales it up (the zoom)
+   .s06-maskinner  counter-scaled so the scene inside stays screen-locked */
+.s06-maskenter {
+  position: absolute;
+  inset: 0;
+}
+.s06-maskwrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%; /* widened by JS to cover the full wordmark travel range */
+  height: 100%;
+  visibility: hidden; /* shown by JS once the mask bitmap is applied */
+  will-change: transform, opacity;
+}
+.s06-maskinner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.s06-tex {
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+}
+.stage--d .s06-tex {
+  width: 1920px;
+  height: 1080px;
+}
+.stage--m .s06-tex {
+  width: 375px;
+  height: 812px;
+}
+
+/* live main-screen loop INSIDE the mask (round 15): explicit stage-px box —
+   NOT inset:0 — because .s06-maskwrap is wider than the stage (see the
+   scene/tex note above). Same stage-cover framing as the full-bleed
+   .s06-vid, and the .s06-maskinner counter-transform screen-locks it, so
+   the letters show exactly the pixels the handoff later reveals. Sits above
+   scene+tex; those stay as the reduced-motion / not-yet-decoded fallback. */
+.s06-mvid {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+}
+.stage--d .s06-mvid {
+  width: 1920px;
+  height: 1080px;
+}
+.stage--m .s06-mvid {
+  width: 375px;
+  height: 812px;
+}
+.s06-mvid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- card morph state-b background (former s08) ---------- */
+.s06-bgb {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.s06-bgb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.s06-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(33, 33, 33, 0.2);
+}
+
+/* ---------- glass card (former s08) ---------- */
+.s06-card {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.04);
+  -webkit-backdrop-filter: blur(100px);
+  backdrop-filter: blur(100px);
+  overflow: hidden;
+}
+.stage--d .s06-card {
+  right: 194px; /* calc(8.33% + 34px) of 1920 */
+  top: 224px;
+  width: 607px;
+  border-radius: 80px;
+  padding: 80px 79px 81px 80px;
+}
+.stage--m .s06-card {
+  left: 40px;
+  top: 299.5px; /* centered via gsap yPercent: -50 */
+  width: 295px;
+  border-radius: 48px;
+  padding: 32px;
+}
+
+.s06-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  border-radius: 80px;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.stage--d .s06-badge {
+  width: 116px;
+  height: 52px;
+  font-size: 20px;
+}
+.stage--m .s06-badge {
+  padding: 10px 16px;
+  font-size: 12px;
+}
+
+.s06-cbody {
+  position: relative;
+  /* roll window (round 9): overflow-hidden so the a->b morph is a clipped
+     vertical roll — content a translates up and OUT of this box while
+     content b translates up INTO it, geometrically disjoint at every scrub
+     position (never blank, never double-exposed). padding-top gives the
+     cap-trimmed headings (negative margins) breathing room so no ink clips
+     at rest; margin-top is reduced by the same amount so the design
+     position is unchanged (60/24px total). */
+  overflow: hidden;
+}
+.stage--d .s06-cbody {
+  margin-top: 48px;
+  padding-top: 12px;
+}
+.stage--m .s06-cbody {
+  margin-top: 16px;
+  padding-top: 8px;
+}
+
+.s06-ca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.stage--d .s06-ca {
+  gap: 60px;
+}
+.stage--m .s06-ca {
+  gap: 24px;
+}
+
+.s06-cb {
+  position: absolute;
+  left: 0;
+  /* hidden until just before its roll window — visibility keeps layout, so
+     the hB height measurement in index.ts is unaffected. JS parks it below
+     the roll window (translateY) at build time; no opacity involved. */
+  visibility: hidden;
+  display: flex; /* prevents margin collapse with trimmed heading */
+  flex-direction: column;
+}
+.stage--d .s06-cb {
+  top: 12px; /* = .s06-cbody padding-top: abs pos is padding-box relative */
+  width: 375px;
+}
+.stage--m .s06-cb {
+  top: 8px;
+  width: 210px;
+}
+
+/* ---------- card type ----------
+   Negative em margins approximate Figma's text-box-trim (cap ~0.72em):
+   trim = (line-height - 0.72) / 2 per side. */
+.s06-h {
+  font-weight: 400;
+  line-height: 1.1;
+  color: #fff;
+  margin: -0.19em 0;
+}
+.s06-ca .s06-h {
+  white-space: nowrap;
+}
+.stage--d .s06-h {
+  font-size: 72px;
+}
+.stage--m .s06-h {
+  font-size: 32px;
+}
+.s06-h-semi {
+  font-weight: 600;
+}
+
+.s06-ctext {
+  display: flex;
+  flex-direction: column;
+}
+.stage--d .s06-ctext {
+  gap: 32px;
+}
+.stage--m .s06-ctext {
+  gap: 20px;
+}
+
+.s06-sub {
+  color: #fff;
+  line-height: 1.4;
+  margin: -0.34em 0;
+}
+.stage--d .s06-sub {
+  font-size: 20px;
+}
+.stage--m .s06-sub {
+  font-size: 14px;
+}
+
+.s06-specs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.s06-spec-big {
+  color: #fff;
+  line-height: 1.1;
+  margin: -0.19em 0;
+}
+.stage--d .s06-spec-big {
+  font-size: 52px;
+}
+.stage--m .s06-spec-big {
+  font-size: 24px;
+}
+.s06-cdot {
+  width: 6px;
+  height: 6px;
+}
+.s06-specgrp {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.s06-spec-unit {
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.1;
+  margin: -0.19em 0;
+}
+.stage--d .s06-spec-unit {
+  font-size: 24px;
+}
+.stage--m .s06-spec-unit {
+  font-size: 16px;
+}
+
+.s06-cline {
+  width: 100%;
+  height: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.s06-cinfo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.s06-price {
+  color: #fff;
+  line-height: 1.1;
+  margin: -0.19em 0;
+}
+.stage--d .s06-price {
+  font-size: 52px;
+}
+.stage--m .s06-price {
+  font-size: 24px;
+}
+
+.s06-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff5f34;
+  border-radius: 54px;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.stage--d .s06-btn {
+  width: 164px;
+  height: 52px;
+  font-size: 16px;
+}
+.stage--m .s06-btn {
+  padding: 18px 32px;
+  font-size: 14px;
+}
+
+/* round 14/15: live main-screen loop behind the mask and the card/SONY beat
+   — blooms in with the photo during the zoom (before the mask hands off) and
+   replaces the static Screen-07/08 stills from there on. The bgb still is
+   hidden (its .s06-shade dim overlay still fades in for the state-B tone). */
+.s06-vid {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.s06-vid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.s06-bgb > img {
+  display: none;
+}

@@ -1,0 +1,38 @@
+/* s13 — full-bleed glasses macro photo interstitial */
+
+#s13 {
+  background: #cedae3;
+}
+
+.s13-photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.s13-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* mobile: same render, wide crop shifted to match the 375 frame */
+.s13-mwrap {
+  position: absolute;
+  inset: 0 -115.73% 0 -216%;
+}
+.s13-mcrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.s13-mcrop img {
+  position: absolute;
+  left: -4.53%;
+  top: 0;
+  width: 89.16%;
+  height: 100%;
+}

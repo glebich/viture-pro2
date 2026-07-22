@@ -1,0 +1,513 @@
+/* s27 — merged finale (former s27 + s28, client round 7):
+   state A "The Classic Returns" hero (1920_Screen-27-01 / 375_Screen-27-01a)
+   state B "Five years in the making" still (1920_Screen-28-01 / 375_Screen-27-01b)
+   ONE persistent frosted offer bar anchored at the bottom across both. */
+
+#s27 {
+  background: #010101;
+}
+
+/* ----- desktop ----- */
+/* wrapper/inner split (round 9): the entrance animates the wrapper
+   (.s27-hero), the pinned scrub animates the inner image (.s27-bg) — two
+   writers on one element raced, and a fast ride into the pin could rest as
+   a double exposure of hero + still. */
+.s27-hero {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.s27-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* state-B still (Screen-28) — hidden at rest, the pinned scrub blends it in.
+   The harvest code carries blur(30px) on it, but the design export shows it
+   sharp — the effect is disabled in the design, so no filter here. */
+.s27-still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.s27-text {
+  position: absolute;
+  left: calc(8.33% + 34px);
+  top: 218px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* 56 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+.s27-title {
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.1;
+  width: 523px;
+  margin-top: -17px;
+}
+
+.s27-tagline {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* state-B headline (Screen-28 design: centered, cap-center at 269.5px →
+   static top = 269.5 − line-box half-height; no CSS transform so the
+   scrub's y-roll owns the transform channel). Hidden at rest (opacity
+   only — visibility would stick under the QA freeze, cf. s16b). */
+.s27-title-b {
+  position: absolute;
+  left: 20.73%;
+  right: 20.68%;
+  top: 190.3px;
+  text-align: center;
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.1;
+  opacity: 0;
+}
+
+.s27-title-b b {
+  font-weight: 700;
+}
+
+/* persistent bottom column: spec strip slot + the ONE offer bar. The specs
+   element always occupies space (it only animates opacity/y), so the bar
+   sits at the same bottom-anchored position in both states — exactly where
+   Screen-27 AND Screen-28 put it (bar bottom = 80px in both). */
+.s27-bottom {
+  position: absolute;
+  left: 10.1%;
+  right: 10.1%;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 54px; /* 60 design gap minus cap-trim slack */
+  align-items: center;
+}
+
+.s27-specs {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  opacity: 0; /* state-B only — rolled in by the scrub (to 0.6 via GSAP) */
+}
+
+/* offer block — REAL glass (client r10): the backdrop-filter + a light
+   translucent fill live directly on the block, so the actual scene (temple,
+   lens glow, cross-blend to the still) reads through as soft blurred shapes.
+   The former baked imgBlock.webp tint — a flattened design export that
+   painted a frozen copy of the scene over the live blur and made the bar
+   read as an opaque slab — is gone. Empirical note: the blur chain DOES
+   work in Chromium inside the scaled stage; Playwright's headless WebKit
+   renders NO backdrop-filter anywhere (even on a bare page — broken
+   oracle, cf. the earlier s06 "WebKit no-op" report), so the rgba fill is
+   also the graceful no-backdrop fallback: still transparent, just unblurred. */
+.s27-block {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 60px;
+  padding: 40px 154px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(40px) saturate(1.3);
+  backdrop-filter: blur(40px) saturate(1.3);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* inner gradient sheen — kept light so the blurred scene stays visible
+   through it, under the content (which is lifted to z-index: 1) */
+.s27-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 38%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+/* rainbow lens-flare crossing the bar — only present in the flattened
+   Figma frame export (NOT in the live hero photo, so the real backdrop
+   blur cannot produce it), so a masked crop of it is layered inside the
+   bar (offsets assume the bar's design rect: left 194px, top 831px — the
+   bottom-anchored column resolves to exactly that). State A only: the
+   pinned scrub fades it out with the hero cross-blend. */
+.s27-flare {
+  position: absolute;
+  left: 300px;
+  top: 0;
+  width: 400px;
+  height: 75px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1; /* above the ::after sheen */
+  mask-image: radial-gradient(ellipse 50% 60% at 50% 45%, #000 45%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 45%, #000 45%, transparent 78%);
+}
+
+.s27-flare img {
+  position: absolute;
+  left: -494px; /* block left 194 + wrapper left 300 */
+  top: -831px; /* block top 831 */
+  width: 1920px;
+  height: 1080px;
+  max-width: none;
+}
+
+.s27-left {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* 16 design gap minus cap-trim slack */
+  justify-content: center;
+}
+
+.s27-offer-title {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.s27-offer-sub {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.s27-right {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex: none;
+}
+
+.s27-off {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.s27-price {
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s27-offword {
+  width: 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s27-offword span {
+  display: block;
+  transform: rotate(-90deg);
+  color: #ff5f34;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.s27-vline {
+  width: 1px;
+  height: 89px;
+  background: rgba(255, 255, 255, 0.1);
+  flex: none;
+}
+
+/* the final CTA — hover: scale 1.04 + brightness */
+.s27-btn {
+  width: 200px;
+  height: 62px;
+  border-radius: 54px;
+  background: #ff5f34;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.16px;
+  color: #fff;
+  white-space: nowrap;
+  flex: none;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+  will-change: transform;
+}
+
+.s27-btn:hover {
+  transform: scale(1.04);
+  filter: brightness(1.12);
+}
+
+/* ----- mobile 375×812 ----- */
+.s27-hero-m {
+  position: absolute;
+  top: 16.01%;
+  bottom: 25.99%;
+  left: 2.13%;
+  right: -34.93%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.s27-hero-m img {
+  position: absolute;
+  height: 100%;
+  width: 167.86%;
+  left: -42.01%;
+  top: 0;
+  max-width: none;
+}
+
+/* state-B still, mobile (Screen-27-01b design rect: left −22.93%, width
+   146.13%, center-y at 50% − 107.5px → static top = 144.4px so the scrub
+   owns the transform channel) */
+.s27-still-m {
+  position: absolute;
+  left: -22.93%;
+  width: 146.13%;
+  aspect-ratio: 1920 / 1080;
+  height: auto;
+  top: 144.4px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.s27-text-m {
+  position: absolute;
+  left: 40px;
+  top: 112px;
+  width: 295px;
+  display: flex;
+  flex-direction: column;
+  gap: 29px; /* 40 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+.s27-title-m {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+  width: 299px;
+  margin-top: -6px;
+}
+
+.s27-tagline-m {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* state-B headline, mobile (design cap-center 158.5px, 3 lines @ 32/1.1
+   → static top = 105.7px) */
+.s27-title-b-m {
+  position: absolute;
+  left: 10.67%;
+  right: 10.67%;
+  top: 105.7px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+  opacity: 0;
+}
+
+.s27-title-b-m b {
+  font-weight: 700;
+}
+
+/* persistent bottom column, mobile — bar bottom = 106px in BOTH designs */
+.s27-bottom-m {
+  position: absolute;
+  left: 10.67%;
+  right: 10.67%;
+  bottom: 106px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* 32 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+.s27-specs-m {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  opacity: 0; /* state-B only — rolled in by the scrub (to 0.6 via GSAP) */
+}
+
+/* same REAL-glass treatment as desktop (see .s27-block) */
+.s27-block-m {
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 48px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(40px) saturate(1.3);
+  backdrop-filter: blur(40px) saturate(1.3);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 25px 32px 32px; /* 32 design padding minus cap-trim slack */
+  display: flex;
+  flex-direction: column;
+  gap: 39px; /* 44 design gap minus cap-trim slack */
+  align-items: flex-start;
+}
+
+/* mobile flare crop from the flattened frame export */
+.s27-flare--m {
+  left: 0;
+  top: 0;
+  width: 140px;
+  height: 100px;
+}
+
+.s27-flare--m img {
+  left: -40px;
+  top: -451px; /* aligns the export's baked copy with the live HTML text */
+  width: 375px;
+  height: 812px;
+}
+
+/* inner gradient sheen — same glass treatment as desktop */
+.s27-block-m::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 38%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+.s27-left-m {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 24 design gap minus cap-trim slack */
+  justify-content: center;
+  width: 100%;
+}
+
+.s27-offer-title-m {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.s27-offer-sub-m {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.s27-right-m {
+  position: relative;
+  z-index: 1; /* above the ::after sheen */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.s27-off--m {
+  align-items: center;
+  gap: 12px;
+}
+
+.s27-price-m {
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s27-offword--m {
+  width: 12px;
+  height: 30px;
+}
+
+.s27-offword--m span {
+  font-size: 16px;
+}
+
+.s27-vline--m {
+  height: 45px;
+}
+
+.s27-btn--m {
+  width: 109px;
+  height: 46px;
+  padding: 0 32px;
+  font-size: 14px;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Safari/WebKit: cheaper backdrop radius, visually equivalent over the
+   dark photo (html.safari is set by main.ts) */
+html.safari .s27-block,
+html.safari .s27-block-m {
+  backdrop-filter: blur(28px) saturate(1.3);
+  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+}

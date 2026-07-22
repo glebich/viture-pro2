@@ -1,0 +1,153 @@
+/* ---------- s02 — anniversary hero ---------- */
+
+/* opaque deep-navy base under the design art (matches the artwork's top) */
+#s02 .stage {
+  background: #080911;
+  overflow: hidden;
+}
+
+/* Original harvested imgBg.svg artwork, pre-baked to webp at the exact
+   design-frame crop (see scripts/bake-blurs.mjs pattern): blurred navy dome
+   + #0046d1 horizon ring over the flat ice base. Baked raster = no runtime
+   SVG-filter cost and identical rendering in Chromium and WebKit. The
+   desktop crop is the 1920×1080 frame; the mobile crop is the same artwork
+   height-fitted to 375×812 (encoded 2×), so both map 1:1 onto the stage. */
+.s02-bg {
+  position: absolute;
+  inset: 0;
+}
+.s02-bgimg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* short, subtle feather at the very bottom only. Round 9 recolored s03's
+   opening row to the bright ice-blue bloom (#b8cdea — see s03's veil), so
+   the old dark #080911 dip here became a black band sandwiched between two
+   LIGHT fields at the fold. The foot now settles onto s03's exact top tone:
+   the art's flat #cedae3 base drifts into #b8cdea, and the fold reads as
+   sky light gathering — no shadow line between two light sections. */
+#s02::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(184, 205, 234, 0) 0%,
+    rgba(184, 205, 234, 0.25) 45%,
+    rgba(184, 205, 234, 0.6) 75%,
+    rgba(184, 205, 234, 1) 100%
+  );
+}
+
+/* ----- desktop content column ----- */
+.s02-content {
+  position: absolute;
+  left: 398px;
+  top: 344px;
+  width: 1124px;
+  height: 656px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 87px;
+}
+
+.s02-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 72px;
+  width: 100%;
+}
+
+.s02-badge {
+  border: 1px solid #fff;
+  border-radius: 50px;
+  padding: 20px 36px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.s02-title {
+  font-size: 92px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+}
+.s02-strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+.s02-sub {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  text-align: center;
+}
+
+.s02-scroll {
+  flex: 1 0 0;
+  min-height: 32px;
+  position: relative;
+  width: 100%;
+}
+
+/* the harvested arrow svg is horizontal (186×5.3) — rotate to vertical */
+.s02-arrow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 186px;
+  height: 6px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+/* ----- mobile content ----- */
+.s02-content--m {
+  left: 50%;
+  top: calc(50% + 24px);
+  transform: translate(-50%, -50%);
+  width: 295px;
+  height: auto;
+}
+
+.s02-text--m {
+  gap: 56px;
+}
+
+.s02-badge--m {
+  padding: 16px 24px;
+  font-size: 14px;
+}
+
+.s02-title--m {
+  font-size: 32px;
+  white-space: normal;
+}
+
+.s02-sub--m {
+  font-size: 16px;
+  width: 227px;
+}
+
+.s02-scroll--m {
+  flex: none;
+  height: 72px;
+}
+
+.s02-arrow--m {
+  width: 75px;
+}

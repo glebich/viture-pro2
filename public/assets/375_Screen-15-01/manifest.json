@@ -1,0 +1,60 @@
+{
+    "frame": "375__Screen-15-01",
+    "nodeId": "17683:8999",
+    "constants": {
+        "imgReload": {
+            "file": "imgReload.svg",
+            "url": "https://www.figma.com/api/mcp/asset/9a5bb64c-8512-4a47-a35e-950010187371"
+        },
+        "imgSiteSettings": {
+            "file": "imgSiteSettings.svg",
+            "url": "https://www.figma.com/api/mcp/asset/a8d67840-89e7-436c-94c0-2eaf23d4ab4a"
+        },
+        "imgLogo": {
+            "file": "imgLogo.svg",
+            "url": "https://www.figma.com/api/mcp/asset/d42585c9-1c62-4f84-a873-d4b1eb41111c"
+        },
+        "imgSearchSm": {
+            "file": "imgSearchSm.svg",
+            "url": "https://www.figma.com/api/mcp/asset/d180501c-bc3e-4086-8ada-67e5d59a9b79"
+        },
+        "imgShoppingBag02": {
+            "file": "imgShoppingBag02.svg",
+            "url": "https://www.figma.com/api/mcp/asset/8903b3bf-766e-4f2b-b74c-b590dfb0f966"
+        },
+        "imgMenuStreamlineLucide11": {
+            "file": "imgMenuStreamlineLucide11.svg",
+            "url": "https://www.figma.com/api/mcp/asset/f3e899cf-925f-40ec-b2ac-42a045679745"
+        },
+        "imgGlasses": {
+            "file": "imgGlasses.png",
+            "url": "https://www.figma.com/api/mcp/asset/a63daaa2-d342-4627-9324-cad2664ab91c"
+        },
+        "imgEllipse1329130924": {
+            "file": "imgEllipse1329130924.svg",
+            "url": "https://www.figma.com/api/mcp/asset/2f235583-6b75-4f43-a433-e25819e085bd"
+        },
+        "imgLine": {
+            "file": "imgLine.svg",
+            "url": "https://www.figma.com/api/mcp/asset/9f4aef42-4d3e-4e52-89f2-d7f8f4d54cd2"
+        }
+    },
+    "rawImages": [
+        {
+            "file": "raw_image_1.png",
+            "url": "https://www.figma.com/api/mcp/asset/b109c90c-a352-44ac-8d7c-576f439f4b6a"
+        },
+        {
+            "file": "raw_image_2.png",
+            "url": "https://www.figma.com/api/mcp/asset/57d1a978-1fdf-406f-af73-b4edb3f435a6"
+        },
+        {
+            "file": "raw_image_3.png",
+            "url": "https://www.figma.com/api/mcp/asset/71f40063-721f-46e7-87c4-2637d3ebd2d1"
+        },
+        {
+            "file": "raw_image_4.png",
+            "url": "https://www.figma.com/api/mcp/asset/3a91d4d7-ef17-4607-afdb-a88c3c514b59"
+        }
+    ]
+}

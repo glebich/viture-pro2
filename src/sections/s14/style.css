@@ -1,0 +1,186 @@
+/* s14 — Premium Feeling / Light Enough to Forget */
+
+#s14 {
+  background: #030303;
+}
+
+.s14-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+/* sh2-slow background clip (client round 12) — takes the exact cover
+   placement of the photo it replaces */
+.s14-bg .s14-bgv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  /* rest state matches the pinned scrub's from-state (settles 1.06 → 1) */
+  transform: scale(1.06);
+  will-change: transform;
+}
+
+/* copy rests at opacity 0 until the pinned build reveals it (cf. s11) —
+   doubled selectors so this wins over the design rules below regardless
+   of order (the eyebrow's own rule sets opacity 0.7; the build tweens
+   back to that exact value). Opacity only, NO visibility: the tweens use
+   plain opacity so no element ever carries inline visibility, letting the
+   stage-level offscreen guard in index.ts cascade to all of the copy. */
+.s14-eyebrow.s14-eyebrow,
+.s14-title.s14-title,
+.s14-line.s14-line,
+.s14-benefit.s14-benefit,
+.s14-stat.s14-stat {
+  opacity: 0;
+}
+
+.s14-content {
+  position: absolute;
+  left: 194px;
+  top: 447px;
+  width: 828px;
+  color: #fff;
+}
+.s14-eyebrow {
+  font-size: 20px;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+.s14-title {
+  /* margins compensate for Figma's text-box-trim (cap-trimmed blocks) */
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+  margin-top: 14px;
+  width: 447px;
+}
+.s14-line {
+  margin-top: 96px;
+  width: 800px;
+  height: 1px;
+}
+.s14-line img {
+  width: 100%;
+  height: 1px;
+}
+.s14-benefits {
+  margin-top: 80px;
+  display: flex;
+  gap: 99px;
+  align-items: center;
+}
+.s14-benefit {
+  width: 210px;
+  flex-shrink: 0;
+}
+.s14-bt {
+  font-size: 32px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.s14-bd {
+  font-size: 20px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 17px;
+}
+.s14-benefit--1 .s14-bd {
+  width: 199px;
+}
+.s14-benefit--3 .s14-bd {
+  width: 258px;
+}
+
+/* 63g stat (client round 12: "50% smaller as in design") — a subtle accent
+   in the free zone bottom-right, sitting alongside the benefit columns at
+   the design's x1440–1650 / baseline ~y950. Season Sans Light, the site's
+   warm gradient family (.gtx--warm in the markup: white → #ffdbbc), big
+   gradient digits with a smaller "g" per the design frame. */
+.s14-stat {
+  position: absolute;
+  right: 270px; /* digits end at x≈1650 in the 1920 frame */
+  bottom: 93px; /* baseline ≈ y950 at 186px / line-height 1 */
+  font-size: 186px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.s14-stat-g {
+  font-size: 0.62em; /* "g" reads as the unit, digits carry the number */
+}
+
+/* mobile (375×812) */
+.s14-mbg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 375px;
+  height: 813px;
+  overflow: hidden;
+}
+.s14-mbg .s14-bgv {
+  position: absolute;
+  top: 0;
+  left: -260px;
+  width: 1446px;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  /* rest state matches the pinned scrub's from-state (settles 1.06 → 1) */
+  transform: scale(1.06);
+  will-change: transform;
+}
+
+.s14-content--m {
+  left: 40px;
+  top: auto;
+  bottom: 131px;
+  width: 295px;
+}
+.s14-content--m .s14-eyebrow {
+  font-size: 16px;
+}
+.s14-content--m .s14-title {
+  font-size: 32px;
+  margin-top: 28px;
+  width: auto;
+}
+.s14-content--m .s14-line {
+  margin-top: 54px;
+  width: 100%;
+}
+.s14-content--m .s14-benefits {
+  margin-top: 44px;
+  flex-direction: column;
+  gap: 42px;
+  align-items: flex-start;
+}
+.s14-content--m .s14-benefit {
+  width: 215px;
+}
+.s14-content--m .s14-bt {
+  font-size: 24px;
+}
+.s14-content--m .s14-bd {
+  font-size: 16px;
+  margin-top: 13px;
+}
+.s14-content--m .s14-benefit--1 .s14-bd {
+  width: 199px;
+}
+.s14-content--m .s14-benefit--3 .s14-bd {
+  width: 215px;
+}
+.stage--m .s14-stat {
+  right: 24px;
+  bottom: 28px;
+  font-size: 48px; /* 50% smaller, matching the desktop reduction */
+  letter-spacing: -0.01em;
+}

@@ -1,0 +1,245 @@
+/* ---------- Global header (fixed overlay, fluid — not stage-scaled) ---------- */
+
+#site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  pointer-events: none;
+}
+
+#site-header a,
+#site-header button {
+  pointer-events: auto;
+}
+
+/* ---- Top scrim: keeps nav text legible over whatever scrolls beneath ----
+   Adaptive rather than a flat black wash: a progressive backdrop blur
+   (mask-faded to nothing at its bottom edge, so there is no visible seam)
+   softens any section content sliding under the header, plus a whisper of
+   darkening that tops out at ~0.32 alpha so dark sections gain contrast
+   without light sections (s20–s22) reading as a dirty grey band.
+   Negative z-index keeps it under the header's own content but over the
+   page. Works in Safari: -webkit- prefixed backdrop-filter + mask. */
+#site-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  z-index: -1;
+  pointer-events: none;
+  /* hold strength through the nav baseline (~y74 desktop / ~y36 mobile),
+     then release — both gradient and mask are flat until 55% so the nav
+     line gets the full effect, and the 55→100% fade kills any hard edge */
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.26) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 55%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 55%,
+    transparent 100%
+  );
+}
+
+/* ----- Desktop (1920 design: 104px tall incl. 44px top padding) -----
+   Fluid: 1em == 16 design px. Scales with viewport width, floored so
+   small desktop windows stay legible. */
+.hd-d {
+  font-size: max(0.8333vw, 11px); /* 16px @ 1920 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 6.5em; /* 104px */
+  padding: 2.75em 2.5em 0; /* 44px 40px 0 */
+}
+
+.hd-left {
+  display: flex;
+  align-items: center;
+  gap: 7.3125em; /* 117px */
+}
+
+.hd-logo {
+  position: relative;
+  display: block;
+  width: 2.3125em; /* 37px */
+  height: 1.625em; /* 26px */
+  cursor: pointer;
+}
+.hd-logo img,
+.hd-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* --- logo hover Lottie (see header/index.ts) ---
+   The 100×100 comps carry the 37×26 mark at offset (~31.75,37), so each
+   layer is a 6.25em (100px) square shifted (-31.75,-37) design px: the
+   animated mark lands on the static one (offset picked by pixel-diff sweep
+   of the swap frame; residual is sub-pixel edge AA only).
+   Layers swap via data-logo set by JS; rest shows the plain static SVG. */
+.hd-lottie {
+  position: absolute;
+  top: -2.3125em; /* -37px */
+  left: -1.984375em; /* -31.75px */
+  width: 6.25em; /* 100px comp */
+  height: 6.25em;
+  display: none;
+  pointer-events: none; /* hover area stays the 37×26 anchor box */
+}
+.hd-logo[data-logo="in"] .hd-mark,
+.hd-logo[data-logo="out"] .hd-mark {
+  visibility: hidden;
+}
+.hd-logo[data-logo="in"] .hd-lottie--in,
+.hd-logo[data-logo="out"] .hd-lottie--out {
+  display: block;
+}
+
+.hd-menu {
+  display: flex;
+  align-items: center;
+  gap: 8.5em; /* 136px */
+  font-size: 1em;
+  font-weight: 400;
+  color: #fff;
+  white-space: nowrap;
+  line-height: 1;
+}
+.hd-menu a {
+  transition: opacity 0.25s ease;
+}
+.hd-menu a:hover {
+  opacity: 0.6;
+}
+
+/* Frosted-glass capsule (client r5): real backdrop frost — blur + a touch
+   of saturation — over a faint white tint with a diagonal sheen, hairline
+   border and a soft drop shadow so it reads as glass on both the dark and
+   the light (#CEDAE3) pages, never as flat translucent gray. */
+.hd-pill {
+  display: flex;
+  align-items: center;
+  gap: 2.75em; /* 44px */
+  padding: 0.625em 2em; /* 10px 32px */
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.06) 42%,
+    rgba(255, 255, 255, 0.04) 62%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 60px;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2);
+  backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Safari/WebKit: cheaper blur radius, visually equivalent at capsule size
+   (html.safari is set by main.ts) */
+html.safari .hd-pill {
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.hd-icons {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5em; /* 40px */
+}
+
+.hd-ic {
+  display: block;
+  padding: 0;
+  line-height: 0;
+  transition: opacity 0.25s ease;
+}
+.hd-ic:hover {
+  opacity: 0.6;
+}
+.hd-ic img {
+  width: 1.5em; /* 24px */
+  height: 1.5em;
+}
+
+.hd-price {
+  display: flex;
+  align-items: center;
+  gap: 0.75em; /* 12px */
+}
+
+.hd-glasses {
+  width: 2.5em; /* 40px */
+  height: 2.5em;
+}
+
+.hd-from {
+  font-size: 0.875em; /* 14px */
+  font-weight: 500;
+  line-height: 1.7143; /* 24px */
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+.hd-from span {
+  color: #fff;
+}
+
+/* ----- Mobile (375 design: 24px vertical / 40px horizontal padding) ----- */
+.hd-m {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .hd-d {
+    display: none;
+  }
+  .hd-m {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px min(40px, 10.6vw);
+  }
+  .hd-logo-m {
+    display: block;
+    width: 32px;
+    height: 22px;
+  }
+  .hd-logo-m img {
+    width: 100%;
+    height: 100%;
+  }
+  .hd-icons-m {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  .hd-icons-m .hd-ic img {
+    width: 24px;
+    height: 24px;
+  }
+}

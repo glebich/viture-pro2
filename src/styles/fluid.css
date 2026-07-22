@@ -1,0 +1,93 @@
+/* ---------------------------------------------------------------------------
+   fluid.css — global ambient fluid-gradient canvas + the minimal per-section
+   base-fill transparency policy that lets it read through.
+
+   The canvas is fixed BETWEEN the body background and the sections. Only
+   flat, full-bleed COLOR washes are made slightly transparent — never
+   photos, product imagery or gradient artwork. Doubled selectors keep the
+   overrides winning regardless of CSS import order.
+--------------------------------------------------------------------------- */
+
+#fluid-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  /* final polish: hides the sub-pixel dither grain / upscale aliasing of the
+     reduced-resolution WebGL buffer without softening the broad field */
+  filter: blur(1px);
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+/* (s02 keeps its opaque baked design artwork — no override: the s01 loader
+   feathers into the artwork's solid #080911 top instead, so the fold still
+   reads seamless while the hero gradient stays exactly the design's) */
+
+/* ---- dark-neutral washes (s14–s15): near-black, ambient breathes gently
+   (s16/s17 merged away round 5; s18/s19 removed earlier) */
+#s14.screen {
+  background: rgba(3, 3, 3, 0.7);
+}
+.s15-bg.s15-bg {
+  background: rgba(2, 2, 2, 0.7);
+}
+
+/* s20 sits on the ice-blue keyframe — keep it darker, just a cold sheen */
+.s20-bg.s20-bg {
+  background: rgba(2, 2, 2, 0.86);
+}
+
+/* ---- vivid orange washes (s09–s12): fluid is same family underneath */
+.s09-fill.s09-fill,
+.s10-fill.s10-fill {
+  background: rgba(255, 105, 44, 0.84);
+}
+/* round 7 ("design is wrong, no gradient"): s11's glow ellipse + video
+   renders carry ALPHA, and the plus-lighter bloom band opacifies its group,
+   so at 0.78 this base fill dragged the whole luminous left-glow composition
+   ~15–20% darker/flatter than the design (under the bloom the translucency
+   is pure luminance loss — the fluid never shows there). 0.94 (plus the
+   brightened VIVID_ORANGE stops and the s11 calm factor in fluid.ts) keeps
+   a subtle ambient drift in the semi-transparent glow band while the
+   composite stays within a few RGB units of the Screen-11/12 shots at every
+   pin beat. */
+.s11-bg.s11-bg {
+  background: rgba(255, 105, 44, 0.94);
+}
+
+/* ---- ice / light-blue washes (s21–s22) */
+.s22-bg.s22-bg,
+.s22m-bg.s22m-bg {
+  background: rgba(206, 218, 227, 0.8);
+}
+/* s21's underlay mirrors its baked art (dark sky top → ice foot) instead of
+   a flat light wash: the art fades in over this layer, and a flat #cedae3
+   read as a wrong light slab against s20's black bottom during the
+   entrance. Same translucency policy, graded to match the art's stops. */
+.s21-fill.s21-fill {
+  background: linear-gradient(
+    180deg,
+    rgba(8, 9, 17, 0.86) 0%,
+    rgba(8, 9, 17, 0.86) 45%,
+    rgba(10, 11, 22, 0.85) 55%,
+    rgba(82, 84, 125, 0.82) 65%,
+    rgba(173, 182, 206, 0.8) 75%,
+    rgba(206, 218, 227, 0.8) 88%,
+    rgba(206, 218, 227, 0.8) 100%
+  );
+}
+
+/* ---- warm-dark washes (s24–s27; s28 merged into s27, round 7) */
+.s24-bg.s24-bg,
+.s24m-bg.s24m-bg,
+#s25.screen,
+#s26.screen,
+#s27.screen {
+  background: rgba(1, 1, 1, 0.72);
+}

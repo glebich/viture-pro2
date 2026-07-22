@@ -1,0 +1,17 @@
+{
+  "frame": "1920_Screen-28-01",
+  "nodeId": "17683:10477",
+  "assets": [
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/71188d7d-871d-46f9-b5eb-01bbff59840c" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/48df4c44-5336-45ca-8b2e-7eeb26657c14" },
+    { "constant": "imgSearch", "filename": "imgSearch.svg", "url": "https://www.figma.com/api/mcp/asset/d3499f0d-f7ed-4e0b-a79d-96e54de9246d" },
+    { "constant": "imgShopping", "filename": "imgShopping.svg", "url": "https://www.figma.com/api/mcp/asset/5e4e36a7-6c0d-49e9-b467-59aac38da3e0" },
+    { "constant": "imgGlasses", "filename": "imgGlasses.svg", "url": "https://www.figma.com/api/mcp/asset/9d527dd4-3702-4ff7-a05f-8a2ead998007" },
+    { "constant": "imgStillsIt322", "filename": "imgStillsIt322.png", "url": "https://www.figma.com/api/mcp/asset/3267b119-04d9-4ce4-b0e5-aebdca45afe3", "note": "full-bleed blurred background still, 21.1 MB — rendered with blur(30px) in design" },
+    { "constant": "imgBlock", "filename": "imgBlock.png", "url": "https://www.figma.com/api/mcp/asset/cae3dada-e389-4041-8e58-87f2286dce09" },
+    { "constant": "imgLine", "filename": "imgLine.svg", "url": "https://www.figma.com/api/mcp/asset/a51bfc63-3869-4b67-8656-667e593a3fb2" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/44df573e-043b-4c42-830a-91eae8a6f5a6" },
+    { "constant": "raw_image_1", "filename": "raw_image_1.png", "url": "https://www.figma.com/api/mcp/asset/8ed0cb74-5153-43e1-a5d0-370d8decb3c5", "note": "same as imgStillsIt322" },
+    { "constant": "raw_image_2", "filename": "raw_image_2.png", "url": "https://www.figma.com/api/mcp/asset/efad09c3-86e1-4e37-9c3e-cff74b8acb47" }
+  ]
+}

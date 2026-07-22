@@ -1,0 +1,18 @@
+{
+  "frame": "Screen-05-01",
+  "nodeId": "17683:8810",
+  "assets": [
+    {"constant": "imgReload", "filename": "imgReload.svg", "source": "https://www.figma.com/api/mcp/asset/1010f584-95cb-45ce-9242-f8370e7b990c"},
+    {"constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "source": "https://www.figma.com/api/mcp/asset/3b032d03-2a12-4255-a23f-3bdb5ccd8a0d"},
+    {"constant": "imgLogo", "filename": "imgLogo.svg", "source": "https://www.figma.com/api/mcp/asset/5886d34a-e7d6-40be-aab9-d1a13a1d8e33"},
+    {"constant": "imgSearchSm", "filename": "imgSearchSm.svg", "source": "https://www.figma.com/api/mcp/asset/2a335bfe-a103-4340-9273-87142f9891cf"},
+    {"constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "source": "https://www.figma.com/api/mcp/asset/7b0aa35a-4fde-43f3-826e-30adce2bc0c6"},
+    {"constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "source": "https://www.figma.com/api/mcp/asset/891d1bd2-8c6f-4a83-a3a9-1f7752e5cc83"},
+    {"constant": "imgKv2LightStatic00000001", "filename": "imgKv2LightStatic00000001.png", "source": "https://www.figma.com/api/mcp/asset/d103d485-0dff-4995-94ef-a2b4977403fc"},
+    {"constant": "imgEllipse1329130913", "filename": "imgEllipse1329130913.svg", "source": "https://www.figma.com/api/mcp/asset/f631b1a7-1a87-4e5f-bdf5-bf54bf5cc7df"}
+  ],
+  "rawImages": [
+    {"filename": "raw_image_1.png", "format": "png", "source": "https://www.figma.com/api/mcp/asset/375c067a-d39c-429c-bbb7-ed6eef5f547e", "note": "3840x2160 KV2 LIGHT static full-res"},
+    {"filename": "raw_image_2.png", "format": "png", "source": "https://www.figma.com/api/mcp/asset/30afbe00-c77d-43e9-b1eb-b44bed594e80", "note": "480x270 preview"}
+  ]
+}

@@ -1,0 +1,169 @@
+/* s16 — Slimmer Than Pro / Thin Enough to Disappear (alternate glasses crop) */
+
+.s16-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* bottom feather (same pattern as s01/s02): eases s16's #020202 field and the
+   glow's lower spill into the exact tone of s16b's top row (#030303 desktop,
+   #010101 mobile) so the section fold has no hard tonal step */
+#s16::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 3, 3, 0) 0%,
+    rgba(3, 3, 3, 0.2) 40%,
+    rgba(3, 3, 3, 0.6) 75%,
+    rgb(3, 3, 3) 100%
+  );
+}
+@media (max-width: 640px) {
+  #s16::after {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 1, 1, 0) 0%,
+      rgba(1, 1, 1, 0.2) 40%,
+      rgba(1, 1, 1, 0.6) 75%,
+      rgb(1, 1, 1) 100%
+    );
+  }
+}
+
+.s16-glow {
+  position: absolute;
+  left: 883px;
+  top: 779px;
+  width: 800px;
+  height: 800px;
+}
+.s16-glow-in {
+  position: absolute;
+  inset: -37.5%;
+}
+.s16-glow--m {
+  left: -212px;
+  top: 715px;
+  width: 800px;
+  height: 601px;
+}
+.s16-glow--m .s16-glow-in {
+  inset: -49.88% -37.5%;
+}
+.s16-glow-in img {
+  width: 100%;
+  height: 100%;
+}
+
+.s16-glasses {
+  position: absolute;
+  left: 955px;
+  top: 211px;
+  width: 680px;
+  height: 713px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.s16-glasses img {
+  position: absolute;
+  left: -173.87%;
+  top: -35.8%;
+  width: 316.57%;
+  height: 169.94%;
+}
+.s16-glasses--m {
+  left: 49px;
+  top: 416px;
+  width: 279px;
+  height: 312px;
+}
+
+.s16-content {
+  position: absolute;
+  left: 194px;
+  top: 440px;
+  width: 800px;
+  color: #fff;
+}
+.s16-eyebrow {
+  font-size: 20px;
+  line-height: 1.4;
+  opacity: 0.7;
+  margin-top: -7px;
+}
+.s16-title {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+  margin-top: 36px;
+  width: 447px;
+}
+.s16-line {
+  margin-top: 85px;
+  width: 800px;
+  height: 1px;
+}
+.s16-line img {
+  width: 100%;
+  height: 1px;
+}
+.s16-benefits {
+  margin-top: 77px;
+  display: flex;
+  justify-content: space-between;
+  width: 453px;
+}
+.s16-stat {
+  font-size: 72px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+.s16-label {
+  font-size: 20px;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 7px;
+}
+
+/* mobile (375×812) */
+.s16-content--m {
+  left: 40px;
+  top: 136px;
+  width: 295px;
+}
+.s16-content--m .s16-eyebrow {
+  font-size: 16px;
+  margin-top: -5px;
+}
+.s16-content--m .s16-title {
+  font-size: 32px;
+  margin-top: 29px;
+  width: 193px;
+}
+.s16-content--m .s16-line {
+  margin-top: 54px;
+  width: 244px;
+}
+.s16-content--m .s16-benefits {
+  margin-top: 46px;
+  justify-content: flex-start;
+  gap: 10px;
+  width: auto;
+}
+.s16-content--m .s16-benefit {
+  width: 92px;
+}
+.s16-content--m .s16-stat {
+  font-size: 32px;
+}
+.s16-content--m .s16-label {
+  font-size: 16px;
+  margin-top: 15px;
+}

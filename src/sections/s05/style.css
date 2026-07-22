@@ -1,0 +1,110 @@
+/* ---------- s05 — "The Next Big Thing Is LIGHT" ---------- */
+
+/* dark field → ice bottom, sampled from 1920_Screen-05-01.png — the stage
+   itself must never read light: the glow art layers on top of this, and
+   s03's pin release dissolves into the same #080911 */
+#s05 .stage {
+  background: linear-gradient(
+    180deg,
+    #080911 0%,
+    #080911 60%,
+    #0a1732 70%,
+    #33549b 78%,
+    #7d99c8 84%,
+    #b7c8de 90%,
+    #cedae3 95%,
+    #cedae3 100%
+  );
+  overflow: hidden;
+}
+
+#s05 .stage--m {
+  background: linear-gradient(
+    180deg,
+    #080911 0%,
+    #080911 52%,
+    #0a1428 60%,
+    #274b86 68%,
+    #6584bb 75%,
+    #a7bcda 82%,
+    #cedae3 88%,
+    #cedae3 100%
+  );
+}
+
+/* huge radial glow artwork behind everything */
+.s05-glow {
+  position: absolute;
+  left: -3040px;
+  top: -697px;
+  width: 8000px;
+  height: 1969.6px;
+}
+.s05-glow img {
+  position: absolute;
+  left: -160px;
+  top: -160px;
+  width: 8320px;
+  height: 2289.5px;
+}
+
+/* full-bleed COMFORT art render (transparent webp, 3840×2160 @2x; client
+   round 11 — the DESIGN's product-photo letterforms from Figma frame "5"
+   (611:1666, layer "KV comfort 1" 620:701): glasses top view form the C,
+   the mobile dock forms the T, cool blue-violet gradient sheen. The canvas
+   maps 1:1 onto the 1920×1080 stage; word ink spans x 231–1701, y 406–663 */
+.s05-kv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.s05-title {
+  position: absolute;
+  left: calc(50% + 0.5px);
+  top: 222.5px;
+  transform: translate(-50%, -50%);
+  font-size: 52px;
+  font-weight: 400;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ----- mobile ----- */
+.s05-glow--m {
+  left: 50%;
+  top: -534px;
+  width: 2302px;
+  height: 1481px;
+  transform: translateX(-50%);
+}
+.s05-glow--m img {
+  left: -160px;
+  top: -160px;
+  width: 2622px;
+  height: 1801px;
+}
+
+/* mobile: the same full-canvas art render, sized so the COMFORT ink spans
+   ~345px (ink covers 76.5% of the canvas width → 450px canvas) and its
+   optical center rests where the previous wordmark sat (~y456 on the 812
+   canvas; ink center lives at 49.5% of the art height ≈ canvas center) */
+.s05-kv--m {
+  inset: auto;
+  left: 50%;
+  top: calc(50% + 51.5px);
+  width: 450px;
+  height: 253.125px;
+  transform: translate(-50%, -50%);
+  object-fit: fill;
+}
+
+.s05-title--m {
+  left: calc(50% + 1px);
+  top: 311.5px;
+  font-size: 24px;
+}

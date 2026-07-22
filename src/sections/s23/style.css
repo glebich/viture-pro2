@@ -1,0 +1,57 @@
+/* s23 — typography interstitial on gradient SVG background */
+
+/* ---------- desktop (1920×1080) ---------- */
+/* bg svg: inset -78.22% / -166.39% / -32.8% / -166.39% of the 1920×1080 frame */
+.s23-bg {
+  position: absolute;
+  left: -3195px;
+  top: -845px;
+  width: 8309px;
+  height: 2279px;
+}
+.s23-bg img {
+  width: 100%;
+  height: 100%;
+}
+.s23-headwrap {
+  position: absolute;
+  left: 541px;
+  right: 540px;
+  top: 540.5px;
+  transform: translateY(-50%);
+}
+.s23-headline {
+  font-size: 92px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+/* ---------- mobile (375×812) ---------- */
+/* bg svg: inset -82.95% / -199.6% / -37.53% / -199.6% of the 375×812 frame */
+.s23m-bg {
+  position: absolute;
+  left: -749px;
+  top: -674px;
+  width: 1872px;
+  height: 1790px;
+}
+.s23m-bg img {
+  width: 100%;
+  height: 100%;
+}
+.s23m-headwrap {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  width: 295px;
+  transform: translateY(-50%);
+}
+.s23m-headline {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: capitalize;
+}

@@ -1,0 +1,45 @@
+/* s19v — laser light-path interstitial, full-bleed video, no copy */
+
+#s19v {
+  background: #020202;
+}
+
+/* solid base under the video: covers the beat before the lazy loader kicks
+   in and any letterbox sliver during resize — the clip's own edges are
+   near-black, so the fold from s16b reads seamless either way */
+.s19v-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+.s19v-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Bottom feather into s18 (same junction pattern as s01/s02/s18→s20):
+   the projected screen's glow reaches the lower edge of the frame, and s18
+   now opens on the bright main-screen loop — feather the foot into the
+   near-black both sections share so the fold reads as one shadow. */
+#s19v::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(2, 2, 2, 0) 0%,
+    rgba(2, 2, 2, 0.5) 55%,
+    rgb(2, 2, 2) 100%
+  );
+}

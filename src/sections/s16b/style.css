@@ -1,0 +1,162 @@
+/* s16b — "Eye Comfort" → "Sleek On Every Face" merged pinned page.
+   The full-bleed blurred-glasses field persists (Comfort still cross-fades
+   to the s17 product mid-pin); the copy swaps with a vertical roll.
+   NOTE: the Figma layer carries blur(30px), but the source stills are
+   already soft-rendered — the design screenshots match the raw assets 1:1
+   and a CSS blur would double-blur them, so no runtime filter is applied. */
+
+.s16b-bg {
+  position: absolute;
+  inset: 0;
+  background: #030303;
+}
+
+/* Desktop */
+.s16b-glasses-d {
+  position: absolute;
+  left: 0;
+  top: 166px;
+  width: 1920px;
+  height: 1080px;
+  object-fit: cover;
+  pointer-events: none;
+  /* tall soft fade on the still's top edge: the imagery emerges out of the
+     #030303 field instead of starting at a hard horizontal line at 166px */
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.55) 160px,
+    #000 320px
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.55) 160px,
+    #000 320px
+  );
+}
+
+/* second-state layers rest hidden until the pinned scrub brings them in.
+   The copy wrapper's alpha is opacity-driven by the scrub; its visibility
+   is flipped by a dedicated discrete tween just before its roll-in window
+   (round 8: guarantees copy-a and copy-b can never paint together) */
+.s16b-photo-b {
+  opacity: 0;
+  visibility: hidden;
+}
+.s16b-copy-b {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.s16b-title {
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.s16b-title-d {
+  position: absolute;
+  /* centered without a CSS transform (50% − 860px/2): the headline is
+     gradient-clipped text, and a persistent transform promotes it to its own
+     compositor layer — which is what let a stale "ghost" of it linger over
+     later sections in Chromium. Keep its rest state transform-free.
+     860px + the explicit .s16b-br break pin the headline to exactly two
+     lines ("The XR Glasses Your Eyes / Will Actually Thank You for") — the
+     old 807px box let it wrap to three at some renderings, driving its last
+     line into the "Hour three. Still on." sub (client round-5 bug). */
+  left: calc(50% - 430px);
+  width: 860px;
+  top: 301px; /* 314 design cap-top minus line-box trim */
+  font-size: 72px;
+}
+
+.s16b-sub {
+  font-weight: 500;
+  line-height: 1.4;
+  color: #fff;
+  text-align: center;
+}
+
+.s16b-sub-d {
+  position: absolute;
+  /* transform-free like the title: 508.5px design vertical center minus half
+     the one-line box (32px * 1.4 / 2 = 22.4px). The two-line headline ends at
+     301 + 2·79.2 ≈ 459px — 27px of clearance at every rendering. */
+  left: calc(50% - 430px);
+  top: 486.1px;
+  width: 860px;
+  font-size: 32px;
+}
+
+/* Mobile — comfort state derived from s17's mobile treatment */
+/* the still's own field is #010101 — match it so the image rect is seamless */
+.stage--m .s16b-bg {
+  background: #010101;
+}
+
+.s16b-glasses-m {
+  position: absolute;
+  left: calc(50% - 350px); /* centered without a transform, like the desktop copy */
+  bottom: 0;
+  width: 700px;
+  height: 394px;
+  object-fit: cover;
+  pointer-events: none;
+  /* same soft top-edge fade as desktop, scaled to the smaller crop */
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.55) 70px,
+    #000 140px
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(0, 0, 0, 0.55) 70px,
+    #000 140px
+  );
+}
+
+/* s17 product placement (mobile second state) */
+.s16b-glasses17-m {
+  position: absolute;
+  left: -67px;
+  bottom: 87px;
+  width: 509px;
+  height: 338px;
+  pointer-events: none;
+}
+.s16b-glasses17-m img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 508px;
+  height: 286px;
+}
+
+.s16b-title-m {
+  position: absolute;
+  left: calc(50% - 150px);
+  top: 186px; /* cap-top ~192 minus line-box trim */
+  width: 300px;
+  font-size: 32px;
+}
+/* mobile lets the headline wrap naturally in the 300px column (3 lines,
+   ending ~292px — 56px clear of the sub) — the desktop-only forced break
+   would rag it into 4 short lines here */
+.stage--m .s16b-br {
+  display: none;
+}
+/* second-state headline sits at s17's design cap-top */
+.s16b-copy-b .s16b-title-m {
+  top: 226px; /* 232 design cap-top minus line-box trim */
+}
+
+.s16b-sub-m {
+  position: absolute;
+  left: calc(50% - 150px);
+  top: 348px;
+  width: 300px;
+  font-size: 16px;
+}

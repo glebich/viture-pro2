@@ -1,0 +1,438 @@
+/* s22 — Mobile Dock product carousel on #CEDAE3 (pinned, 4 slides + annotation) */
+
+/* ---------- desktop (1920×1080) ---------- */
+
+/* shared chrome */
+.s22-bg {
+  position: absolute;
+  inset: 0;
+  background: #cedae3;
+}
+.s22-horizon {
+  position: absolute;
+  left: 50%;
+  top: -529px;
+  width: 8000px;
+  height: 1200px;
+  transform: translateX(-50%);
+}
+.s22-horizon-in {
+  position: absolute;
+  inset: -12.9% -1.93%;
+}
+.s22-horizon-in img {
+  width: 100%;
+  height: 100%;
+}
+.s22-glow {
+  /* perf: authored 1920x1080 with blur(150px); rendered at half size and
+     composited with scale(2) — same softness, 4x fewer blurred pixels. */
+  position: absolute;
+  left: 0;
+  top: 960px;
+  width: 960px;
+  height: 540px;
+  transform: scale(2);
+  transform-origin: 0 0;
+  filter: blur(75px);
+  mix-blend-mode: plus-lighter;
+  will-change: opacity;
+}
+.s22-glow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* fold feather: top veil matching s21's bottom edge (#CEDAE3) so the
+   s21→s22 fold reads light-to-light. Color-true ramp (client r5): instead
+   of a straight alpha fade (light-over-black = wide muddy gray band), the
+   feather steps through the design's own atmosphere palette — the same
+   periwinkle/indigo ramp sampled from the s21/s22 harvest art — so the
+   blend into the dark sky reads as sky, not shadow. GSAP compresses it
+   upward (scaleY, origin top) and melts the thin remainder — see index.ts. */
+.s22-fold {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 640px;
+  transform-origin: 50% 0;
+  background: linear-gradient(
+    to bottom,
+    #cedae3 0%,
+    #cedae3 26%,
+    rgba(194, 207, 224, 0.98) 40%,
+    rgba(156, 172, 209, 0.92) 54%,
+    rgba(91, 110, 164, 0.76) 70%,
+    rgba(39, 52, 101, 0.5) 84%,
+    rgba(13, 19, 45, 0.24) 94%,
+    rgba(8, 9, 17, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* per-state product renders */
+.s22-img {
+  position: absolute;
+}
+.s22-img img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.s22-cover {
+  object-fit: cover;
+}
+.s22-img--1 {
+  left: 607px;
+  top: 261px;
+  width: 907px;
+  height: 667px;
+}
+.s22-img--1 img {
+  object-position: bottom;
+}
+.s22-img--2 {
+  left: 204px;
+  top: -306px;
+  width: 1713px;
+  height: 1713px;
+}
+.s22-img--3 {
+  left: 634px;
+  top: 265px;
+  width: 852px;
+  height: 502px;
+}
+.s22-img--3 img {
+  object-position: bottom;
+}
+.s22-img--4 {
+  left: 523px;
+  top: 59px;
+  width: 1074px;
+  height: 1074px;
+}
+.s22-img--5 {
+  left: 496px;
+  top: 61px;
+  width: 1048px;
+  height: 1048px;
+}
+
+/* per-state copy (counter + headline + price/sub) */
+.s22-copy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.s22-counter {
+  position: absolute;
+  left: 170px;
+  top: 758px;
+  transform: translate(-100%, -50%);
+  font-size: 20px;
+  line-height: 1.4;
+  color: #010101;
+  text-align: right;
+}
+/* odometer counter: fixed invisible window, right-aligned lines so every
+   rest state renders exactly like the original right-aligned "0X" text;
+   the strip's y is rolled by GSAP between slides */
+.s22-odo {
+  width: 26px; /* >= widest line ("04" ~24.8px); overhang is invisible */
+  height: 28px;
+  overflow: hidden;
+}
+.s22-odo-strip {
+  display: block;
+}
+.s22-odo-strip span {
+  display: block;
+  height: 28px;
+  text-align: right;
+  white-space: nowrap;
+}
+.s22-copytext {
+  position: absolute;
+  left: 194px;
+  top: 730px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px; /* 40 design gap minus cap-trim slack */
+}
+.s22-headline {
+  font-size: 92px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.s22-sub {
+  font-size: 20px;
+  line-height: 1.4;
+  color: #010101;
+}
+
+/* persistent "Anniversary Collection" block */
+.s22-collection {
+  position: absolute;
+  left: 194px;
+  top: 204px;
+  width: 382px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 54px;
+}
+.s22-collection-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 24 design gap minus cap-trim slack */
+  width: 100%;
+}
+.s22-label {
+  font-size: 20px;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  margin-top: -7px;
+}
+.s22-title {
+  font-size: 32px;
+  line-height: 1.1;
+  text-align: center;
+  width: 100%;
+}
+.s22-learn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  height: 80px;
+  border: 1.5px solid #ff5f34;
+  border-radius: 54px;
+  color: #ff5f34;
+  font-size: 20px;
+  letter-spacing: 0.2px;
+  line-height: 24px;
+}
+
+/* leader-line annotation (state 5 only) */
+.s22-anno {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.s22-anno-line {
+  position: absolute;
+  left: 1242px;
+  top: 573px;
+  width: 431px;
+  height: 414px;
+}
+.s22-anno-line img {
+  width: 100%;
+  height: 100%;
+}
+.s22-anno-text {
+  position: absolute;
+  left: 1428px;
+  top: 653px;
+  width: 291px;
+  transform: translateY(-100%);
+  font-size: 20px;
+  line-height: 1.3;
+  color: #fff;
+}
+
+/* prev / next arrows (SVG viewBox 81.5 vs 80px box → inset -0.94%) */
+.s22-btn {
+  position: absolute;
+  top: 836px;
+  width: 80px;
+  height: 80px;
+  z-index: 5;
+}
+.s22-btn--next {
+  right: 194px;
+}
+.s22-btn--prev {
+  right: 348px;
+}
+.s22-btn img {
+  position: absolute;
+  left: -0.94%;
+  top: -0.94%;
+  width: 101.88%;
+  height: 101.88%;
+}
+.s22-btn--prev img {
+  transform: scaleX(-1);
+}
+.s22-btn-skin--dark {
+  opacity: 0;
+}
+
+/* ---------- mobile (375×812) ---------- */
+
+.s22m-bg {
+  position: absolute;
+  inset: 0;
+  background: #cedae3;
+}
+.s22m-horizon {
+  position: absolute;
+  left: -594px;
+  top: -398px;
+  width: 1563px;
+  height: 902px;
+}
+.s22m-horizon-in {
+  position: absolute;
+  inset: -17.15% -9.9%;
+}
+.s22m-horizon-in img {
+  width: 100%;
+  height: 100%;
+}
+.s22m-glow {
+  /* perf: half-size render composited at scale(2) — see .s22-glow */
+  position: absolute;
+  left: 0;
+  top: 722px;
+  width: 187.5px;
+  height: 406px;
+  transform: scale(2);
+  transform-origin: 0 0;
+  filter: blur(75px);
+  mix-blend-mode: plus-lighter;
+  will-change: opacity;
+}
+.s22m-glow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* fold feather — color-true atmosphere ramp, see .s22-fold */
+.s22m-fold {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 420px;
+  transform-origin: 50% 0;
+  background: linear-gradient(
+    to bottom,
+    #cedae3 0%,
+    #cedae3 26%,
+    rgba(194, 207, 224, 0.98) 40%,
+    rgba(156, 172, 209, 0.92) 54%,
+    rgba(91, 110, 164, 0.76) 70%,
+    rgba(39, 52, 101, 0.5) 84%,
+    rgba(13, 19, 45, 0.24) 94%,
+    rgba(8, 9, 17, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.s22m-dock {
+  position: absolute;
+  left: 42px;
+  top: 295px;
+  width: 294px;
+  height: 216px;
+}
+.s22m-dock img {
+  width: 100%;
+  height: 100%;
+  object-position: bottom;
+  pointer-events: none;
+}
+.s22m-copy {
+  position: absolute;
+  left: 40px;
+  top: 544px;
+  width: 193px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px; /* 32 design gap minus cap-trim slack */
+}
+.s22m-counter {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #010101;
+  margin-top: -5px;
+}
+.s22m-copytext {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 29px; /* 40 design gap minus cap-trim slack */
+}
+.s22m-headline {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.s22m-price {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #010101;
+}
+.s22m-content {
+  position: absolute;
+  left: 40px;
+  top: 112px;
+  width: 295px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 36px; /* 40 design gap minus cap-trim slack */
+}
+.s22m-content-text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* 24 design gap minus cap-trim slack */
+  width: 100%;
+}
+.s22m-label {
+  font-size: 16px;
+  line-height: 1.4;
+  color: #fff;
+  opacity: 0.6;
+  margin-top: -5px;
+}
+.s22m-title {
+  font-size: 24px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.s22m-learn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 32px;
+  border: 1.5px solid #ff5f34;
+  border-radius: 54px;
+  color: #ff5f34;
+  font-size: 16px;
+  letter-spacing: 0.16px;
+  line-height: 24px;
+}
+.s22m-next {
+  position: absolute;
+  right: 40px;
+  bottom: 271px;
+  width: 40px;
+  height: 40px;
+  z-index: 5;
+}
+.s22m-next img {
+  position: absolute;
+  left: -1.88%;
+  top: -1.88%;
+  width: 103.76%;
+  height: 103.76%;
+}

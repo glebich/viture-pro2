@@ -1,0 +1,12 @@
+{
+  "frame": "375__Screen-21-01", "nodeId": "17683:9244", "assets": [
+    { "constant": "imgReload", "filename": "imgReload.svg", "url": "https://www.figma.com/api/mcp/asset/9ceaa894-e337-49b0-8980-d543ee0dce0f" },
+    { "constant": "imgSiteSettings", "filename": "imgSiteSettings.svg", "url": "https://www.figma.com/api/mcp/asset/d9d967e6-8a20-474f-8fa2-c0250e3929bf" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/80118db9-eda7-414b-8c0a-fdc6d4439fd2" },
+    { "constant": "imgSearchSm", "filename": "imgSearchSm.svg", "url": "https://www.figma.com/api/mcp/asset/026afab0-ea6e-4190-ae8d-74c1bd619e9e" },
+    { "constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "url": "https://www.figma.com/api/mcp/asset/c75f216c-9201-4be4-a28f-1c0572d4f2d4" },
+    { "constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "url": "https://www.figma.com/api/mcp/asset/2ca43ab8-a317-4525-9844-d5f3971e0c53" },
+    { "constant": "img375Screen2101", "filename": "img375Screen2101.svg", "url": "https://www.figma.com/api/mcp/asset/216e16c2-c5e8-4450-b7d0-1ddc6101d675" },
+    { "constant": "imgArrowDown", "filename": "imgArrowDown.svg", "url": "https://www.figma.com/api/mcp/asset/a106e4f5-88cc-44d1-a0d4-f2db2be9f6e7" }
+  ]
+}

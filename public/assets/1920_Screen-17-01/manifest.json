@@ -1,0 +1,14 @@
+{
+  "frame": "1920__Screen-17-01",
+  "nodeId": "17683:9080",
+  "assets": [
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/fd4b4768-c9a2-4ea3-90e0-a2f3a4c8ae92" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/b08b26d0-3d96-42fc-9aba-762c763fb247" },
+    { "constant": "imgSearch", "filename": "imgSearch.svg", "url": "https://www.figma.com/api/mcp/asset/434ccd76-4d33-46a6-832e-5e7fede1ccf1" },
+    { "constant": "imgShopping", "filename": "imgShopping.svg", "url": "https://www.figma.com/api/mcp/asset/a4e366df-a05b-40b6-9e72-6e126239ced1" },
+    { "constant": "imgGlasses", "filename": "imgGlasses.svg", "url": "https://www.figma.com/api/mcp/asset/aa681482-ab69-438e-a985-4e8eb45389f8" },
+    { "constant": "imgGlasses1", "filename": "imgGlasses1.png", "url": "https://www.figma.com/api/mcp/asset/4625fb1e-848d-4b60-af18-a1fbac1488e6", "note": "hero glasses image, 3840x2160 source" },
+    { "constant": null, "filename": "raw_image_1.png", "url": "https://www.figma.com/api/mcp/asset/cbcf5b77-7f8e-4f69-8a4d-b3c0b1df3c30", "note": "raw fill image (same bytes as imgGlasses1)" },
+    { "constant": null, "filename": "raw_image_2.png", "url": "https://www.figma.com/api/mcp/asset/756dcd15-993d-4281-801a-785638d11bf5", "note": "raw fill image" }
+  ]
+}

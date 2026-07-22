@@ -1,0 +1,282 @@
+import "./style.css";
+import type { Section } from "../../lib/section";
+import { createFluid, LOADER_WARM } from "../../lib/fluid";
+
+/* s01 — loader (client round 10, "follow this design"): the model-portrait
+ * hero photo IS the loader now. The warm fluid veil covers the screen at
+ * 0% and dissolves away as the count runs, softly revealing the photo
+ * beneath; while it thins, a line-art tracing of the glasses draws itself
+ * over the face (stroke-dashoffset) and then melts into the real glasses
+ * as the reveal completes. Counter per Figma 224:3905 — 80px Season Sans
+ * Light "24" (warm gradient) + 40px "%" (ice, 20%) at the bottom center.
+ * KEPT: auto-advance glide to s02, the s01 retirement mechanism and the
+ * ?only QA harness behavior — all untouched below. */
+
+/* Glasses line-art — the client's OFFICIAL vector art (round 12), inlined
+ * verbatim from public/assets/loader-glasses-outline.svg (474×158 viewBox)
+ * so each path can draw on via stroke-dashoffset. The paths are classified
+ * for the staged draw (order = DOM order): the full frame silhouette
+ * (--outer), the two lens inner rims (--rim), the nose-bridge bar
+ * (--bridge), eleven small pad/accent strokes (--detail, the two hairline
+ * ticks also --hair), and the V logomark as two FILLED paths (.s01-logo)
+ * that condense in last. Stroke widths live in style.css, scaled ~1.5× the
+ * source art so they read ~2-3px at display size; the CSS box maps the
+ * 474×158 art onto the photo's glasses in 1920×1080 design pixels. */
+const GLASSES = (extra: string) => `
+  <svg class="s01-glasses${extra}" viewBox="0 0 474 158" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path class="s01-draw s01-draw--outer" d="M236.756 17.5977C235.958 17.5977 235.161 17.5746 234.352 17.54C233.438 17.4938 232.525 17.4361 231.612 17.3437C230.571 17.2513 229.543 17.1358 228.514 17.0087C227.346 16.8586 226.19 16.6969 225.034 16.5121C223.74 16.3158 222.445 16.0964 221.162 15.8538C219.717 15.5882 218.283 15.311 216.85 15.0223C215.255 14.6989 213.659 14.3409 212.064 13.9829C210.295 13.5786 208.527 13.1629 206.77 12.724C204.816 12.2505 202.862 11.7539 200.909 11.2573C198.736 10.7029 196.551 10.1485 194.378 9.60572C191.927 8.99362 189.453 8.39306 186.979 7.8387C184.517 7.28434 182.055 6.76463 179.569 6.29111C177.211 5.84069 174.841 5.43647 172.472 5.0669C169.905 4.66268 167.328 4.3162 164.75 3.99283C161.802 3.62325 158.843 3.29988 155.883 2.98805C152.739 2.66467 149.606 2.37594 146.462 2.13341C143.329 1.87933 140.197 1.67145 137.052 1.48666C133.885 1.30187 130.729 1.16328 127.562 1.04779C124.417 0.932299 121.273 0.851455 118.129 0.805258C115.031 0.759062 111.921 0.747512 108.835 0.759062C105.794 0.78216 102.766 0.828357 99.737 0.909201C96.7777 0.990045 93.83 1.10554 90.8822 1.25568C87.9575 1.40581 85.0445 1.5906 82.1429 1.79849C79.2067 2.01792 76.2937 2.26045 73.3921 2.53763C70.4906 2.81481 67.6006 3.11509 64.7338 3.45002C61.8785 3.77339 59.0348 4.13142 56.2257 4.47789C53.4629 4.82437 50.7233 5.18239 47.9951 5.52887C46.7813 5.67901 45.5676 5.84069 44.3653 5.99083C42.9781 6.16407 41.591 6.33731 40.2038 6.51055C37.7415 6.82237 35.2908 7.1111 32.8633 7.39983C30.5397 7.67701 28.2278 7.94264 25.9389 8.18517C24.5864 8.33531 23.2455 8.4739 21.9045 8.61249C20.6214 8.73953 19.3498 8.86657 18.0898 8.98207C16.876 9.09756 15.6738 9.2015 14.4831 9.29389C13.0959 9.40939 11.8475 9.49023 10.784 9.61727C9.72045 9.74431 8.83034 9.89445 8.05583 10.0908C7.26976 10.2871 6.59929 10.5297 5.99817 10.8068C5.40862 11.084 4.89999 11.3958 4.41447 11.7539C3.92896 12.1119 3.47813 12.5161 3.01573 13.0705C2.55334 13.6364 2.09094 14.3524 1.74415 15.1378C1.39735 15.9347 1.17771 16.8009 1.039 17.8403C0.900278 18.8797 0.842479 20.0693 0.796239 21.2126C0.75 22.356 0.75 23.4301 0.75 24.5388C0.75 25.6475 0.78468 26.8024 0.78468 27.9111C0.78468 29.0199 0.78468 30.1055 0.78468 31.0525C0.78468 31.9996 0.865599 32.8426 1.00432 33.6626C1.14304 34.4826 1.35111 35.2795 1.67479 36.088C1.77883 36.342 1.89443 36.6077 2.03314 36.8617C2.31058 37.393 2.6227 37.9012 2.96949 38.3516C3.47813 39.0099 4.033 39.5065 4.68035 39.9569C5.3277 40.4073 6.06753 40.8116 6.95764 41.1465C7.84775 41.4814 8.8997 41.7586 10.1482 41.9087C11.3504 42.0473 12.7376 42.0589 14.3559 42.1628C14.853 42.1975 15.2576 42.2206 15.6622 42.2668C16.0437 42.3014 16.4136 42.336 16.7951 42.3822C17.1419 42.4284 17.4887 42.4746 17.8355 42.5208C18.2401 42.5786 18.6331 42.6594 19.0261 42.7403C19.3729 42.8096 19.7197 42.902 20.0665 42.9944C20.3671 43.0752 20.6676 43.1791 20.9682 43.2831C21.2341 43.387 21.4999 43.491 21.7543 43.6065C21.997 43.722 22.2282 43.8374 22.4594 43.976C22.679 44.1031 22.8987 44.2417 23.1183 44.3803C23.3264 44.5188 23.5345 44.6805 23.7426 44.8422C23.9506 45.0039 24.1471 45.1771 24.3437 45.3619C24.5402 45.5467 24.7367 45.7431 24.9332 45.9509C25.1297 46.1704 25.3263 46.4014 25.5228 46.6323C25.7308 46.8864 25.9274 47.152 26.1239 47.4292C26.3435 47.7411 26.54 48.0529 26.7366 48.3763C26.9562 48.7458 27.1758 49.127 27.3723 49.5081C27.6035 49.947 27.8232 50.3974 28.0197 50.8478C28.2509 51.3675 28.4705 51.8872 28.6786 52.43C28.9098 53.0421 29.1294 53.6542 29.3491 54.2779C29.5803 54.9824 29.7999 55.6984 30.0196 56.4145C30.2507 57.2229 30.4819 58.0314 30.69 58.8398C30.9328 59.7522 31.1524 60.653 31.3836 61.577C31.6264 62.5933 31.8691 63.6096 32.1003 64.6375C32.3546 65.7809 32.609 66.9127 32.8402 68.056C33.106 69.3149 33.3604 70.5853 33.6031 71.8557C33.8805 73.2532 34.1464 74.6506 34.4239 76.0596C35.2562 80.3559 35.996 84.248 36.6433 87.4817C37.2907 90.7271 37.834 93.3025 38.4467 95.9704C39.0594 98.6382 39.7298 101.375 40.4465 103.951C41.1517 106.526 41.8915 108.94 42.666 111.204C43.4405 113.467 44.2497 115.604 45.1398 117.741C46.03 119.877 47.001 122.014 48.2841 124.37C49.5673 126.726 51.1394 129.313 52.7347 131.588C54.3299 133.863 55.9367 135.815 57.9019 137.778C59.8671 139.742 62.1791 141.717 64.5142 143.403C66.8492 145.089 69.1959 146.498 72.4789 147.988C75.7619 149.478 79.9812 151.06 83.5186 152.18C87.0443 153.289 89.888 153.936 93.4022 154.559C96.9164 155.183 101.101 155.795 105.17 156.176C109.239 156.557 113.216 156.731 116.892 156.8C120.568 156.881 123.955 156.858 127.284 156.742C130.613 156.627 133.885 156.419 136.798 156.153C139.711 155.887 142.266 155.587 145.121 155.137C147.976 154.686 151.132 154.097 154.184 153.347C157.247 152.596 160.207 151.695 162.831 150.748C165.455 149.813 167.744 148.831 170.206 147.572C172.668 146.302 175.292 144.742 177.835 142.929C180.379 141.116 182.818 139.037 185.211 136.67C187.592 134.302 189.915 131.634 192.066 128.724C194.204 125.813 196.169 122.66 197.799 119.796C199.441 116.932 200.77 114.357 202.273 111.158C203.776 107.958 205.463 104.124 206.839 100.821C208.215 97.518 209.267 94.7462 210.191 92.3093C211.105 89.884 211.879 87.7936 212.596 85.8418C213.313 83.8899 213.972 82.0652 214.642 80.2058C215.312 78.3464 215.983 76.4638 216.757 74.3619C217.532 72.2599 218.399 69.9501 219.162 67.9752C219.913 66.0349 220.561 64.4181 221.127 62.9513C223.832 55.9641 231.069 56.2643 236.791 56.2528C242.513 56.2528 249.749 55.9641 252.454 62.9513C253.021 64.4181 253.668 66.0349 254.419 67.9752C255.182 69.9501 256.061 72.2599 256.824 74.3619C257.598 76.4638 258.269 78.3579 258.939 80.2058C259.61 82.0652 260.269 83.8899 260.985 85.8418C261.702 87.7936 262.477 89.8724 263.39 92.3093C264.303 94.7346 265.367 97.518 266.742 100.821C268.118 104.124 269.806 107.947 271.308 111.158C272.811 114.357 274.141 116.932 275.782 119.796C277.424 122.66 279.377 125.813 281.527 128.724C283.666 131.634 285.989 134.302 288.382 136.67C290.764 139.037 293.214 141.116 295.757 142.929C298.301 144.742 300.925 146.302 303.387 147.572C305.849 148.842 308.138 149.813 310.762 150.748C313.386 151.684 316.357 152.596 319.409 153.347C322.472 154.097 325.617 154.686 328.472 155.137C331.327 155.587 333.882 155.899 336.795 156.153C339.708 156.419 342.979 156.627 346.309 156.742C349.638 156.858 353.025 156.869 356.701 156.8C360.377 156.719 364.342 156.557 368.423 156.176C372.492 155.795 376.676 155.183 380.191 154.559C383.705 153.936 386.549 153.3 390.074 152.18C393.6 151.071 397.831 149.489 401.114 147.988C404.397 146.498 406.744 145.089 409.079 143.403C411.414 141.717 413.726 139.742 415.691 137.778C417.656 135.815 419.263 133.852 420.858 131.588C422.454 129.313 424.037 126.737 425.309 124.37C426.592 122.014 427.563 119.877 428.453 117.741C429.343 115.604 430.152 113.479 430.927 111.204C431.701 108.929 432.43 106.526 433.146 103.951C433.852 101.375 434.534 98.6267 435.146 95.9704C435.759 93.3025 436.302 90.7155 436.95 87.4817C437.597 84.2364 438.337 80.3444 439.169 76.0596C439.435 74.6622 439.712 73.2532 439.99 71.8557C440.244 70.5853 440.487 69.3264 440.753 68.056C440.996 66.9127 441.238 65.7693 441.493 64.6375C441.724 63.6212 441.967 62.5933 442.209 61.577C442.429 60.6646 442.66 59.7522 442.903 58.8398C443.123 58.0198 443.342 57.2114 443.573 56.4145C443.781 55.6984 444.001 54.9824 444.244 54.2779C444.452 53.6542 444.672 53.0421 444.914 52.43C445.122 51.8988 445.342 51.3675 445.573 50.8478C445.781 50.3974 446.001 49.947 446.221 49.5081C446.417 49.127 446.637 48.7458 446.856 48.3763C447.053 48.0529 447.261 47.7295 447.469 47.4292C447.666 47.152 447.862 46.8864 448.07 46.6323C448.255 46.4014 448.452 46.1704 448.66 45.9509C448.845 45.7431 449.041 45.5467 449.249 45.3619C449.446 45.1771 449.642 45.0039 449.85 44.8422C450.058 44.6805 450.267 44.5304 450.475 44.3803C450.694 44.2301 450.914 44.1031 451.133 43.976C451.365 43.849 451.596 43.722 451.839 43.6065C452.093 43.491 452.359 43.3755 452.625 43.2831C452.925 43.1676 453.226 43.0752 453.526 42.9944C453.873 42.902 454.22 42.8096 454.567 42.7403C454.96 42.6594 455.364 42.5901 455.757 42.5208C456.104 42.4631 456.451 42.4169 456.798 42.3822C457.179 42.336 457.549 42.3014 457.931 42.2668C458.335 42.2321 458.74 42.1975 459.237 42.1628C460.855 42.0589 462.243 42.0473 463.445 41.9087C464.693 41.7701 465.745 41.493 466.635 41.1465C467.525 40.8116 468.265 40.4073 468.913 39.9569C469.56 39.5065 470.115 38.9983 470.623 38.3516C470.97 37.9127 471.282 37.393 471.56 36.8617C471.687 36.6077 471.803 36.3536 471.918 36.088C472.253 35.2911 472.461 34.4826 472.589 33.6626C472.727 32.8426 472.785 32.0111 472.808 31.0525C472.831 30.0939 472.82 29.0199 472.82 27.9111C472.831 26.8024 472.854 25.6475 472.854 24.5388C472.866 23.4301 472.843 22.356 472.808 21.2126C472.774 20.0693 472.704 18.8797 472.565 17.8403C472.427 16.8009 472.207 15.9347 471.86 15.1378C471.514 14.3409 471.051 13.6248 470.589 13.0705C470.126 12.5046 469.664 12.1119 469.19 11.7539C468.704 11.3958 468.196 11.084 467.606 10.8068C467.017 10.5297 466.335 10.2871 465.549 10.0908C464.763 9.89445 463.884 9.74431 462.821 9.61727C461.757 9.49023 460.52 9.40939 459.121 9.29389C457.931 9.2015 456.728 9.09756 455.515 8.98207C454.255 8.86657 452.983 8.73953 451.7 8.61249C450.359 8.4739 449.018 8.33531 447.666 8.18517C445.377 7.93109 443.065 7.66546 440.741 7.39983C438.314 7.1111 435.874 6.81082 433.401 6.51055C432.025 6.33731 430.638 6.16407 429.239 5.99083C428.037 5.84069 426.823 5.67901 425.609 5.52887C422.881 5.18239 420.142 4.82437 417.379 4.47789C414.558 4.11987 411.726 3.77339 408.871 3.45002C406.004 3.12664 403.114 2.81481 400.212 2.53763C397.311 2.26045 394.386 2.01792 391.462 1.79849C388.56 1.5906 385.647 1.40581 382.722 1.25568C379.786 1.10554 376.827 0.990045 373.867 0.909201C370.839 0.828357 367.81 0.770611 364.77 0.759062C361.683 0.735963 358.574 0.759062 355.476 0.805258C352.331 0.851455 349.187 0.932299 346.043 1.04779C342.887 1.16328 339.72 1.31342 336.552 1.48666C333.419 1.67145 330.287 1.87933 327.143 2.13341C323.998 2.38749 320.854 2.67622 317.721 2.98805C314.762 3.28833 311.803 3.62325 308.855 3.99283C306.277 4.3162 303.699 4.66268 301.133 5.0669C298.763 5.43647 296.393 5.84069 294.035 6.29111C291.55 6.76463 289.087 7.28434 286.625 7.8387C284.151 8.40461 281.678 8.99362 279.227 9.60572C277.042 10.1485 274.869 10.7029 272.696 11.2573C270.742 11.7539 268.788 12.2505 266.835 12.724C265.066 13.1513 263.309 13.5786 261.54 13.9829C259.945 14.3409 258.35 14.6874 256.755 15.0223C255.321 15.3226 253.888 15.5997 252.443 15.8538C251.16 16.0848 249.865 16.3042 248.57 16.5121C247.414 16.6969 246.258 16.8586 245.091 17.0087C244.062 17.1358 243.033 17.2513 241.993 17.3437C241.079 17.4245 240.166 17.4938 239.253 17.54C238.34 17.5746 237.542 17.5977 236.744 17.5977H236.756Z"/>
+    <path class="s01-draw s01-draw--bridge" d="M221.092 62.9626C219.716 62.4198 218.919 61.8885 218.214 61.2533C217.497 60.6181 216.873 59.879 216.352 59.0821C215.832 58.2852 215.428 57.4306 215.139 56.5297C214.85 55.6289 214.688 54.6934 214.642 53.7464C214.607 52.7993 214.688 51.8523 214.896 50.9284C215.104 50.0044 215.439 49.1152 215.89 48.2836C216.341 47.4521 216.896 46.6783 217.543 45.9853C218.19 45.3039 218.93 44.7034 219.751 44.2068C220.572 43.7102 221.462 43.329 222.398 43.0634C223.323 42.7978 224.282 42.6592 225.288 42.6592H248.2C249.206 42.6592 250.165 42.7978 251.09 43.0634C252.015 43.329 252.916 43.7102 253.737 44.2068C254.558 44.7034 255.298 45.3039 255.945 45.9853C256.592 46.6667 257.159 47.4405 257.598 48.2836C258.049 49.1152 258.384 50.016 258.592 50.9284C258.8 51.8523 258.893 52.7993 258.846 53.7464C258.812 54.6934 258.638 55.6404 258.349 56.5297C258.06 57.4306 257.656 58.2852 257.136 59.0821C256.615 59.879 255.98 60.6181 255.274 61.2533C254.558 61.8885 253.772 62.4198 252.396 62.9626"/>
+    <g class="s01-logo">
+      <path d="M450.024 33.5818H455.804L446.382 17.2744H440.603L450.024 33.5818Z"/>
+      <path d="M464.23 21.9411L461.537 17.2744H455.757L458.45 21.9411H464.23Z"/>
+    </g>
+  </svg>`;
+
+export const s01: Section = {
+  id: "s01",
+  html: `
+  <div class="stage stage--d s01-pstage"><div class="s01-photo"></div></div>
+  <div class="stage stage--m s01-pstage"><div class="s01-photo"></div></div>
+  <div class="s01-veil">
+    <canvas class="s01-fluid"></canvas>
+    <div class="s01-glowfx"></div>
+  </div>
+  <div class="s01-feather"></div>
+  <div class="stage stage--d">
+    <div class="s01-gscale">${GLASSES("")}</div>
+    <div class="s01-loader">
+      <span class="s01-count gtx gtx--warm cap-trim">0</span>
+      <span class="s01-pct gtx gtx--ice cap-trim">%</span>
+    </div>
+  </div>
+  <div class="stage stage--m">
+    <div class="s01-gscale">${GLASSES(" s01-glasses--m")}</div>
+    <div class="s01-loader s01-loader--m">
+      <span class="s01-count gtx gtx--warm cap-trim">0</span>
+      <span class="s01-pct gtx gtx--ice cap-trim">%</span>
+    </div>
+  </div>`,
+  init(el, ctx) {
+    const counts = Array.from(el.querySelectorAll<HTMLElement>(".s01-count"));
+    const loaders = el.querySelectorAll<HTMLElement>(".s01-loader");
+    const veil = el.querySelector<HTMLElement>(".s01-veil")!;
+    const glow = el.querySelector<HTMLElement>(".s01-glowfx")!;
+    const photos = el.querySelectorAll<HTMLElement>(".s01-photo");
+    const glasses = el.querySelectorAll<SVGSVGElement>(".s01-glasses");
+    const fluidCanvas = el.querySelector<HTMLCanvasElement>(".s01-fluid")!;
+
+    // loader fluid: a warm ambient veil OVER the hero photo. It stays in
+    // the photo's own sunset family the whole time and simply dissolves
+    // with the count, so the reveal reads as the warm haze condensing into
+    // the photograph rather than a color change.
+    const fluid = createFluid(fluidCanvas, {
+      palettes: { warm: LOADER_WARM },
+      getBlend: () => ({ from: "warm", to: "warm", mix: 0 }),
+      speed: 1.6,
+      grain: 0.03,
+    });
+
+    // slow plus-lighter glow breathing on top of the fluid
+    const pulse = ctx.gsap.to(glow, {
+      opacity: 0.9,
+      scale: 1.12,
+      duration: 1.7,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // prime the draw-on: each stroke starts fully dashed-out. Dash lengths
+    // are measured from the real geometry (getTotalLength) — never
+    // hardcoded — so the draw starts/ends exactly at the path tips with no
+    // seams or pops.
+    const paths = Array.from(el.querySelectorAll<SVGPathElement>(".s01-draw"));
+    for (const p of paths) {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = String(len);
+      p.style.strokeDashoffset = String(len);
+    }
+    const outers = el.querySelectorAll<SVGPathElement>(".s01-draw--outer");
+    // simplified round-14 art: rims/details removed from the client SVG —
+    // these selectors resolve empty and their tweens no-op harmlessly
+    const rims = el.querySelectorAll<SVGPathElement>(".s01-draw--rim");
+    const details = el.querySelectorAll<SVGPathElement>(".s01-draw--detail");
+    const bridges = el.querySelectorAll<SVGPathElement>(".s01-draw--bridge");
+    const logos = el.querySelectorAll<SVGGElement>(".s01-logo");
+    // per-stage counts (desktop + mobile stages carry identical art) — used
+    // so staggers key off the index WITHIN a stage and both stages animate
+    // on the identical clock
+    const rimsPer = rims.length / 2;
+    const detailsPer = details.length / 2;
+
+    const state = { v: 0 };
+    const tl = ctx.gsap.timeline({ delay: 0.2 });
+    tl.to(state, {
+      v: 100,
+      duration: 1.6,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        const txt = String(Math.round(state.v));
+        counts.forEach((c) => (c.textContent = txt));
+      },
+    });
+    // photo reveal: the warm veil thins away in step with the counter,
+    // while the photo settles from a gentle overscale — by 100% the frame
+    // rests on the exact Figma 224:3905 composition. The glasses line-art
+    // rides the SAME settle tween via its full-stage .s01-gscale wrapper
+    // (identical geometry + origin), so the outline stays registered to the
+    // photo's glasses at EVERY frame of the draw — not only at rest.
+    tl.to(veil, { opacity: 0, duration: 1.55, ease: "sine.inOut" }, 0.25);
+    const gscales = el.querySelectorAll<HTMLElement>(".s01-gscale");
+    tl.fromTo(
+      [...Array.from(photos), ...Array.from(gscales)],
+      { scale: 1.06 },
+      { scale: 1, duration: 2.4, ease: "power2.out" },
+      0
+    );
+    // glasses line-art draws itself over the face while loading, staged
+    // with the counter: first the full frame silhouette as one long
+    // continuous stroke, the two lens rims chasing it, then the nose
+    // bridge, the small pad/accent strokes rippling in, and finally the
+    // V logomark condensing in as a fill.
+    tl.to(
+      outers,
+      { strokeDashoffset: 0, duration: 0.9, ease: "power1.inOut" },
+      0.15
+    );
+    tl.to(
+      rims,
+      {
+        strokeDashoffset: 0,
+        duration: 0.62,
+        ease: "power1.inOut",
+        stagger: (i: number) => (i % rimsPer) * 0.1,
+      },
+      0.38
+    );
+    tl.to(
+      bridges,
+      { strokeDashoffset: 0, duration: 0.2, ease: "sine.inOut" },
+      1.0
+    );
+    tl.to(
+      details,
+      {
+        strokeDashoffset: 0,
+        duration: 0.16,
+        ease: "sine.inOut",
+        stagger: (i: number) => (i % detailsPer) * 0.028,
+      },
+      1.08
+    );
+    tl.to(logos, { autoAlpha: 1, duration: 0.32, ease: "sine.inOut" }, 1.32);
+    // the bottom feather rises late, darkening the photo's foot into the
+    // exact tone of s02's washed top so the fold reads seamless
+    tl.to(
+      el.querySelector(".s01-feather"),
+      { opacity: 1, duration: 1.2, ease: "sine.inOut" },
+      0.8
+    );
+    // the warm ember glow cools away as the veil thins
+    tl.to(
+      glow,
+      {
+        autoAlpha: 0,
+        duration: 1,
+        ease: "sine.out",
+        onStart: () => pulse.kill(),
+      },
+      0.8
+    );
+    // hold on 100%, then fade the counter away — the photo stays
+    tl.to(loaders, { autoAlpha: 0, duration: 0.5, ease: "power2.out" }, "+=0.15");
+    // the finished line art melts into the real glasses of the photograph
+    tl.to(glasses, { autoAlpha: 0, duration: 0.7, ease: "sine.inOut" }, 1.8);
+    // once the veil is fully gone the fluid has nothing left to show —
+    // release the GL context and the layer
+    tl.call(
+      () => {
+        fluid.destroy();
+        veil.remove();
+      },
+      undefined,
+      2.1
+    );
+
+    // ---- auto-advance: once the count lands and the photo settles, the
+    // story begins by itself — a slow luxurious glide down to the s02 hero.
+    // Only on an untouched initial load: any user input (or an already-moved
+    // scroll position) means the visitor took over, so we stay put.
+    let userTookOver = false;
+    const markUser = () => (userTookOver = true);
+    const userEvts = ["wheel", "touchstart", "pointerdown", "keydown"];
+    userEvts.forEach((e) =>
+      window.addEventListener(e, markUser, { passive: true, once: true })
+    );
+
+    // ---- retirement (client round 8): the loader must be gone for good
+    // once the story lands on the s02 home — scrolling back up afterwards
+    // stops at s02. s01 only decides WHEN; main.ts owns the removal itself
+    // (trigger cleanup, same-frame scroll compensation, paginator/fluid
+    // rewiring — see its "s01:retire" listener). Two paths get here: the
+    // auto-glide's onComplete (scroll rests exactly at s02's top), or — if
+    // the visitor took over — the first moment the scroll RESTS at/past
+    // s02's top (the velocity gate keeps us from cutting a live flick's
+    // momentum; the height subtraction makes the removal itself invisible
+    // at any resting position). Never dispatched in the ?only QA harness:
+    // there is no #s02 there, so s01 keeps rendering normally for QA.
+    let retired = false;
+    const retireWhenSettled = () => {
+      if (
+        window.scrollY >= el.offsetHeight - 0.5 &&
+        Math.abs(ctx.lenis.velocity) < 8
+      )
+        retire();
+    };
+    const retire = () => {
+      if (retired) return;
+      retired = true;
+      ctx.lenis.off("scroll", retireWhenSettled);
+      window.removeEventListener("scroll", retireWhenSettled);
+      window.dispatchEvent(new Event("s01:retire"));
+    };
+
+    tl.call(
+      () => {
+        userEvts.forEach((e) => window.removeEventListener(e, markUser));
+        const next = document.getElementById("s02");
+        if (!next) return;
+        // arm the resting-scroll path (covers the took-over case and an
+        // auto-glide interrupted by external scrolling)
+        ctx.lenis.on("scroll", retireWhenSettled);
+        window.addEventListener("scroll", retireWhenSettled, { passive: true });
+        retireWhenSettled();
+        if (userTookOver || window.scrollY > 2) return;
+        // a native scroll far from lenis's animated value mid-glide means
+        // something external (scrollbar drag, tooling) grabbed the page —
+        // hand control over immediately instead of fighting it
+        const yieldToExternal = () => {
+          if (Math.abs(window.scrollY - ctx.lenis.animatedScroll) > 150) {
+            ctx.lenis.scrollTo(window.scrollY, { immediate: true });
+            window.removeEventListener("scroll", yieldToExternal);
+          }
+        };
+        window.addEventListener("scroll", yieldToExternal, { passive: true });
+        ctx.lenis.scrollTo(next, {
+          duration: 1.8,
+          easing: (t: number) =>
+            t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+          onComplete: () => {
+            window.removeEventListener("scroll", yieldToExternal);
+            // the glide has landed on s02 — remove the loader in this
+            // same frame (main.ts compensates the scroll position, so
+            // there is no visible hop)
+            retire();
+          },
+        });
+      },
+      undefined,
+      2.3
+    );
+  },
+};

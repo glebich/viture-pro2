@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 431 414" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="line">
+<circle id="Ellipse 1329130915" cx="16.5" cy="292.5" r="16.5" fill="var(--fill-0, white)" fill-opacity="0.02"/>
+<path id="Line 342" d="M15.1144 294.886C16.1558 295.927 17.8442 295.927 18.8856 294.886C19.927 293.844 19.927 292.156 18.8856 291.114C17.8442 290.073 16.1558 290.073 15.1144 291.114C14.073 292.156 14.073 293.844 15.1144 294.886ZM189 121L189 120.5L188.793 120.5L188.646 120.646L189 121ZM17 293L17.3536 293.354L189.354 121.354L189 121L188.646 120.646L16.6464 292.646L17 293ZM189 121L189 121.5L431 121.5V121V120.5L189 120.5L189 121Z" fill="url(#paint0_linear_0_36)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_36" x1="17.3536" y1="293.354" x2="189.354" y2="121.354" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#817EA3"/>
+</linearGradient>
+</defs>
+</svg>

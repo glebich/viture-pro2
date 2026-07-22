@@ -1,0 +1,204 @@
+/* s26 — 7 frosted product cards (1920_Screen-26-01 / 375_Screen-26-01) */
+
+#s26 {
+  background: #010101;
+}
+
+/* ----- rows (desktop) ----- */
+.s26-row {
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.s26-row--1 {
+  left: calc(8.33% + 35px);
+  top: 269px;
+}
+
+.s26-row--2 {
+  left: calc(16.67% + 67.5px);
+  top: 602px;
+}
+
+/* ----- card ----- */
+.s26-card {
+  position: relative;
+  flex: none;
+  border-radius: 60px;
+}
+
+.s26-card img {
+  pointer-events: none;
+}
+
+/* inner wrapper takes over the clipping so the hover halo can bloom
+   outside the card bounds; it also carries the hover lift, keeping the
+   card root free for the GSAP entrance transform */
+.s26-clip {
+  position: absolute;
+  inset: 0;
+  border-radius: 60px;
+  overflow: hidden;
+}
+
+/* pre-rendered ambient halo — a soft radial gradient larger than the card,
+   revealed on hover with an opacity-only transition (no runtime blur).
+   Its centre drifts with the cursor via --gx/--gy set from pointermove. */
+.s26-halo {
+  position: absolute;
+  inset: -90px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    60% 57% at calc(50% + var(--gx, 0px)) calc(46% + var(--gy, 0px)),
+    var(--s26-tint, rgba(255, 190, 140, 0.5)) 0%,
+    rgba(0, 0, 0, 0) 76%
+  );
+}
+
+/* ----- hover (desktop pointers only; touch untouched) ----- */
+@media (hover: hover) and (pointer: fine) {
+  .stage--d .s26-halo {
+    transition: opacity 350ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .stage--d .s26-clip {
+    transition: transform 350ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .stage--d .s26-frost {
+    transition: border-color 350ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .stage--d .s26-crisp img {
+    transition: filter 350ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .stage--d .s26-card:hover {
+    z-index: 1; /* halo spills over neighbours as light, not under them */
+  }
+
+  .stage--d .s26-card:hover .s26-halo {
+    opacity: 1;
+  }
+
+  .stage--d .s26-card:hover .s26-clip {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .stage--d .s26-card:hover .s26-frost {
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  .stage--d .s26-card:hover .s26-crisp img {
+    filter: brightness(1.05);
+  }
+}
+
+/* product image layers (glow behind the frost, crisp copy above it) */
+.s26-layer {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.s26-layer--crop {
+  overflow: hidden;
+}
+
+/* frosted gradient panel */
+.s26-frost {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 60px;
+}
+
+.s26-frost img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 60px;
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+/* heading */
+.s26-heading {
+  position: absolute;
+  bottom: 35px; /* 40 design offset minus cap-trim slack */
+  transform: translateX(-50%);
+  width: 169px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px; /* 24 design gap minus cap-trim slack */
+  align-items: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.s26-name {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  color: #fff;
+}
+
+.s26-sub {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ----- mobile: vertical card stack (Figma: left 40 / top 112 / gap 10),
+   scrollable in place so the clipped cards stay reachable ----- */
+.s26-rail {
+  position: absolute;
+  left: 40px;
+  top: 112px;
+  bottom: 0;
+  width: 295px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-y;
+}
+
+.s26-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.s26-rail .s26-card {
+  flex: 0 0 auto;
+  border-radius: 48px;
+}
+
+.s26-rail .s26-clip,
+.s26-rail .s26-frost,
+.s26-rail .s26-frost img {
+  border-radius: 48px;
+}
+
+.s26-rail .s26-heading {
+  bottom: 27px; /* 32 design offset minus cap-trim slack */
+  gap: 12px; /* 20 design gap minus cap-trim slack */
+}
+
+.s26-rail .s26-name {
+  font-size: 20px;
+}
+
+/* Safari/WebKit: cheaper backdrop radius, visually equivalent over the
+   dark photo (html.safari is set by main.ts) */
+html.safari .s26-frost img {
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+}

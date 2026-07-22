@@ -1,0 +1,156 @@
+/* s20 — Designer Lens Shade, #FF5F34 "Mono" label */
+
+.s20-bg {
+  position: absolute;
+  inset: 0;
+  background: #020202;
+}
+
+/* top feather (round 5, s16b+s17 merge): s20 now folds directly out of
+   s16b, whose bottom row is a fixed near-black (#030303 desktop, #010101
+   mobile) while s20's field carries the cold ambient sheen — dissolve from
+   that exact tone so the junction has no hard tonal line. Inverted variant
+   of the s01/s02 bottom-feather pattern (the incoming tone is fixed, the
+   receiving field is ambient-driven); z-index lifts it over the stage
+   children, and 20vh ends well above the photo (274px design top). */
+#s20::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 20vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(3, 3, 3) 0%,
+    rgba(3, 3, 3, 0.6) 25%,
+    rgba(3, 3, 3, 0.2) 60%,
+    rgba(3, 3, 3, 0) 100%
+  );
+}
+@media (max-width: 640px) {
+  #s20::before {
+    background: linear-gradient(
+      180deg,
+      rgb(1, 1, 1) 0%,
+      rgba(1, 1, 1, 0.6) 25%,
+      rgba(1, 1, 1, 0.2) 60%,
+      rgba(1, 1, 1, 0) 100%
+    );
+  }
+}
+
+.s20-photo {
+  /* asset fills the Figma box edge-to-edge (fill, not cover) */
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* Desktop */
+.s20-photo-d {
+  position: absolute;
+  left: 968px;
+  top: 274px;
+  width: 752px;
+  height: 532px;
+}
+
+.s20-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.s20-text-d {
+  position: absolute;
+  left: 194px;
+  top: 421px;
+  width: 568px;
+  gap: 40px; /* 56 design gap minus cap-trim slack */
+}
+.s20-text-d .s20-kicker {
+  margin-top: 16px;
+}
+
+.s20-kicker {
+  font-size: 20px;
+  line-height: 1;
+  color: #fff;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.s20-title {
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.s20-title-d {
+  font-size: 72px;
+  width: 505px;
+}
+
+.s20-info {
+  display: flex;
+  align-items: flex-end;
+  white-space: nowrap;
+}
+
+.s20-info-d {
+  position: absolute;
+  left: 194px;
+  top: 899px;
+  gap: 32px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.s20-mono {
+  color: #ff5f34;
+}
+
+.s20-note {
+  color: rgba(255, 255, 255, 0.32);
+}
+
+/* Mobile */
+.s20-photo-m {
+  position: absolute;
+  left: 41px;
+  top: 153px;
+  width: 293px;
+  height: 207px;
+}
+
+.s20-text-m {
+  position: absolute;
+  left: 40px;
+  top: 476px;
+  width: 295px;
+  gap: 32px;
+}
+.s20-text-m .s20-kicker {
+  margin-top: 6px;
+}
+
+.s20-text-m .s20-kicker {
+  font-size: 16px;
+}
+
+.s20-title-m {
+  font-size: 32px;
+  white-space: nowrap;
+}
+
+.s20-info-m {
+  position: absolute;
+  left: 40px;
+  bottom: 121px;
+  gap: 20px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+

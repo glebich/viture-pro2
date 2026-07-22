@@ -1,0 +1,12 @@
+{
+  "frame": "1920_Screen-25-01",
+  "nodeId": "17683:9467",
+  "assets": [
+    { "constant": "imgPaginator", "filename": "imgPaginator.svg", "url": "https://www.figma.com/api/mcp/asset/4f9507f2-bae8-4715-a52c-f4e4a2566753" },
+    { "constant": "imgLogo", "filename": "imgLogo.svg", "url": "https://www.figma.com/api/mcp/asset/f7556624-fdac-4296-91f9-651bb52c6bfc" },
+    { "constant": "imgSearch", "filename": "imgSearch.svg", "url": "https://www.figma.com/api/mcp/asset/d9be5918-49a6-4f08-869d-6842f3735a6a" },
+    { "constant": "imgShopping", "filename": "imgShopping.svg", "url": "https://www.figma.com/api/mcp/asset/99cacabe-6c59-498c-9a35-880ebed63b37" },
+    { "constant": "imgGlasses", "filename": "imgGlasses.svg", "url": "https://www.figma.com/api/mcp/asset/08a9664e-5bb8-4681-b19d-53c8efd3ec54" },
+    { "constant": "export", "filename": "export.png", "url": "https://www.figma.com/api/mcp/asset/c1bf0c55-29d6-4fbf-83f0-211815b98661" }
+  ]
+}

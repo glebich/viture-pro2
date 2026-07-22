@@ -1,0 +1,11 @@
+{
+  "frame": "header_375",
+  "nodeId": "17683:8722",
+  "assets": [
+    {"constant": "imgLogo", "filename": "imgLogo.svg", "source": "https://www.figma.com/api/mcp/asset/d9df6077-fce6-44a0-b349-feb504d9c001"},
+    {"constant": "imgSearchSm", "filename": "imgSearchSm.svg", "source": "https://www.figma.com/api/mcp/asset/007707de-145a-46ef-a700-6cf85f2e78ed"},
+    {"constant": "imgShoppingBag02", "filename": "imgShoppingBag02.svg", "source": "https://www.figma.com/api/mcp/asset/a0abcf3b-f352-495f-94a2-60c9dd5c1da2"},
+    {"constant": "imgMenuStreamlineLucide11", "filename": "imgMenuStreamlineLucide11.svg", "source": "https://www.figma.com/api/mcp/asset/a4826df6-76ed-4b4b-a882-9fe569df5c47"}
+  ],
+  "rawImages": []
+}
