@@ -57,7 +57,11 @@ img.s11-b,
   inset: 63.33% auto -13.33% 0;
 }
 .s11-still img,
-.s11-video img {
+.s11-video img,
+.s11-video video {
+  /* the round-17 transparent glasses video is 16:9 like the old renders,
+     so cover reproduces the old placement/crop exactly (the orange field
+     and glow show through its alpha) */
   position: absolute;
   inset: 0;
   width: 100%;

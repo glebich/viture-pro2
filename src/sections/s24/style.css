@@ -45,14 +45,18 @@
   inset: 0;
   background: #000;
 }
-.s24-media-item img {
+/* card content is a looping video encoded at exactly 1002×480 — the card's
+   design-pixel size — so cover here is a 1:1 pixel mapping (no crop, no
+   scale). object-bottom kept from the still era: if a future re-encode ever
+   mismatches, the card still crops from the bottom edge like the stills.
+   The black media-item underlay shows until the first frame decodes. */
+.s24-media-item video {
+  display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   object-position: bottom;
   pointer-events: none;
-}
-.s24-cover {
-  object-fit: cover;
 }
 .s24-text {
   position: absolute;
@@ -109,9 +113,15 @@
   height: 213px;
   background: #000;
 }
-.s24m-media img {
+/* same 1002×480 gaming loop as desktop (shared warm cache across
+   breakpoints); card is 446×213 (≈2.09 vs the video's 2.0875), so cover
+   trims well under a pixel of height — object-bottom keeps the crop edge
+   consistent with the old still */
+.s24m-media video {
+  display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   object-position: bottom;
   pointer-events: none;
 }

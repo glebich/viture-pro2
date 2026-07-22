@@ -3,40 +3,55 @@ import type { Section } from "../../lib/section";
 
 /* s15 — merged page (former s15 + s16, client round 5; unpinned round 7):
  * one "Thin Enough to Disappear" page; the copy and the 16%/20% stats
- * persist while the top-down glasses render does a slow camera pan
- * between the two harvest crop framings (Screen-15-01 → Screen-16-01).
+ * persist over the top-down glasses render.
  *
- * Client round 7: "glasses need to be switched automatically, not by
- * using scroll" — the section is a normal 100vh screen again (no pin),
- * and the camera pan is TIME-based: a gentle infinite loop
- * (hold A → 6s pan → hold B → 6s pan back, power2.inOut) that plays
- * while the section is on screen and pauses when it scrolls away.
+ * Client round 18: "Delete the sliding glasses images and replace with
+ * video: plays every 15 sec with a 15 sec break. First play when you
+ * arrive at the page, then 15s break, repeat." The camera-pan loop and
+ * both harvest crops are gone; in the render's slot sit two stacked
+ * TRANSPARENT client videos (HEVC-alpha .mov for Safari, VP9-alpha .webm
+ * for Chromium, both 1920×1080/1s/30fps):
+ *   - thin-static: a settle-to-hold idle — it converges to a still pose
+ *     (consecutive-frame PSNR rises 42→68dB), so it is not looped; it is
+ *     held on its LAST frame, which matches the anim's first frame to
+ *     ~40dB (visually identical) — that swap edge is invisible.
+ *   - thin-anim: a one-shot light-sweep flourish. It STARTS on the static
+ *     hold pose but ENDS on a slightly different camera pose (alpha bbox
+ *     (596,150,1324,1000) → (598,176,1326,942), ~22dB vs every static
+ *     frame — measured, not slight), so the swap BACK to the static hold
+ *     is masked with a 300ms crossfade that reads as the glasses settling.
  *
- * The pan is transform-only: both harvest renders are stacked inside a
- * .s15-cam mover authored at the Screen-15 img rect; translating/scaling
- * the mover to the Screen-16 img rect reproduces the second crop exactly
- * (rect math below), and a subtle cross-fade to the Screen-16 export at
- * the end of the pan guarantees framing B is pixel-true to the harvest.
+ * Cadence: section enters the viewport → ANIM plays immediately; on ended
+ * → crossfade back to the static hold and start a 15s break; replay while
+ * the section stays in view. Offscreen the timer and videos pause
+ * (rect-based like lib/lazyvideo — NOT IntersectionObserver, which WebKit
+ * handles inconsistently once GSAP reparents pinned siblings into
+ * pin-spacers); re-entry replays the anim immediately and restarts the
+ * cadence. prefers-reduced-motion: the settled static frame only, no cycle.
  *
- * Desktop rect math (design px):
- *   crop A (957,163,670×751), img -49.87%/-35.8%/338.33%/169.94%
- *     → img rect (622.87,-105.86) 2266.81×1276.25
- *   crop B (955,211,680×713), img -173.87%/-35.8%/316.57%/169.94%
- *     → img rect (-227.32,-44.25) 2152.68×1211.67
- *   cam: x -850.19, y 61.61, scaleX .94966, scaleY .94940 (origin 0 0)
- * Mobile:
- *   crop A (44,409,287×322) → img rect (-99.13,293.72) 971.01×547.21
- *   crop B (49,416,279×312) → img rect (-436.10,304.30) 883.23×530.21
- *   cam: x -336.97, y 10.58, scaleX .90960, scaleY .96893
+ * Placement (design px): the videos render the same glasses as the harvest
+ * Screen-15-01 export but front-bar-up, so they are rotated 180°; the
+ * rotated pose-A alpha bbox is then mapped onto the harvest render's pair
+ * bbox in stage coords (left pair of imgGlasses1.webp (434,383,1073,1106)
+ * in its 2560×1440 source → stage (1007.17,233.59,1572.98,874.37) desktop,
+ * (65.49,439.26,307.89,714.01) mobile via the old crop-A img rects):
+ *   desktop: video element 1492.27×814.19 at (-411.05,10.28) in the window
+ *   mobile:  video element 639.30×349.09 at (-176.96,4.40)
+ * (~3% deliberate non-uniform stretch — the client render's pose aspect
+ * differs slightly from the harvest still; object-fit: fill honors it.)
  */
 
 const D15 = "/assets/1920_Screen-15-01";
-const D16 = "/assets/1920_Screen-16-01";
 const M15 = "/assets/375_Screen-15-01";
-const M16 = "/assets/375_Screen-16-01";
 
-const CAM_D = { x: -850.19, y: 61.61, scaleX: 0.94966, scaleY: 0.9494 };
-const CAM_M = { x: -336.97, y: 10.58, scaleX: 0.9096, scaleY: 0.96893 };
+const BREAK_MS = 15_000; // rest between anim replays (client: "15 sec break")
+const FADE_MS = 300; // anim→static settle crossfade (end poses differ)
+
+const VID = (kind: "static" | "anim") => `
+  <video class="s15-vid s15-vid--${kind}" muted playsinline preload="metadata" aria-hidden="true">
+    <source src="/video/thin-${kind}-hevc.mov" type="video/quicktime" />
+    <source src="/video/thin-${kind}.webm" type="video/webm" />
+  </video>`;
 
 const content = `
   <p class="s15-eyebrow">Slimmer Than Pro</p>
@@ -61,12 +76,7 @@ export const s15: Section = {
       <div class="s15-glow">
         <div class="s15-glow-in"><img src="${D15}/imgEllipse1329130924.baked.webp" alt="" /></div>
       </div>
-      <div class="s15-glasses">
-        <div class="s15-cam">
-          <img class="s15-img-a" src="${D15}/imgGlasses1.webp" alt="" />
-          <img class="s15-img-b" src="${D16}/imgGlasses1.webp" alt="" />
-        </div>
-      </div>
+      <div class="s15-glasses">${VID("static")}${VID("anim")}</div>
       <div class="s15-content">${content.replace("__M__", D15)}</div>
     </div>
     <div class="stage stage--m">
@@ -74,23 +84,16 @@ export const s15: Section = {
       <div class="s15-glow s15-glow--m">
         <div class="s15-glow-in"><img src="${M15}/imgEllipse1329130924.baked.webp" alt="" /></div>
       </div>
-      <div class="s15-glasses s15-glasses--m">
-        <div class="s15-cam">
-          <img class="s15-img-a" src="${M15}/imgGlasses.webp" alt="" />
-          <img class="s15-img-b" src="${M16}/imgGlasses.webp" alt="" />
-        </div>
-      </div>
+      <div class="s15-glasses s15-glasses--m">${VID("static")}${VID("anim")}</div>
       <div class="s15-content s15-content--m">${content.replace("__M__", M15)}</div>
     </div>
   `,
   init(el, ctx) {
-    const { gsap, ScrollTrigger } = ctx;
+    const { gsap, ScrollTrigger, lenis } = ctx;
     const mm = gsap.matchMedia();
 
-    // QA harness (?progress=p): the camera loop is time-based now, so the
-    // harness's scrub-freeze doesn't reach it — freeze it ourselves at p of
-    // one cycle (p=0 → framing A, p≈0.45 → framing B). Entrances are
-    // skipped in that mode so their from-states can't stick (cf. s03/s10).
+    // QA harness (?progress=p): freeze the scene on the settled static pose
+    // and skip entrances so their from-states can't stick (cf. s03/s10).
     const qaProgress = (() => {
       if (!import.meta.env.DEV) return null;
       const raw = new URLSearchParams(location.search).get("progress");
@@ -99,73 +102,149 @@ export const s15: Section = {
       return Number.isNaN(p) ? null : p;
     })();
 
+    // entrances stay per-breakpoint (copy + stats + glow + glasses slot);
+    // they touch only the container, never the videos' opacity, so they
+    // can't fight the cycle below.
     const build = (isMobile: boolean) => () => {
+      if (qaProgress !== null) return;
       const stage = el.querySelector<HTMLElement>(
         isMobile ? ".stage--m" : ".stage--d",
       )!;
       const q = (s: string) => stage.querySelectorAll<HTMLElement>(s);
-      const cam = q(".s15-cam");
-      const imgB = q(".s15-img-b");
-
-      if (qaProgress === null) {
-        // copy + stats keep their entrance (targets never overlap the
-        // camera loop's — it only drives .s15-cam / .s15-img-b).
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: "top 78%" },
-          defaults: { ease: "power3.out", duration: 0.9 },
-        });
-        tl.from(q(".s15-glow"), { opacity: 0, scale: 1.05, duration: 1 }, 0)
-          .from(q(".s15-glasses"), { opacity: 0, y: 40, duration: 1 }, 0)
-          .from(q(".s15-eyebrow"), { opacity: 0, y: 36 }, 0.12)
-          .from(q(".s15-title"), { opacity: 0, y: 36 }, 0.22)
-          .from(q(".s15-line"), { opacity: 0, scaleX: 0, transformOrigin: "left center", duration: 0.7 }, 0.38)
-          .from(q(".s15-benefit"), { opacity: 0, y: 36, stagger: 0.1 }, 0.46);
-      }
-
-      // Time-based camera loop (client round 7 — no scroll input): hold on
-      // framing A, breathe over to the Screen-16 framing (~6s, power2.inOut,
-      // cross-fading to the Screen-16 export late in the pan), hold, and
-      // breathe back. Runs only while the section is on screen.
-      const camTo = isMobile ? CAM_M : CAM_D;
-      const camFrom = { x: 0, y: 0, scaleX: 1, scaleY: 1 };
-      const HOLD = 2.2; // s of rest on each framing
-      const PAN = 6; // s per camera leg
-      const loop = gsap.timeline({ repeat: -1, paused: true });
-      loop
-        .set(cam, camFrom, 0)
-        // hold A: 0 → HOLD
-        .to(cam, { ...camTo, duration: PAN, ease: "power2.inOut" }, HOLD)
-        .fromTo(
-          imgB,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: PAN * 0.4, ease: "none" },
-          HOLD + PAN * 0.45,
-        )
-        // hold B: HOLD+PAN → 2*HOLD+PAN
-        .to(cam, { ...camFrom, duration: PAN, ease: "power2.inOut" }, HOLD * 2 + PAN)
-        .to(
-          imgB,
-          { autoAlpha: 0, duration: PAN * 0.4, ease: "none" },
-          HOLD * 2 + PAN + PAN * 0.15,
-        )
-        // hold A again comes from the repeat's leading HOLD
-        .to({}, { duration: 0.001 }, (HOLD + PAN) * 2);
-
-      if (qaProgress !== null) {
-        loop.pause(qaProgress * loop.duration());
-        return;
-      }
-
-      // play only while s15 is in view; pause (and keep phase) offscreen
-      ScrollTrigger.create({
-        trigger: el,
-        start: "top bottom",
-        end: "bottom top",
-        onToggle: (self) => (self.isActive ? loop.play() : loop.pause()),
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: el, start: "top 78%" },
+        defaults: { ease: "power3.out", duration: 0.9 },
       });
+      tl.from(q(".s15-glow"), { opacity: 0, scale: 1.05, duration: 1 }, 0)
+        .from(q(".s15-glasses"), { opacity: 0, y: 40, duration: 1 }, 0)
+        .from(q(".s15-eyebrow"), { opacity: 0, y: 36 }, 0.12)
+        .from(q(".s15-title"), { opacity: 0, y: 36 }, 0.22)
+        .from(q(".s15-line"), { opacity: 0, scaleX: 0, transformOrigin: "left center", duration: 0.7 }, 0.38)
+        .from(q(".s15-benefit"), { opacity: 0, y: 36, stagger: 0.1 }, 0.46);
     };
-
     mm.add("(min-width: 641px)", build(false));
     mm.add("(max-width: 640px)", build(true));
+
+    /* --------------------------- video cycle --------------------------- */
+
+    const statics = Array.from(
+      el.querySelectorAll<HTMLVideoElement>("video.s15-vid--static"),
+    );
+    const anims = Array.from(
+      el.querySelectorAll<HTMLVideoElement>("video.s15-vid--anim"),
+    );
+    const all = [...statics, ...anims];
+
+    // the static clip is a settle-to-hold, not a loopable idle: park it on
+    // its final (settled) frame — the pose the anim launches from — instead
+    // of playing it, so the under-layer always matches anim frame 0.
+    const parkStatic = (v: HTMLVideoElement) => {
+      const seek = () => {
+        if (v.duration > 0) v.currentTime = Math.max(0, v.duration - 0.05);
+      };
+      if (v.readyState >= 1) seek();
+      else v.addEventListener("loadedmetadata", seek, { once: true });
+    };
+
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      qaProgress !== null
+    ) {
+      // static poster only: settled frame, no cycle, anims stay hidden
+      for (const v of statics) {
+        v.preload = "auto";
+        v.load();
+        parkStatic(v);
+      }
+      return;
+    }
+
+    let loaded = false;
+    let wasVisible = false;
+    let timer: number | null = null;
+
+    const clearTimer = () => {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    };
+
+    const isVisible = () => {
+      const r = el.getBoundingClientRect();
+      return r.bottom > 0 && r.top < window.innerHeight;
+    };
+
+    const playAnim = () => {
+      for (const v of anims) {
+        v.style.transition = "none";
+        if (v.currentTime > 0.001) v.currentTime = 0;
+        if (v.offsetParent !== null) {
+          // active breakpoint: show over the (identical) static hold frame
+          v.style.opacity = "1";
+          v.play().catch(() => {});
+        } else {
+          v.style.opacity = "0";
+          if (!v.paused) v.pause();
+        }
+      }
+    };
+
+    for (const v of anims) {
+      v.addEventListener("ended", () => {
+        // settle back onto the static hold; the end poses differ slightly
+        // (see header comment) so a hard swap would pop — crossfade instead
+        v.style.transition = `opacity ${FADE_MS}ms ease`;
+        v.style.opacity = "0";
+        window.setTimeout(() => {
+          // rewind during the break so the next reveal can never flash the
+          // end pose before the seek lands
+          if (v.paused) v.currentTime = 0;
+        }, FADE_MS + 50);
+        clearTimer();
+        timer = window.setTimeout(() => {
+          timer = null;
+          if (isVisible()) playAnim();
+        }, BREAK_MS);
+      });
+    }
+
+    // rect-based visibility gate — same listener trio as lib/lazyvideo
+    // (deliberately NOT IntersectionObserver; see that module's header)
+    const update = () => {
+      const vh = window.innerHeight;
+      const r = el.getBoundingClientRect();
+      const near = r.bottom > -vh && r.top < vh * 2; // ±1 viewport preload
+      const visible = r.bottom > 0 && r.top < vh;
+      if (near && !loaded) {
+        loaded = true;
+        for (const v of all) {
+          v.preload = "auto";
+          v.load();
+        }
+        statics.forEach(parkStatic);
+      }
+      if (visible && !wasVisible) {
+        // arrival / every re-entry: the anim fires immediately, then the
+        // ended-handler above restarts the 15s cadence
+        playAnim();
+      } else if (!visible && wasVisible) {
+        // offscreen: freeze the cycle (timer + playback), reset the anim
+        // layer so re-entry starts from a clean static hold
+        clearTimer();
+        for (const v of anims) {
+          if (!v.paused) v.pause();
+          v.style.transition = "none";
+          v.style.opacity = "0";
+          if (v.currentTime > 0.001) v.currentTime = 0;
+        }
+      }
+      wasVisible = visible;
+    };
+
+    lenis.on("scroll", update);
+    window.addEventListener("scroll", update, { passive: true });
+    ScrollTrigger.addEventListener("refresh", update);
+    update();
   },
 };

@@ -1,9 +1,8 @@
 /* s16b — "Eye Comfort" → "Sleek On Every Face" merged pinned page.
-   The full-bleed blurred-glasses field persists (Comfort still cross-fades
-   to the s17 product mid-pin); the copy swaps with a vertical roll.
-   NOTE: the Figma layer carries blur(30px), but the source stills are
-   already soft-rendered — the design screenshots match the raw assets 1:1
-   and a CSS blur would double-blur them, so no runtime filter is applied. */
+   Round 18: ONE background for both states — the design-registered sleek
+   sequence video (its 1920×1080 frame IS the 1920_Screen-17-01 page, baked
+   in the encode) plays once on arrival and holds its final frame; only the
+   copy swaps with a vertical roll. */
 
 .s16b-bg {
   position: absolute;
@@ -11,39 +10,22 @@
   background: #030303;
 }
 
-/* Desktop */
-.s16b-glasses-d {
+/* Desktop: the encode is registered to the 1920×1080 design page, so the
+   video maps 1:1 onto the stage — no crop, no mask (the frame's own field
+   is pure black and melts into the #030303 bg). */
+.s16b-seq {
   position: absolute;
-  left: 0;
-  top: 166px;
-  width: 1920px;
-  height: 1080px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   pointer-events: none;
-  /* tall soft fade on the still's top edge: the imagery emerges out of the
-     #030303 field instead of starting at a hard horizontal line at 166px */
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0,
-    rgba(0, 0, 0, 0.55) 160px,
-    #000 320px
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0,
-    rgba(0, 0, 0, 0.55) 160px,
-    #000 320px
-  );
 }
 
-/* second-state layers rest hidden until the pinned scrub brings them in.
-   The copy wrapper's alpha is opacity-driven by the scrub; its visibility
-   is flipped by a dedicated discrete tween just before its roll-in window
+/* copy-b rests hidden until the pinned scrub brings it in. The wrapper's
+   alpha is opacity-driven by the scrub; its visibility is flipped by the
+   progress-driven style write in index.ts just before its roll-in window
    (round 8: guarantees copy-a and copy-b can never paint together) */
-.s16b-photo-b {
-  opacity: 0;
-  visibility: hidden;
-}
 .s16b-copy-b {
   opacity: 0;
   visibility: hidden;
@@ -82,57 +64,37 @@
   position: absolute;
   /* transform-free like the title: 508.5px design vertical center minus half
      the one-line box (32px * 1.4 / 2 = 22.4px). The two-line headline ends at
-     301 + 2·79.2 ≈ 459px — 27px of clearance at every rendering. */
+     301 + 2·79.2 ≈ 459px — 27px of clearance at every rendering; the video's
+     glasses top out at ≈570px in the registered frame, well below the sub. */
   left: calc(50% - 430px);
   top: 486.1px;
   width: 860px;
   font-size: 32px;
 }
 
-/* Mobile — comfort state derived from s17's mobile treatment */
-/* the still's own field is #010101 — match it so the image rect is seamless */
+/* Mobile */
+/* the video frame's own field is pure black — match the bg */
 .stage--m .s16b-bg {
   background: #010101;
 }
 
-.s16b-glasses-m {
-  position: absolute;
-  left: calc(50% - 350px); /* centered without a transform, like the desktop copy */
-  bottom: 0;
-  width: 700px;
-  height: 394px;
-  object-fit: cover;
-  pointer-events: none;
-  /* same soft top-edge fade as desktop, scaled to the smaller crop */
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0,
-    rgba(0, 0, 0, 0.55) 70px,
-    #000 140px
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0,
-    rgba(0, 0, 0, 0.55) 70px,
-    #000 140px
-  );
-}
-
-/* s17 product placement (mobile second state) */
-.s16b-glasses17-m {
+/* the same registered 1920×1080 video frame mapped through the measured
+   375_Screen-17-01 transform: the design page embeds the desktop frame at
+   scale 0.265 (1920×0.265 = 508.8 wide), offset (−67, 343) — glasses land
+   exactly on the mobile design composition */
+.s16b-seq-m {
   position: absolute;
   left: -67px;
-  bottom: 87px;
-  width: 509px;
-  height: 338px;
+  top: 343px;
+  width: 508.8px;
+  height: 286.2px;
   pointer-events: none;
 }
-.s16b-glasses17-m img {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 508px;
-  height: 286px;
+.s16b-seq-m video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 
 .s16b-title-m {
@@ -159,13 +121,4 @@
   top: 348px;
   width: 300px;
   font-size: 16px;
-}
-
-/* round 17: sleek-state bg is a one-shot 30fps sequence video — same layout
-   slot as the old still (classes carry the crossfade + ghost-armor rules) */
-video.s16b-photo-b,
-.s16b-glasses17-m video {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
 }

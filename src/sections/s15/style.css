@@ -1,10 +1,11 @@
 /* s15 — Slimmer Than Pro / Thin Enough to Disappear.
-   Merged page (former s15 + s16; unpinned in round 7): copy + stats persist
-   while the glasses render camera-pans automatically (a gentle time-based
-   loop, no scroll input) between the two harvest crops. The crop window is
-   the union of both design windows; .s15-cam is authored at the Screen-15
-   img rect and the loop transforms it to the Screen-16 rect (see index.ts
-   for the rect math). */
+   Merged page (former s15 + s16; unpinned round 7; video round 18): copy +
+   stats persist over two stacked transparent client videos in the glasses
+   render's slot — the static settle-hold beneath, the one-shot anim above
+   (JS drives its opacity for the 15s cadence; see index.ts). The videos
+   render the glasses front-bar-up, so both are rotated 180° and sized so
+   the pose-A alpha bbox lands exactly on the harvest render's glasses bbox
+   (rect math in index.ts). */
 
 .s15-bg {
   position: absolute;
@@ -69,9 +70,9 @@
   height: 100%;
 }
 
-/* crop window: union of the Screen-15 (957,163,670×751) and Screen-16
-   (955,211,680×713) design windows — the 2–10px of extra reveal is
-   near-black render field, invisible against the #020202 bg */
+/* glasses slot: the old union crop window (955,163,680×761) is kept as an
+   overflow gate — the videos' transparent 1920×1080 canvas extends past it
+   but the glasses themselves rest fully inside */
 .s15-glasses {
   position: absolute;
   left: 955px;
@@ -81,26 +82,22 @@
   overflow: hidden;
   pointer-events: none;
 }
-.s15-cam {
-  /* Screen-15 img rect, relative to the union window */
+/* video element rect: rotated 180° (the client render is front-bar-up,
+   the design front-bar-down) and mapped so the rotated pose-A alpha bbox
+   (596,80,1324,930 of 1920×1080) lands on the harvest glasses bbox at
+   stage (1007.17,233.59)-(1572.98,874.37) — see index.ts for the math */
+.s15-vid {
   position: absolute;
-  left: -332.13px;
-  top: -268.86px;
-  width: 2266.81px;
-  height: 1276.25px;
-  transform-origin: 0 0;
-  will-change: transform;
+  left: -411.05px;
+  top: 10.28px;
+  width: 1492.27px;
+  height: 814.19px;
+  transform: rotate(180deg);
+  object-fit: fill;
 }
-.s15-cam img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-/* the Screen-16 export rests hidden until the loop cross-fades it in */
-.s15-img-b {
+/* the anim flourish rests hidden; JS drives its opacity for the cadence */
+.s15-vid--anim {
   opacity: 0;
-  visibility: hidden;
 }
 .s15-glasses--m {
   left: 44px;
@@ -108,11 +105,12 @@
   width: 287px;
   height: 322px;
 }
-.s15-glasses--m .s15-cam {
-  left: -143.13px;
-  top: -115.28px;
-  width: 971.01px;
-  height: 547.21px;
+.s15-glasses--m .s15-vid {
+  /* rotated pose-A bbox → stage (65.49,439.26)-(307.89,714.01) */
+  left: -176.96px;
+  top: 4.4px;
+  width: 639.3px;
+  height: 349.09px;
 }
 
 .s15-content {

@@ -1,12 +1,20 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { mountLazyVideo } from "../../lib/lazyvideo";
 
 /* Backdrop is identical across the three states — referenced once from -01.
    The center media render differs per state. */
 const A1 = "/assets/1920_Screen-24-01";
-const A2 = "/assets/1920_Screen-24-02";
-const A3 = "/assets/1920_Screen-24-03";
 const AM = "/assets/375_Screen-24-01";
+
+/* Client (TV round): the three media cards hold LOOPING videos instead of
+   stills — re-encoded at exactly 1002×480, the card's design-pixel size, so
+   cover = 1:1 mapping with zero scaling. The card container keeps the black
+   underlay + object-bottom crop of the still era; all transforms/clip-paths
+   stay on .s24-media-item, never on the <video>. Posters are the clips'
+   first frames (prefers-reduced-motion shows them via lazyvideo). */
+const tv = (name: string, label: string) =>
+  `<video class="s24-video" muted loop playsinline preload="metadata" poster="/video/tv-${name}-poster.jpg" src="/video/tv-${name}.mp4" aria-label="${label}"></video>`;
 
 export const s24: Section = {
   id: "s24",
@@ -16,9 +24,9 @@ export const s24: Section = {
     <div class="s24-backdrop"><img src="${A1}/imgImage6347543.webp" alt=""></div>
     <div class="s24-glow"></div>
     <div class="s24-media">
-      <div class="s24-media-item s24-media-item--1"><img src="${A1}/imgRectangle1329134998.webp" alt="Gaming on TV"></div>
-      <div class="s24-media-item s24-media-item--2"><img class="s24-cover" src="${A2}/imgRectangle1329134998.webp" alt="Movie on TV"></div>
-      <div class="s24-media-item s24-media-item--3"><img src="${A3}/imgRectangle1329134998.webp" alt="Coding on TV"></div>
+      <div class="s24-media-item s24-media-item--1">${tv("gaming", "Gaming on TV")}</div>
+      <div class="s24-media-item s24-media-item--2">${tv("entertainment", "Movie on TV")}</div>
+      <div class="s24-media-item s24-media-item--3">${tv("productivity", "Coding on TV")}</div>
     </div>
     <div class="s24-text s24-text--1">
       <h3 class="s24-headline gtx gtx--peach">Gaming</h3>
@@ -37,7 +45,7 @@ export const s24: Section = {
   <div class="stage stage--m">
     <div class="s24m-bg"></div>
     <div class="s24m-backdrop"><img src="${AM}/imgImage6347543.webp" alt=""></div>
-    <div class="s24m-media"><img src="${AM}/imgRectangle1329134998.webp" alt="Gaming on TV"></div>
+    <div class="s24m-media">${tv("gaming", "Gaming on TV")}</div>
     <div class="s24m-text">
       <h3 class="s24m-headline gtx gtx--peach">Gaming</h3>
       <p class="s24m-sub">Single Switch 2 Gaming on the Mobile Dock Mini</p>
@@ -52,6 +60,19 @@ export const s24: Section = {
     // progress, which would freeze entrances mid-flight — skip them there.
     const qaProgress =
       import.meta.env.DEV && new URLSearchParams(location.search).has("progress");
+
+    /* Card-video playback gating: lazyvideo owns proximity load + the
+       display:none-breakpoint check; on top of that a desktop card video
+       only plays while its .s24-media-item is un-retired. The scrub
+       timeline drives autoAlpha, so `visibility` is the exact "covered"
+       bit: the incoming card unhides (and starts playing) as its reveal
+       begins, the outgoing one goes visibility:hidden (and pauses) the
+       moment it is fully covered. The mobile video has no media-item
+       ancestor — always gate-open, plain proximity behavior. Mounted after
+       mm.add so the initial gsap.set() hides cards 2/3 before the first
+       gate evaluation; the scrub timeline's onUpdate re-runs the tick so
+       scrub catch-up after the last scroll event still settles playback. */
+    let syncVideos: () => void = () => {};
 
     /* ---------- desktop: pinned, scrubbed 3-state use-case carousel ---------- */
     mm.add("(min-width: 641px)", () => {
@@ -124,6 +145,10 @@ export const s24: Section = {
         /* spacer: keeps total duration exactly 2 so integer labels map to
            progress 0/.5/1 (QA harness relies on it) */
         .to({}, { duration: T0 }, 2 - T0);
+
+      /* every scrub frame re-settles card-video play/pause (see gate note) */
+      tl.eventCallback("onUpdate", () => syncVideos());
+      return () => tl.eventCallback("onUpdate", null);
     });
 
     /* ---------- mobile: single state (Gaming), entrance only ---------- */
@@ -135,6 +160,13 @@ export const s24: Section = {
         .from($(".s24m-backdrop"), { opacity: 0, scale: 1.04, duration: 0.9, ease: "power3.out" }, 0)
         .from($(".s24m-media"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.12)
         .from($(".s24m-text"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.24);
+    });
+
+    syncVideos = mountLazyVideo(el, ctx, {
+      gate: (v) => {
+        const item = v.closest<HTMLElement>(".s24-media-item");
+        return !item || getComputedStyle(item).visibility !== "hidden";
+      },
     });
   },
 };

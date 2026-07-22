@@ -39,8 +39,10 @@ export const s11: Section = {
       <div class="s11-still s11-still--a s11-a"><img src="${D11}/imgHeroStill000000021.webp" alt="" /></div>
       <div class="s11-still s11-still--b s11-b"><img src="${D12}/imgHeroStill000000022.webp" alt="" /></div>
       <div class="s11-video">
-        <img class="s11-a" src="${D11}/imgVitureBeast20HeroVideo00024013.webp" alt="" />
-        <img class="s11-b" src="${D12}/imgVitureBeast20HeroVideo00024014.webp" alt="" />
+        <video muted playsinline preload="auto" aria-hidden="true">
+          <source src="/video/diopter-glasses-hevc.mov" type="video/quicktime" />
+          <source src="/video/diopter-glasses.webm" type="video/webm" />
+        </video>
       </div>
       <div class="s11-text">
         <p class="s11-eyebrow">Built-in Diopter</p>
@@ -72,8 +74,10 @@ export const s11: Section = {
         <img class="s11-b" src="${MB}/imgHeroStill000000021.webp" alt="" />
       </div>
       <div class="s11-video s11-video--m">
-        <img class="s11-a" src="${MA}/imgVitureBeast20HeroVideo00024013.webp" alt="" />
-        <img class="s11-b" src="${MB}/imgVitureBeast20HeroVideo00024013.webp" alt="" />
+        <video muted playsinline preload="auto" aria-hidden="true">
+          <source src="/video/diopter-glasses-hevc.mov" type="video/quicktime" />
+          <source src="/video/diopter-glasses.webm" type="video/webm" />
+        </video>
       </div>
       <div class="s11-text s11-text--m">
         <p class="s11-eyebrow">Built-in Diopter</p>
@@ -117,6 +121,14 @@ export const s11: Section = {
       const aLayers = q(".s11-a");
       const bLayers = q(".s11-b");
       const video = q(".s11-video");
+      // round 17: the glasses render is a delivered TRANSPARENT one-shot
+      // video over the orange field (HEVC-alpha .mov source for Safari,
+      // VP9-alpha .webm for Chromium) — plays once on the section's
+      // existing onEnter, then holds its last frame (no loop)
+      const vids = stage.querySelectorAll<HTMLVideoElement>(".s11-video video");
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
       const line = q(isMobile ? ".s11-vline" : ".s11-line");
       const stat = q(".s11-stat");
       const sgs = q(".s11-sgs");
@@ -207,12 +219,21 @@ export const s11: Section = {
         return;
       }
 
-      // one-way: play once when the section enters, then stay built
+      // one-way: play once when the section enters, then stay built; the
+      // transparent glasses video fires on the same beat and holds its
+      // final frame (reduced motion: first frame stays as a still)
       ScrollTrigger.create({
         trigger: el,
         start: "top 60%",
         once: true,
-        onEnter: () => tl.play(),
+        onEnter: () => {
+          tl.play();
+          if (!reducedMotion)
+            vids.forEach((v) => {
+              v.currentTime = 0;
+              v.play().catch(() => {});
+            });
+        },
       });
     };
 

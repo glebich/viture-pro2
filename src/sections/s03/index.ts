@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { createGlassText, type GlassText } from "../../lib/glasstext";
+import { mountLazyVideo } from "../../lib/lazyvideo";
 
 /* ---------- s03 — "Five Years" glass journey ----------
  * One pinned page merging the former s03 (glasses render) and s04 (Mobile
@@ -10,9 +11,7 @@ import { createGlassText, type GlassText } from "../../lib/glasstext";
  * dissolving the veil into s05's dark field (#080911).
  */
 
-const A_D3 = "/assets/1920_Screen-03-01";
 const A_D4 = "/assets/1920_Screen-04-01";
-const A_MA = "/assets/375_Screen-03-01";
 const A_MB = "/assets/375_Screen-03-01b";
 
 /* Vertical background colors — round 9 (client: "same problem here", the
@@ -107,7 +106,7 @@ export const s03: Section = {
     <div class="s03-inner">
       <div class="s03-veil"></div>
       <div class="s03-veil s03-veil--dock"></div>
-      <img class="s03-prod s03-prod--glasses" src="${A_D3}/imgGlasses01.webp" alt="" />
+      <video class="s03-prod s03-prod--glasses" muted playsinline preload="auto" poster="/video/fiveyears-poster.jpg" src="/video/fiveyears-seq.mp4" aria-hidden="true"></video>
       <img class="s03-prod s03-prod--dock" src="${A_D4}/imgMobileDock.webp" alt="" />
       <p class="s03-big cap-trim">Five Years</p>
       <div class="s03-exit"></div>
@@ -117,7 +116,7 @@ export const s03: Section = {
     <div class="s03-inner">
       <div class="s03-veil s03-veil--m"></div>
       <div class="s03-veil s03-veil--dock-m"></div>
-      <img class="s03-prod s03-prod--glasses-m" src="${A_MA}/imgGlasses01.webp" alt="" />
+      <video class="s03-prod s03-prod--glasses-m" muted playsinline preload="auto" poster="/video/fiveyears-poster.jpg" src="/video/fiveyears-seq.mp4" aria-hidden="true"></video>
       <img class="s03-prod s03-prod--dock-m" src="${A_MB}/imgMobileDock.webp" alt="" />
       <p class="s03-big s03-big--m cap-trim">Five Years</p>
       <div class="s03-exit"></div>
@@ -126,6 +125,13 @@ export const s03: Section = {
   init(el, ctx) {
     const { gsap } = ctx;
     const mm = gsap.matchMedia();
+
+    // Round 17: state A's glasses render is a one-shot 30fps sequence video
+    // (client: "starts playing once you scroll through it, then stops, no
+    // loop"). lazyvideo playOnce owns the lifecycle — restart from 0 on
+    // each viewport entry (the pin starts ON state A, so arrival = play),
+    // hold the last frame after 'ended', poster under reduced motion.
+    mountLazyVideo(el, ctx, { playOnce: true });
 
     // QA harness freezes scrubbed timelines at a fixed progress; entrance
     // from-states would then stick, so skip them in that mode (cf. s10).
@@ -138,7 +144,7 @@ export const s03: Section = {
         isMobile ? ".stage--m" : ".stage--d",
       )!;
       const inner = stage.querySelector<HTMLElement>(".s03-inner")!;
-      const prodA = stage.querySelector<HTMLImageElement>(
+      const prodA = stage.querySelector<HTMLVideoElement>(
         isMobile ? ".s03-prod--glasses-m" : ".s03-prod--glasses",
       )!;
       const prodB = stage.querySelector<HTMLImageElement>(
@@ -312,7 +318,46 @@ export const s03: Section = {
           );
       }
 
-      return () => glass?.destroy();
+      // Live refraction (round 17): while the sequence video plays, the
+      // shader's background composition must re-upload every presented
+      // frame so the view THROUGH the letters shows the live sequence
+      // (glasstext only recomposites on layer-state changes otherwise).
+      // requestVideoFrameCallback fires exactly once per new frame (30/s)
+      // and stops on its own when playback stops; rAF fallback polls while
+      // playing. Both re-arm on 'play', and 'pause'/'ended' push one final
+      // sync so the held last frame is what the glass refracts. glasstext's
+      // IntersectionObserver already gates the actual draw to near-viewport.
+      const ac = new AbortController();
+      let raf = 0;
+      const bump = () => glass?.invalidateBg();
+      const vfc = (
+        prodA as HTMLVideoElement & {
+          requestVideoFrameCallback?: (cb: () => void) => number;
+        }
+      ).requestVideoFrameCallback?.bind(prodA);
+      const loop = () => {
+        bump();
+        if (prodA.paused || prodA.ended) return;
+        if (vfc) vfc(loop);
+        else raf = requestAnimationFrame(loop);
+      };
+      prodA.addEventListener(
+        "play",
+        () => {
+          cancelAnimationFrame(raf);
+          if (vfc) vfc(loop);
+          else raf = requestAnimationFrame(loop);
+        },
+        { signal: ac.signal },
+      );
+      prodA.addEventListener("pause", bump, { signal: ac.signal });
+      prodA.addEventListener("ended", bump, { signal: ac.signal });
+
+      return () => {
+        ac.abort();
+        cancelAnimationFrame(raf);
+        glass?.destroy();
+      };
     };
 
     mm.add("(min-width: 641px)", build(false));

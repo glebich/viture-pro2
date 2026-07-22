@@ -35,15 +35,29 @@ export interface LazyVideoOptions {
    *  drift — client: "plays and then just stops, not a loop". Strips the
    *  loop/autoplay attributes so this module owns the lifecycle. */
   playOnce?: boolean;
+  /** Per-video play gate layered ON TOP of the proximity check: loading
+   *  still follows section proximity for every video, but a video only
+   *  plays while gate(v) is true — it pauses (without unloading) the tick
+   *  the gate closes. Used by the s24 use-case carousel, where only the
+   *  ACTIVE state's card video should burn decode time while the covered
+   *  ones hold. Re-evaluated on every scroll/refresh tick and on whatever
+   *  extra hooks the caller wires the returned updater into (e.g. a
+   *  scrubbed timeline's onUpdate, so scrub catch-up after the last scroll
+   *  event still settles play/pause correctly). */
+  gate?: (v: HTMLVideoElement) => boolean;
 }
 
+/** Returns the update tick so callers with animation-driven gates can run it
+ *  from extra hooks (a scrubbed timeline's onUpdate); no-op when reduced
+ *  motion retired the videos, so wiring it unconditionally is safe. */
 export function mountLazyVideo(
   host: HTMLElement,
   ctx: SectionCtx,
   opts: LazyVideoOptions = {},
-): void {
+): () => void {
+  const noop = () => {};
   const videos = Array.from(host.querySelectorAll<HTMLVideoElement>("video"));
-  if (!videos.length) return;
+  if (!videos.length) return noop;
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     // poster-only mode: kill autoplay before the fetch/play pipeline starts
@@ -53,7 +67,7 @@ export function mountLazyVideo(
       v.preload = "none";
       v.pause();
     }
-    return;
+    return noop;
   }
 
   if (opts.playOnce) {
@@ -94,7 +108,7 @@ export function mountLazyVideo(
         }
         continue;
       }
-      if (shouldPlay && active) {
+      if (shouldPlay && active && (!opts.gate || opts.gate(v))) {
         if (v.paused) v.play().catch(() => {});
       } else if (!v.paused) {
         v.pause();
@@ -108,4 +122,5 @@ export function mountLazyVideo(
   window.addEventListener("scroll", update, { passive: true });
   ctx.ScrollTrigger.addEventListener("refresh", update);
   update();
+  return update;
 }

@@ -113,8 +113,35 @@
   z-index: 1;
 }
 
-/* hero glasses render (2560×1440, derived from the 3840×2160 Figma raw;
-   16:9 = box aspect, so cover never crops) — DOF is baked into the asset */
+/* hero glasses slot — round 17: a one-shot 1920×1080 sequence <video>
+   (16:9 = box aspect, so cover never crops) — DOF is baked into the asset.
+   The mp4 is OPAQUE on a pure-black studio field (the old webp render was
+   transparent), so the box edges would cut hard lines across the blue veil
+   bands — feather them with a mask. Ramp widths sit inside the video's own
+   black margins (content bbox 296..1603 × 98..955 of 1920×1080 ⇒ margins
+   15.4/16.5/9.1/11.6%), so the glasses themselves are never touched. */
+.s03-prod--glasses,
+.s03-prod--glasses-m {
+  -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #fff 11.5%,
+      #fff 88.5%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0, #fff 7%, #fff 89.5%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #fff 11.5%,
+      #fff 88.5%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0, #fff 7%, #fff 89.5%, transparent 100%);
+  mask-composite: intersect;
+}
+
 .s03-prod--glasses {
   left: 245.35px;
   top: 156px;

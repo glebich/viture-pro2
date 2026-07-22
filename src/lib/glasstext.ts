@@ -45,8 +45,10 @@
  */
 
 export interface GlassLayer {
-  /** Device render composited into the refraction background. */
-  image: HTMLImageElement;
+  /** Device render composited into the refraction background. A <video>
+   *  is drawn at its CURRENT frame — callers drive per-frame re-uploads
+   *  via `invalidateBg()` while it plays (round 17 sequence videos). */
+  image: HTMLImageElement | HTMLVideoElement;
   /** Its base placement in design px: [x, y, w, h]. */
   rect: [number, number, number, number];
 }
@@ -117,6 +119,10 @@ export interface GlassTextConfig {
 
 export interface GlassText {
   readonly canvas: HTMLCanvasElement;
+  /** Mark the live background composition stale (a video layer presented
+   *  a new frame) and redraw. Cheap: one 2D composite + texSubImage2D +
+   *  the scissored fullscreen pass — call at most once per video frame. */
+  invalidateBg(): void;
   /** Move the text center to design-px x (horizontal scroll). */
   setX(x: number): void;
   /** 0..1 scroll progress — drives the travelling light streak and the
@@ -326,6 +332,21 @@ function imageReady(img: HTMLImageElement) {
     img.addEventListener("load", () => res(), { once: true });
     img.addEventListener("error", () => res(), { once: true });
   });
+}
+
+function isVideo(
+  src: HTMLImageElement | HTMLVideoElement,
+): src is HTMLVideoElement {
+  return typeof HTMLVideoElement !== "undefined" &&
+    src instanceof HTMLVideoElement;
+}
+
+/** Can this source be drawImage()d right now? Videos need a decoded frame
+ *  (readyState ≥ HAVE_CURRENT_DATA); images need natural dimensions. */
+function drawable(src: HTMLImageElement | HTMLVideoElement) {
+  return isVideo(src)
+    ? src.readyState >= 2 && src.videoWidth > 0
+    : src.complete && src.naturalWidth > 0;
 }
 
 /* ---------- exact euclidean distance transform (Felzenszwalb) ---------- */
@@ -636,7 +657,7 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
       const L = cfg.layers[i];
       const s = layerState[i];
       if (s.alpha <= 0.004) continue;
-      if (!(L.image.complete && L.image.naturalWidth > 0)) continue;
+      if (!drawable(L.image)) continue;
       const [rx, ry, rw, rh] = L.rect;
       const w = rw * s.scale;
       const h = rh * s.scale;
@@ -709,9 +730,28 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
       )
     : Promise.resolve(undefined);
 
+  // Video layers must NOT gate readiness: they are lazy-loaded (and never
+  // load at all under prefers-reduced-motion), and composite() skips
+  // non-drawable sources anyway. When a video's first frame does arrive,
+  // refresh the background so the glass picks it up.
+  for (const l of cfg.layers) {
+    if (isVideo(l.image) && !drawable(l.image)) {
+      l.image.addEventListener(
+        "loadeddata",
+        () => {
+          if (destroyed) return;
+          bgDirty = true;
+          dirty = true;
+          if (active) draw();
+        },
+        { once: true },
+      );
+    }
+  }
+
   Promise.all([
     fontLoaded,
-    ...cfg.layers.map((l) => imageReady(l.image)),
+    ...cfg.layers.map((l) => (isVideo(l.image) ? undefined : imageReady(l.image))),
   ]).then(() => {
     if (destroyed) return;
 
@@ -798,6 +838,11 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
 
   return {
     canvas,
+    invalidateBg() {
+      bgDirty = true;
+      dirty = true;
+      if (active) draw();
+    },
     setX(v: number) {
       if (v !== x) {
         x = v;

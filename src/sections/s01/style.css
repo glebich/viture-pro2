@@ -74,10 +74,10 @@
    tighter against the photo's soft frame highlight. */
 .s01-glasses {
   position: absolute;
-  left: 681px;
-  top: 331px;
-  width: 534px;
-  height: 175px;
+  left: 691px;
+  top: 334px;
+  width: 515px;
+  height: 169px;
   transform: scale(0.98);
   transform-origin: center center;
   pointer-events: none;
@@ -117,10 +117,10 @@
 /* mobile: the same design-space art mapped onto the photo's center-crop
    (image cover scale 0.7505, x offset −533 — see s01/index.ts note) */
 .s01-glasses--m {
-  left: -22px;
-  top: 248px;
-  width: 401px;
-  height: 131px;
+  left: -15px;
+  top: 251px;
+  width: 387px;
+  height: 127px;
 }
 
 /* bottom feather: fades in late so s01's photo foot darkens into the exact
