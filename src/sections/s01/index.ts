@@ -110,7 +110,21 @@ export const s01: Section = {
     const detailsPer = details.length / 2;
 
     const state = { v: 0 };
-    const tl = ctx.gsap.timeline({ delay: 0.2 });
+    // Created PAUSED and released on the first ticker tick (below): this
+    // init runs inside the heavy synchronous startup (whole-graph module
+    // eval + every section's init), during which gsap's ticker clock is
+    // stale — and main.ts sets lagSmoothing(0), so an unpaused timeline
+    // fast-forwards by the entire stall on the first frame. On slow
+    // machines/networks that stall exceeded the whole loader (mobile hunt:
+    // count/veil/photo skipped outright, visitors landed mid-glide on s02).
+    // A ticker callback runs after the clock update for its frame, so
+    // play() from there starts cleanly at 0 with the 0.2s delay intact.
+    const tl = ctx.gsap.timeline({ delay: 0.2, paused: true });
+    const startOnTick = () => {
+      ctx.gsap.ticker.remove(startOnTick);
+      tl.play();
+    };
+    ctx.gsap.ticker.add(startOnTick);
     tl.to(state, {
       v: 100,
       duration: 1.6,

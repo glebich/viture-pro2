@@ -20,7 +20,7 @@ export const s16b: Section = {
     <div class="stage stage--d">
       <div class="s16b-bg"></div>
       <img class="s16b-photo s16b-glasses-d s16b-photo-a" src="${D}/imgStillsIt322.webp" alt="VITURE Pro 2 glasses, front view" />
-      <img class="s16b-photo s16b-glasses-d s16b-photo-b" src="${D17}/imgGlasses1.webp" alt="" />
+      <video class="s16b-photo s16b-glasses-d s16b-photo-b" muted playsinline preload="auto" poster="/video/sleek-poster.jpg" src="/video/sleek-seq.mp4" aria-hidden="true"></video>
       <div class="s16b-copy s16b-copy-a">
         <h2 class="s16b-title s16b-title-d gtx gtx--peach">The XR Glasses Your Eyes <br class="s16b-br" />Will Actually Thank You for</h2>
         <p class="s16b-sub s16b-sub-d">Hour three. Still on.</p>
@@ -33,7 +33,7 @@ export const s16b: Section = {
       <div class="s16b-bg"></div>
       <img class="s16b-photo s16b-glasses-m s16b-photo-a" src="${D}/imgStillsIt322.webp" alt="VITURE Pro 2 glasses, front view" />
       <div class="s16b-photo s16b-glasses17-m s16b-photo-b">
-        <img src="${M17}/imgGlasses.webp" alt="" />
+        <video muted playsinline preload="auto" poster="/video/sleek-poster.jpg" src="/video/sleek-seq.mp4" aria-hidden="true"></video>
       </div>
       <div class="s16b-copy s16b-copy-a">
         <h2 class="s16b-title s16b-title-m gtx gtx--peach">The XR Glasses Your Eyes <br class="s16b-br" />Will Actually Thank You for</h2>
@@ -103,6 +103,7 @@ export const s16b: Section = {
         isMobile ? ".stage--m" : ".stage--d",
       )!;
       const q = (s: string) => stage.querySelectorAll<HTMLElement>(s);
+      const q1 = (s: string) => stage.querySelector<HTMLElement>(s)!;
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: el,
@@ -113,60 +114,85 @@ export const s16b: Section = {
         },
         defaults: { ease: "none", immediateRender: false },
       });
-      // plain `opacity` on the copy wrappers (not autoAlpha): the offscreen
-      // visibility guard already holds the stages hidden at init, and an
-      // autoAlpha fromTo whose from-state (visible) disagrees with that
-      // resolved a bogus opacity-0 write onto copy-a at creation (cf. the
-      // s06 card swap, which uses opacity for the same reason)
+      // plain `opacity` EVERYWHERE in this scrub (never autoAlpha, never a
+      // visibility fromTo). Root cause of the mobile-hunt "black comfort
+      // page": ScrollTrigger.refresh() force-renders scrubbed timelines
+      // end->back and finally rewinds each fromTo to the element's
+      // PRE-TWEEN COMPUTED value recorded at first render (gsap
+      // `_rewindStartAt`). This section's own offscreen guard (below) holds
+      // the stages `visibility: hidden` at load on EVERY browser, so any
+      // gsap-owned visibility (autoAlpha included) recorded "hidden" and
+      // parked it INLINE on copy-a/photo-a — the whole first state
+      // invisible at rest. Same mechanism as the s06 round-12 Safari
+      // empty-card bug; same fix: gsap owns opacity/y only, and visibility
+      // is a plain style write driven as a pure function of scrub progress
+      // (proxy tween below), so a refresh dance always lands in the
+      // correct state with nothing for gsap to snapshot or rewind.
       tl.fromTo(
         q(".s16b-copy-a"),
         { opacity: 1, y: 0 },
         { opacity: 0, y: -56, duration: 0.14, ease: "power1.in" },
         0.3,
-      )
-        // Hard visibility clamp (round 8): copy-a rests at opacity 0 but
-        // keeps a live translateY under gradient-clipped text — Chromium can
-        // hold a stale compositor layer of it and double-expose it over
-        // copy-b. `visibility: hidden` stops it painting at all past 0.44.
-        // Explicit "inherit" (never "visible") on the way back so it can't
-        // override the stage-level offscreen guard. Discrete-value tween:
-        // GSAP snaps to the end value once the playhead enters the window
-        // and back to the start value below it — scrub-safe both ways.
-        .fromTo(
-          q(".s16b-copy-a"),
-          { visibility: "inherit" },
-          { visibility: "hidden", duration: 0.01 },
-          0.44,
-        )
-        .fromTo(q(".s16b-photo-b"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.32);
+      ).fromTo(
+        q(".s16b-photo-b"),
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3 },
+        0.32,
+      );
       if (isMobile) {
         // the two renders sit in different frames on mobile (full-bleed
         // still vs the smaller s17 product) — a one-way fade-in would
         // double-expose them, so retire the comfort still underneath
         tl.fromTo(
           q(".s16b-photo-a"),
-          { autoAlpha: 1 },
-          { autoAlpha: 0, duration: 0.3 },
+          { opacity: 1 },
+          { opacity: 0, duration: 0.3 },
           0.32,
         );
       }
-      tl
-        // copy-b stays visibility:hidden (style.css) until just before its
-        // roll-in — with copy-a hard-hidden at 0.44 and copy-b unhidden at
-        // 0.475 the two can never paint together (gap ≥ 0.04 to a's window)
-        .fromTo(
-          q(".s16b-copy-b"),
-          { visibility: "hidden" },
-          { visibility: "inherit", duration: 0.01 },
-          0.475,
-        )
-        .fromTo(
-          q(".s16b-copy-b"),
-          { opacity: 0, y: 56 },
-          { opacity: 1, y: 0, duration: 0.16, ease: "power1.out" },
-          0.5,
-        )
-        .to({}, { duration: 0.34 }, 0.66);
+      tl.fromTo(
+        q(".s16b-copy-b"),
+        { opacity: 0, y: 56 },
+        { opacity: 1, y: 0, duration: 0.16, ease: "power1.out" },
+        0.5,
+      ).to({}, { duration: 0.34 }, 0.66);
+      // ---- visibility driver (round-16 hunt) ----
+      // Beat semantics preserved from round 8: copy-a paints only below
+      // 0.44, copy-b only from 0.475 (gap ≥ 0.03 — the two can never paint
+      // together, so neither can double-expose over the other via a stale
+      // compositor layer); photo-b joins the compositor only once its fade
+      // window opens; the mobile comfort still stops painting after its
+      // fade-out completes. "inherit" (never "visible") so the stage-level
+      // offscreen guards are never overridden.
+      const copyA = q1(".s16b-copy-a");
+      const copyB = q1(".s16b-copy-b");
+      const photoA = q1(".s16b-photo-a");
+      const photoB = q1(".s16b-photo-b");
+      // round 17: the sleek-state bg is a 30fps one-shot PNG-sequence video —
+      // restart it on each forward arrival at the state (client: "once you
+      // scroll to this page it starts playing"), hold last frame after
+      const vids = el.querySelectorAll<HTMLVideoElement>(".s16b-photo-b video, video.s16b-photo-b");
+      let vidPlayedAt = -1;
+      const playSeq = (p: number) => {
+        if (p > 0.4 && vidPlayedAt <= 0.4) {
+          vids.forEach((v) => {
+            if (v.offsetParent !== null) { v.currentTime = 0; v.play().catch(() => {}); }
+          });
+        }
+        vidPlayedAt = p;
+      };
+      const vis = { p: 0 };
+      const applyVis = () => {
+        const p = vis.p;
+        copyA.style.visibility = p >= 0.44 ? "hidden" : "inherit";
+        copyB.style.visibility = p >= 0.475 ? "inherit" : "hidden";
+        photoB.style.visibility = p > 0.32 ? "inherit" : "hidden";
+        playSeq(p);
+        if (isMobile)
+          photoA.style.visibility = p >= 0.62 ? "hidden" : "inherit";
+      };
+      tl.to(vis, { p: 1, duration: 1, ease: "none", onUpdate: applyVis }, 0);
+      applyVis();
     };
     mm.add("(min-width: 641px)", build(false));
     mm.add("(max-width: 640px)", build(true));
