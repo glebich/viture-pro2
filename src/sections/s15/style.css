@@ -1,11 +1,11 @@
 /* s15 — Slimmer Than Pro / Thin Enough to Disappear.
-   Merged page (former s15 + s16; unpinned round 7; video round 18): copy +
-   stats persist over two stacked transparent client videos in the glasses
-   render's slot — the static settle-hold beneath, the one-shot anim above
-   (JS drives its opacity for the 15s cadence; see index.ts). The videos
-   render the glasses front-bar-up, so both are rotated 180° and sized so
-   the pose-A alpha bbox lands exactly on the harvest render's glasses bbox
-   (rect math in index.ts). */
+   Merged page (former s15 + s16; unpinned round 7; canvas round 19): copy +
+   stats persist over the transparent client thin clips in the glasses
+   render's slot — one canvas per breakpoint painted by JS from the alpha
+   WebP frame sequences (static intro once → anim ping-pong; see index.ts).
+   The clips render the glasses front-bar-up, so the canvas is rotated 180°
+   and sized so the pose-A alpha bbox lands exactly on the harvest render's
+   glasses bbox (rect math in index.ts). */
 
 .s15-bg {
   position: absolute;
@@ -71,7 +71,7 @@
 }
 
 /* glasses slot: the old union crop window (955,163,680×761) is kept as an
-   overflow gate — the videos' transparent 1920×1080 canvas extends past it
+   overflow gate — the frames' transparent 1920×1080 canvas extends past it
    but the glasses themselves rest fully inside */
 .s15-glasses {
   position: absolute;
@@ -82,10 +82,12 @@
   overflow: hidden;
   pointer-events: none;
 }
-/* video element rect: rotated 180° (the client render is front-bar-up,
+/* canvas element rect: rotated 180° (the client render is front-bar-up,
    the design front-bar-down) and mapped so the rotated pose-A alpha bbox
    (596,80,1324,930 of 1920×1080) lands on the harvest glasses bbox at
-   stage (1007.17,233.59)-(1572.98,874.37) — see index.ts for the math */
+   stage (1007.17,233.59)-(1572.98,874.37) — see index.ts for the math
+   (the 1920×1080 bitmap stretches to this box, honoring the deliberate
+   ~3% non-uniform fit exactly as the video's object-fit: fill did) */
 .s15-vid {
   position: absolute;
   left: -411.05px;
@@ -93,11 +95,6 @@
   width: 1492.27px;
   height: 814.19px;
   transform: rotate(180deg);
-  object-fit: fill;
-}
-/* the anim flourish rests hidden; JS drives its opacity for the cadence */
-.s15-vid--anim {
-  opacity: 0;
 }
 .s15-glasses--m {
   left: 44px;

@@ -46,9 +46,10 @@
 
 export interface GlassLayer {
   /** Device render composited into the refraction background. A <video>
-   *  is drawn at its CURRENT frame — callers drive per-frame re-uploads
-   *  via `invalidateBg()` while it plays (round 17 sequence videos). */
-  image: HTMLImageElement | HTMLVideoElement;
+   *  or canvas source is drawn at its CURRENT content — callers drive
+   *  re-uploads via `invalidateBg()` when it changes (round 17/18 live
+   *  sequence layers, e.g. s03's scroll-scrubbed frame canvas). */
+  image: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement;
   /** Its base placement in design px: [x, y, w, h]. */
   rect: [number, number, number, number];
 }
@@ -110,6 +111,14 @@ export interface GlassTextConfig {
   fresnel?: number;
   /** Travelling light-streak strength (default 0.14; 0 disables). */
   streak?: number;
+  /** Cracked-crystal facet shear, design px (default 0 = classic liquid
+   *  lens). Each voronoi facet shifts the backdrop in its own random
+   *  direction so the glass reads as fractured crystal. */
+  crack?: number;
+  /** Facet cell size, design px (default fontSize * 0.5). */
+  crackCell?: number;
+  /** Fracture-border glint strength (default 0.16 when crack is on). */
+  glint?: number;
   /** Refraction flow: design px the normal-sample phase drifts across the
    *  full scroll progress (default 30; 0 disables). */
   flow?: number;
@@ -175,9 +184,21 @@ uniform float uProgress;  /* 0..1 scroll progress */
 uniform float uOpacity;
 uniform vec3 uTap[${taps}]; /* xy = blur-ring jitter, z = dispersion scale */
 uniform vec3 uW[${taps}];   /* per-tap RGB weights (pre-normalized) */
+uniform float uCrack;     /* facet shear displacement, design px (0 = off) */
+uniform float uCrackCell; /* voronoi facet cell size, design px */
+uniform float uGlint;     /* fracture-line highlight strength */
 
 float sd1(vec2 t) { return (texture2D(uSdf, t).r - 0.5) * uSpan1; }
 float sd2(vec2 t) { return (texture2D(uSdf, t).a - 0.5) * uSpan2; }
+
+/* cracked-crystal facets (round 20): jittered voronoi over TEXT-LOCAL
+   design px — F1's cell id gives each facet a stable random shear
+   direction (the backdrop breaks into angular shards instead of one
+   liquid lens), F2-F1 gives the fracture borders a bright glint line. */
+vec2 hash2(vec2 p) {
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return fract(sin(p) * 43758.5453);
+}
 
 /* shaped glass thickness 0..1 — parabolic lens cap over the lowpassed
    field: flat on the stroke's spine, smooth shoulders at the sides */
@@ -237,6 +258,31 @@ void main() {
   vec2 disp = (mv * mix(0.85, 1.0, h)
             + vec2(0.0, uShift) - gh * uRefr) / uStage;
 
+  /* ---- cracked-crystal facet shear + fracture glint ---- */
+  float glint = 0.0;
+  if (uCrack > 0.001) {
+    vec2 lp = t * uRect.zw / uCrackCell; /* facet-cell space */
+    vec2 cell = floor(lp);
+    vec2 fr = lp - cell;
+    float f1 = 8.0; float f2 = 8.0;
+    vec2 id1 = vec2(0.0);
+    for (int cy = -1; cy <= 1; cy++) {
+      for (int cx = -1; cx <= 1; cx++) {
+        vec2 o = vec2(float(cx), float(cy));
+        vec2 seed = o + 0.5 + (hash2(cell + o) - 0.5) * 0.9;
+        float dd = length(seed - fr);
+        if (dd < f1) { f2 = f1; f1 = dd; id1 = cell + o; }
+        else if (dd < f2) { f2 = dd; }
+      }
+    }
+    /* per-facet stable shear direction; weighted by thickness so the
+       shards live in the glass body and die out at the silhouette */
+    vec2 dir = normalize(hash2(id1 + 7.31) - 0.5);
+    disp += dir * (uCrack * (0.35 + 0.65 * h)) / uStage;
+    /* bright hairline where two facets meet */
+    glint = (1.0 - smoothstep(0.0, 0.14, f2 - f1)) * (0.25 + 0.75 * h);
+  }
+
   /* ---- dispersion + roughness sampling (MeshTransmissionMaterial-ish):
      TAPS samples along the chromatic axis (per-channel displacement scale
      1±uCa baked into uTap[i].z) jittered on a ring that widens with
@@ -251,9 +297,12 @@ void main() {
   vec3 col = acc;
 
   /* light-glass floor: the glass must NEVER come out darker than the
-     scene directly behind it — refraction may only brighten */
+     scene directly behind it — refraction may only brighten. With the
+     crystal facets on, the floor is softened (72%) so the dark half of a
+     facet shear survives — a fully-clamped shard is invisible over a
+     product render darker than the veil. */
   vec3 base = texture2D(uBg, vUv).rgb;
-  col = max(col, base);
+  col = max(col, base * (uCrack > 0.001 ? 0.72 : 1.0));
 
   /* faint milky body — kept subtle so the refraction reads clear */
   float lum = dot(col, vec3(0.299, 0.587, 0.114));
@@ -278,6 +327,9 @@ void main() {
      light-facing shoulders and dies out before the stroke interior. */
   float slope = smoothstep(0.28, 0.75, glen * uThick * 0.75);
   col += vec3(0.95, 0.97, 1.0) * (uSpec * slope * facing * facing * facing);
+
+  /* fracture-line glint (facet borders catch the light) */
+  col += vec3(0.9, 0.95, 1.06) * (uGlint * glint);
 
   /* hairline cut edge from the CRISP field + extra light on top edges */
   float line = (1.0 - smoothstep(0.0, uEdge, d)) * cov;
@@ -334,19 +386,20 @@ function imageReady(img: HTMLImageElement) {
   });
 }
 
-function isVideo(
-  src: HTMLImageElement | HTMLVideoElement,
-): src is HTMLVideoElement {
+type LayerSource = HTMLImageElement | HTMLVideoElement | HTMLCanvasElement;
+
+function isVideo(src: LayerSource): src is HTMLVideoElement {
   return typeof HTMLVideoElement !== "undefined" &&
     src instanceof HTMLVideoElement;
 }
 
 /** Can this source be drawImage()d right now? Videos need a decoded frame
- *  (readyState ≥ HAVE_CURRENT_DATA); images need natural dimensions. */
-function drawable(src: HTMLImageElement | HTMLVideoElement) {
-  return isVideo(src)
-    ? src.readyState >= 2 && src.videoWidth > 0
-    : src.complete && src.naturalWidth > 0;
+ *  (readyState ≥ HAVE_CURRENT_DATA); images need natural dimensions;
+ *  canvases are always drawable (transparent until first painted). */
+function drawable(src: LayerSource) {
+  if (isVideo(src)) return src.readyState >= 2 && src.videoWidth > 0;
+  if (src instanceof HTMLCanvasElement) return src.width > 0;
+  return src.complete && src.naturalWidth > 0;
 }
 
 /* ---------- exact euclidean distance transform (Felzenszwalb) ---------- */
@@ -561,6 +614,13 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
   gl.uniform1f(U("uFres"), P("fres", cfg.fresnel ?? 0.05));
   gl.uniform1f(U("uStreak"), P("streak", cfg.streak ?? 0.14));
   gl.uniform1f(U("uFlow"), P("flow", cfg.flow ?? 30));
+  const crack = P("crack", cfg.crack ?? 0);
+  gl.uniform1f(U("uCrack"), crack);
+  gl.uniform1f(
+    U("uCrackCell"),
+    P("crackcell", cfg.crackCell ?? cfg.fontSize * 0.5),
+  );
+  gl.uniform1f(U("uGlint"), P("glint", cfg.glint ?? (crack > 0 ? 0.16 : 0)));
 
   // precomputed dispersion/roughness taps: positions on a widening ring,
   // per-channel gaussian weights along the chromatic axis (normalized so
@@ -730,10 +790,11 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
       )
     : Promise.resolve(undefined);
 
-  // Video layers must NOT gate readiness: they are lazy-loaded (and never
-  // load at all under prefers-reduced-motion), and composite() skips
-  // non-drawable sources anyway. When a video's first frame does arrive,
-  // refresh the background so the glass picks it up.
+  // Video/canvas layers must NOT gate readiness: they are lazy-fed (and a
+  // video never loads at all under prefers-reduced-motion), and composite()
+  // skips non-drawable sources anyway. When a video's first frame does
+  // arrive, refresh the background so the glass picks it up (canvas layers
+  // are repainted by their owner, who calls invalidateBg()).
   for (const l of cfg.layers) {
     if (isVideo(l.image) && !drawable(l.image)) {
       l.image.addEventListener(
@@ -751,7 +812,9 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
 
   Promise.all([
     fontLoaded,
-    ...cfg.layers.map((l) => (isVideo(l.image) ? undefined : imageReady(l.image))),
+    ...cfg.layers.map((l) =>
+      l.image instanceof HTMLImageElement ? imageReady(l.image) : undefined,
+    ),
   ]).then(() => {
     if (destroyed) return;
 

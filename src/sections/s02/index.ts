@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { prepareText, revealText } from "../../lib/textfx";
 
 const A_D = "/assets/1920_Screen-02-01";
 const A_M = "/assets/375_Screen-02-01";
@@ -42,19 +43,23 @@ export const s02: Section = {
     </div>
   </div>`,
   init(el, ctx) {
-    // content rides the ambient fluid in with a soft rise — the background
-    // layers stay put so there is no hard change against the loader field
+    // Ambient text language (see lib/textfx.ts): the headline condenses in
+    // word by word (slow drift + soft blur), the badge and subline follow as
+    // whole-block soft fades — unhurried, riding the ambient fluid in.
+    const q = (s: string) => Array.from(el.querySelectorAll<HTMLElement>(s));
+    for (const t of q(".s02-title")) prepareText(t);
+    for (const b of q(".s02-badge")) prepareText(b, { mode: "block" });
+    for (const p of q(".s02-sub")) prepareText(p, { mode: "block" });
     const tl = ctx.gsap.timeline({
       scrollTrigger: { trigger: el, start: "top 78%" },
-      defaults: { ease: "power3.out", duration: 0.9 },
     });
-    tl.from(el.querySelectorAll(".s02-badge"), { autoAlpha: 0, y: 36 }, 0)
-      .from(el.querySelectorAll(".s02-title"), { autoAlpha: 0, y: 36 }, 0.12)
-      .from(el.querySelectorAll(".s02-sub"), { autoAlpha: 0, y: 36 }, 0.24)
-      .from(
-        el.querySelectorAll(".s02-scroll"),
-        { autoAlpha: 0, duration: 0.9 },
-        0.45,
-      );
+    for (const t of q(".s02-title")) tl.add(revealText(t), 0);
+    for (const b of q(".s02-badge")) tl.add(revealText(b), 0.45);
+    for (const p of q(".s02-sub")) tl.add(revealText(p), 0.65);
+    tl.from(
+      q(".s02-scroll"),
+      { opacity: 0, duration: 1.2, ease: "sine.out" },
+      1.0,
+    );
   },
 };

@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { prepareText, revealText } from "../../lib/textfx";
 
 /* ---------- card data (exact px from harvest) ---------- */
 
@@ -187,22 +188,38 @@ export const s26: Section = {
     <div class="stage stage--m">${railM}</div>
   `,
   init(el, ctx) {
-    ctx.gsap
+    // Ambient text language (lib/textfx.ts): the cards keep their staggered
+    // rise (slowed to the ambient tempo) while each card's heading condenses
+    // in as a soft delayed block fade trailing its card.
+    const headings = Array.from(
+      el.querySelectorAll<HTMLElement>(".s26-heading"),
+    );
+    for (const h of headings) prepareText(h, { mode: "block", y: 14 });
+    const tl = ctx.gsap
       .timeline({
         scrollTrigger: { trigger: el, start: "top 78%" },
-        defaults: { ease: "power3.out" },
+        defaults: { ease: "power2.out" },
       })
       .from(el.querySelectorAll(".stage--d .s26-card"), {
         opacity: 0,
-        y: 36,
-        duration: 0.9,
-        stagger: 0.07,
+        y: 30,
+        duration: 1.2,
+        stagger: 0.08,
       })
       .from(
         el.querySelectorAll(".stage--m .s26-card"),
-        { opacity: 0, y: 36, duration: 0.9, stagger: 0.07 },
+        { opacity: 0, y: 30, duration: 1.2, stagger: 0.08 },
         0
       );
+    // headings trail their cards, one soft fade each along the same cascade
+    el.querySelectorAll<HTMLElement>(".stage--d .s26-card").forEach((c, i) => {
+      const h = c.querySelector<HTMLElement>(".s26-heading");
+      if (h) tl.add(revealText(h), 0.35 + i * 0.08);
+    });
+    el.querySelectorAll<HTMLElement>(".stage--m .s26-card").forEach((c, i) => {
+      const h = c.querySelector<HTMLElement>(".s26-heading");
+      if (h) tl.add(revealText(h), 0.35 + i * 0.08);
+    });
 
     /* ambient hover halo follows the cursor slightly (desktop pointers only).
        Only two CSS custom props are written per move — the halo itself is a

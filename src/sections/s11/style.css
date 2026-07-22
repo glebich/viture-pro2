@@ -58,16 +58,28 @@ img.s11-b,
 }
 .s11-still img,
 .s11-video img,
-.s11-video video {
-  /* the round-17 transparent glasses video is 16:9 like the old renders,
-     so cover reproduces the old placement/crop exactly (the orange field
-     and glow show through its alpha) */
+.s11-video canvas {
+  /* the round-18 transparent glasses frame canvas is 16:9 like the old
+     renders, so cover reproduces the old placement/crop exactly (the
+     orange field and glow show through its alpha) */
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+}
+
+/* the frame canvas is interactive: horizontal drag scrubs the dial
+   animation (left = forward, right = backward — mimics turning the dial).
+   pan-y keeps vertical page scrolling alive over it on touch. */
+.s11-video canvas {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.s11-video canvas.s11-dragging {
+  cursor: grabbing;
 }
 
 .s11-video {

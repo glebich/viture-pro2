@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { mountLazyVideo } from "../../lib/lazyvideo";
+import { registerPinSnapAnchors } from "../../lib/snap";
 
 /* ⚠ REGRESSION GUARD: run `node scripts/assert-s06-card.mjs` after ANY edit
  * to this file. It sweeps the card beats in chromium AND webkit (harness +
@@ -29,6 +30,33 @@ const CD = "/assets/1920_Screen-08-01a"; // card spec-divider dot
 const CM = "/assets/375_Screen-08-01a";
 
 const WORDMARK = "VITURE Pro 2";
+
+// ---------------------------------------------------------------------------
+// Magnet geometry (client round 12 — the s05->s06 "strange jump" fix + the
+// card readability anchors). All values are fractions of the pinned scroll
+// length == scrubbed-timeline progress (the spacer tween pins duration at 1).
+//
+// OPEN_PLATEAU: the wordmark travel used to start at p=0, so ANY arrival
+// overshoot past the pin start (Lenis lerp always carries the wheel target
+// 50-380px in) made the letters travel forward, rest, then visibly slide
+// BACK when snap.ts's pin-start catch (first 35%vh of the pin) glided the
+// scroll home — the client's "strange jump after COMFORT". 0.07 of the
+// 5-viewport pin is exactly that 35%vh catch window, so every catch-window
+// rest now lands INSIDE a motionless opening plateau: the pull-back glide
+// still runs, but it is visually a no-op — the wordmark just sits and
+// waits. Travel still completes at 0.28; zoom and every later beat are
+// untouched.
+//
+// CARD_ANCHOR_A/B: interior snap anchors (registered with lib/snap below).
+// A = the state-A "UltraClarity 3.0 Is Here" plateau centre — card rise
+// ends at 0.62 + 0.14 = 0.76, the morph roll starts at 0.78 -> 0.77.
+// B = the state-B rest plateau centre — morph done by 0.90, pin ends at
+// 1.0 -> 0.95. Rests within ±35%vh of an anchor glide onto it so fast
+// scrollers still get parked on a readable card.
+// ---------------------------------------------------------------------------
+const OPEN_PLATEAU = 0.07;
+const CARD_ANCHOR_A = 0.77;
+const CARD_ANCHOR_B = 0.95;
 
 /** Glass card shared by both states. Badge persists; the content blocks
  *  roll vertically through the clipped .s06-cbody window (a out, b in). */
@@ -186,6 +214,10 @@ export const s06: Section = {
   id: "s06",
   html,
   init(el, ctx) {
+    // card-plateau magnet anchors (see the constants block above) — plain
+    // data registration; snap.ts resolves absolute positions per refresh
+    // from the live pin, so this is valid even though the pin builds late
+    registerPinSnapAnchors("s06", [CARD_ANCHOR_A, CARD_ANCHOR_B]);
     mountLazyVideo(el, ctx);
     // keep the in-mask loop frame-locked to the full-bleed loop (round 15):
     // both start on the same lazyvideo tick so they're already near-sync;
@@ -406,21 +438,66 @@ export const s06: Section = {
               end: cfg.end,
               pin: true,
               scrub: 0.6,
+              // Every ScrollTrigger.refresh() force-renders this scrubbed
+              // timeline end->back. The wrap transform is driven by PROXY
+              // tweens (travel/zoom -> setWrap), and the refresh rewind
+              // writes proxy values back WITHOUT firing onUpdate — so with
+              // the scroll resting at/above the pin start the wrap kept the
+              // end-render's travel-END transform until the first positive
+              // progress snapped it home: the s05->s06 fold entrance showed
+              // the wordmark at the read-out END position, then it POPPED
+              // ~1240px to its opening rest as the pin engaged (part of the
+              // client's "jump after COMFORT"). Elements heal themselves
+              // (gsap rewinds their recorded start values directly); only
+              // the proxy-driven wrap needs this: re-assert the pure
+              // opening state whenever a refresh ends at the pin top.
+              onRefresh: (self: ScrollTrigger) => {
+                if (self.progress <= 0) {
+                  travel.p = 0;
+                  applyTravel();
+                }
+              },
             },
             defaults: { ease: "none", immediateRender: false },
           });
+          // opening plateau via EASE, not tween position: the travel tween
+          // must keep spanning [0, 0.28] so some active tween owns the wrap
+          // transform at EVERY progress in that range — ScrollTrigger's
+          // refresh force-renders this scrubbed timeline end->back, and a
+          // tween that hasn't started yet (immediateRender: false) leaves
+          // the end-render's wx=TX/scale=1.06 leftovers on the DOM (the
+          // same leftover class as the round-12 card bug). A clamped-linear
+          // ease holds p at 0 through the plateau and then runs the exact
+          // linear travel of old — every render at progress 0 re-applies
+          // the true opening state.
+          const PLATEAU_T = OPEN_PLATEAU / 0.28; // plateau as tween fraction
+          const plateauEase = (t: number) =>
+            t <= PLATEAU_T ? 0 : (t - PLATEAU_T) / (1 - PLATEAU_T);
           tl
-            // 1. wordmark read-out travel; scene locked behind the letters
+            // 1. wordmark read-out travel; scene locked behind the letters.
+            //    Motionless through p 0..OPEN_PLATEAU (see the constants
+            //    block) so the snap magnet's pin-start catch settles
+            //    arrivals with zero visible motion.
             .fromTo(
               travel,
               { p: 0 },
-              { p: 1, duration: 0.28, onUpdate: applyTravel },
+              {
+                p: 1,
+                duration: 0.28,
+                ease: plateauEase,
+                onUpdate: applyTravel,
+              },
               0,
             )
             .fromTo(
               bgImg,
               { scale: 1 },
-              { scale: 1.06, duration: 0.28, transformOrigin: "50% 50%" },
+              {
+                scale: 1.06,
+                duration: 0.28,
+                ease: plateauEase,
+                transformOrigin: "50% 50%",
+              },
               0,
             )
             // 2. push through the letters — glow bg falls to black; the

@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { mountLazyVideo } from "../../lib/lazyvideo";
+import { scrubWordArrival } from "../../lib/textfx";
 
 /* s14 — short pinned build (client round 6): the section used to scroll
  * past and get ignored, so the reader is now held for a beat. p0 is the
@@ -147,22 +148,32 @@ export const s14: Section = {
         defaults: { ease: "none", immediateRender: false },
       });
 
+      // Ambient text flavor inside the SAME ratchet windows (lib/textfx.ts):
+      // the headline condenses in word by word (the container just unhides
+      // and the words own the drift), the eyebrow/benefits keep their block
+      // beats but ease power2.out with a softer drift. Beat positions and
+      // the ratchet mechanics are unchanged.
       tl.fromTo(photo, { scale: 1.06 }, { scale: 1, duration: 0.9, ease: "power1.out" }, 0)
         // eyebrow's design opacity is 0.7 — tween to exactly that
-        .fromTo(eyebrow, { opacity: 0, y: 36 }, { opacity: 0.7, y: 0, duration: 0.14 }, 0.1)
-        .fromTo(title, { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.2 }, 0.16)
+        .fromTo(eyebrow, { opacity: 0, y: 30 }, { opacity: 0.7, y: 0, duration: 0.14, ease: "power2.out" }, 0.1)
+        .fromTo(title, { opacity: 0 }, { opacity: 1, duration: 0.05 }, 0.16)
         .fromTo(
           line,
           { opacity: 0, scaleX: 0, transformOrigin: "left center" },
           { opacity: 1, scaleX: 1, duration: 0.16 },
           0.36,
         )
-        .fromTo(b1, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.16 }, 0.5)
-        .fromTo(b2, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.16 }, 0.6)
-        .fromTo(b3, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.16 }, 0.7)
+        .fromTo(b1, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.5)
+        .fromTo(b2, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.6)
+        .fromTo(b3, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.7)
         // final beat (client round 10): the big 63g stat rises last, after
         // the benefit columns land — same easing family as the cascade
-        .fromTo(stat, { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.18 }, 0.78);
+        .fromTo(stat, { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.78);
+      // headline word cascade across the old title window (0.16 → ~0.4)
+      const titleWords = scrubWordArrival(tl, title[0], 0.16, {
+        window: 0.26,
+        y: 34,
+      });
       // rest plateau to p=1 so the fold-out never clips the composition
       tl.to({}, { duration: 0.04 }, 0.96);
 
@@ -193,7 +204,13 @@ export const s14: Section = {
           if (drive.p <= built) return;
           built = drive.p;
           tl.progress(built);
-          if (built >= 1) gsap.set(texts, { clearProps: "transform" });
+          if (built >= 1) {
+            gsap.set(texts, { clearProps: "transform" });
+            // headline words too — their reveal drift rides `top`
+            // (paint-only), cleared once the build lands (same armor)
+            if (titleWords.length)
+              gsap.set(titleWords, { clearProps: "top" });
+          }
         },
       });
     };

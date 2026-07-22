@@ -15,10 +15,18 @@
 //
 // Pin awareness: while the scroll rests INSIDE a pin's active range
 // (st.start < y < st.end) we never snap — the pinned timeline's own rest
-// plateaus own the feel there — EXCEPT within the first ~35%vh past the
-// pin's start, which glides back to the start so a pin entered by a hair
-// still presents full-screen. Just above a pin start needs no special case:
-// the start IS that section's boundary.
+// plateaus own the feel there — EXCEPT:
+// - within the first ~35%vh past the pin's start, which glides back to the
+//   start so a pin entered by a hair still presents full-screen (just above
+//   a pin start needs no special case: the start IS that section's
+//   boundary);
+// - within the catch window of a registered INTERIOR ANCHOR (client round
+//   12 — "users scroll past the UltraClarity card too fast to read"): a
+//   pinned section can expose specific scrub beats as magnet targets via
+//   registerPinSnapAnchors(sectionId, fractions) — fractions of the pin's
+//   scroll length, i.e. of the scrubbed timeline's progress. The nearest
+//   in-window target (pin start or anchor) wins; the glide + one-shot
+//   arming rules are identical, so anchors can never oscillate either.
 //
 // No fighting, no oscillation:
 // - `lenis.scrollTo` is wrapped so any animated programmatic scroll (the
@@ -50,6 +58,22 @@ const GLIDE_S = 0.7; // snap glide duration
 const PROG_STALL_MS = 700; // in-flight flag safety: an "animated" scroll
 // resting this long was interrupted (its onComplete will never fire)
 
+// ---- interior pin anchors ----
+// sectionId -> fractions of the pin's scroll length (== scrubbed-timeline
+// progress, the pins here all normalize total duration to 1). Sections
+// register in their init() — that runs before mountSnap, and the registry
+// is plain data, so registration is safe even when the magnet never mounts
+// (touch, ?nosnap, QA harness). Absolute positions are resolved per refresh
+// in measure() from the live ScrollTrigger, so they survive resizes and the
+// s01 retirement shift like every other boundary.
+const pinAnchorFractions = new Map<string, number[]>();
+export function registerPinSnapAnchors(
+  sectionId: string,
+  fractions: number[]
+): void {
+  pinAnchorFractions.set(sectionId, fractions);
+}
+
 export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
   // touch scrolls natively through Lenis — never hijack finger momentum
   if (matchMedia("(pointer: coarse)").matches || "ontouchstart" in window) return;
@@ -57,7 +81,7 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
 
   // ---- geometry, re-measured on every ScrollTrigger refresh ----
   let boundaries: number[] = [];
-  let pinRanges: { start: number; end: number }[] = [];
+  let pinRanges: { start: number; end: number; anchors: number[] }[] = [];
   const measure = () => {
     const y = window.scrollY;
     boundaries = Array.from(
@@ -79,7 +103,17 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
           st.trigger instanceof Element &&
           st.trigger.isConnected
       )
-      .map((st) => ({ start: st.start, end: st.end }));
+      .map((st) => {
+        const id =
+          (st.trigger as Element).closest?.("section.screen")?.id ?? "";
+        return {
+          start: st.start,
+          end: st.end,
+          anchors: (pinAnchorFractions.get(id) ?? []).map(
+            (f) => st.start + f * (st.end - st.start)
+          ),
+        };
+      });
   };
   ScrollTrigger.addEventListener("refresh", measure);
 
@@ -160,10 +194,28 @@ export function mountSnap(lenis: Lenis, gsap: typeof Gsap): void {
     const catchPx = window.innerHeight * CATCH_VH;
     for (const p of pinRanges) {
       if (y > p.start + SETTLED_PX && y < p.end - SETTLED_PX) {
-        // resting inside an active pin range: only the first ~35%vh pulls
-        // back to the pin's start; deeper in, the pinned timeline's own
-        // rest plateaus are the intended stops — do nothing
-        if (y - p.start <= catchPx) glide(p.start);
+        // resting inside an active pin range: the first ~35%vh pulls back
+        // to the pin's start, and registered interior anchors (scrub rest
+        // beats, e.g. s06's card plateaus) attract within the same catch
+        // window — nearest in-window target wins. Deeper in with no anchor
+        // near, the pinned timeline's own rest plateaus are the intended
+        // stops — do nothing.
+        let best = NaN;
+        let bestD = Infinity;
+        if (y - p.start <= catchPx) {
+          best = p.start;
+          bestD = y - p.start;
+        }
+        for (const a of p.anchors) {
+          const d = Math.abs(y - a);
+          if (d <= catchPx && d < bestD) {
+            bestD = d;
+            best = a;
+          }
+        }
+        // bestD <= SETTLED_PX: already resting on the target — gliding
+        // again would re-run the settle forever on micro-jitter
+        if (Number.isFinite(best) && bestD > SETTLED_PX) glide(best);
         return;
       }
     }

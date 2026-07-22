@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import type { AnimationItem } from "lottie-web";
+import { prepareText, revealText } from "../../lib/textfx";
 
 /* ---- Logo hover Lottie (desktop, hover-capable pointers only) ----
    Two raster-sequence Lotties (public/lottie/): logo-in.json loops while
@@ -131,14 +132,21 @@ export const header: Section = {
       initLogoLottie(el.querySelector<HTMLElement>(".hd-d .hd-logo")!);
     }
 
-    // Reveal the header after the s01 loader counter finishes (~1.6s).
-    ctx.gsap.from(el, {
-      autoAlpha: 0,
-      y: -24,
-      duration: 0.8,
-      delay: 1.9,
-      ease: "power3.out",
-      clearProps: "transform",
-    });
+    // Reveal the header after the s01 loader counter finishes (~1.6s) —
+    // ambient flavor (lib/textfx.ts): the bar itself soft-fades in
+    // (autoAlpha keeps it click-through while the loader runs — the header
+    // is a fixed overlay, never offscreen-guarded, so gsap-owned visibility
+    // is safe HERE, unlike in sections) while the nav links and the price
+    // pill drift down from above as gently staggered blocks.
+    const navLinks = Array.from(
+      el.querySelectorAll<HTMLElement>(".hd-menu a"),
+    );
+    const pill = el.querySelector<HTMLElement>(".hd-pill");
+    for (const a of navLinks) prepareText(a, { mode: "block", y: -14 });
+    if (pill) prepareText(pill, { mode: "block", y: -14 });
+    const tl = ctx.gsap.timeline({ delay: 1.9 });
+    tl.from(el, { autoAlpha: 0, duration: 1.1, ease: "sine.out" }, 0);
+    navLinks.forEach((a, i) => tl.add(revealText(a), 0.25 + i * 0.09));
+    if (pill) tl.add(revealText(pill), 0.45);
   },
 };

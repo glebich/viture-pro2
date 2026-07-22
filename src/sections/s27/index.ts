@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { mountFrameStore } from "../../lib/frameseq";
 
 /* s27 — merged pinned page (former s27 + s28, client round 7):
  * ONE "Exclusive offer on the anniversary collection" bar for the whole
@@ -26,9 +27,57 @@ const BM = "/assets/375_Screen-27-01b";
 const SPECS =
   "UltraClarity 3.0 · 63g · Ergo-perfect · Razor-thin · Myopia −5.00D · SGS A+";
 
+/* Client round 19 — TRANSPARENT product videos (HEVC-alpha .mov for Safari +
+ * VP9-alpha .webm for Chromium, 1920×1080/1s/30fps, alpha-verified):
+ *   a  classic.*  → state A, the "Classic Returns" hero product
+ *   b  finale.*   → state B, the "Five years" front-on product
+ * Each video is a full-frame render of ONLY the product (the field is
+ * transparent), so it REPLACES its state's baked product: the video rides
+ * inside the state's fading group, and the group's <img> (kept as the
+ * pre-load / reduced-motion fallback) is hidden the moment the video first
+ * presents frames (.s27-live, see style.css). Stacking the video over a
+ * visible photo is NOT an option — the photo's product pose differs
+ * slightly, and its bright rim (up to full-white temple-tip pixels) reads
+ * as a ghost outline around the video product (measured: ~14% of the
+ * photo's bright pixels stay uncovered).
+ *
+ * Placement is bbox-mapped, not full-bleed: the video's product alpha bbox
+ * is registered onto the design product's bbox in stage px —
+ *   classic f29 alpha bbox (451,139,1521,898)  → design (384.8,144.0,1422.8,897.8)
+ *     uniform scale 0.9701, center-matched → element (-52.7,17.9) 1862.6×1047.7
+ *   finale  f29 alpha bbox (158,187,1762,1045) → design (315.8,420.0,1622.2,1079+)
+ *     (design bottom is frame-cropped, so width+top matched)
+ *     uniform scale 0.8145 → element (187.1,267.7) 1563.8×879.7
+ * Mobile maps the same element rects through each state's measured design
+ * transform (see style.css). */
+/* Classic (A) is a CANVAS frame sequence, not a video (round 20): the
+ * client wants it to play backwards on scroll-back, and <video> can't seek
+ * smoothly in reverse — so the pinned scrub maps progress→frame exactly
+ * like s03's Five Years asset (30 alpha WebPs, bidirectional for free).
+ * Finale (B) stays a play-once video (it fires on a forward crossing). */
+const VID = (which: "a" | "b") =>
+  which === "a"
+    ? `<canvas class="s27-vid s27-vid-a" width="1920" height="1080" aria-hidden="true"></canvas>`
+    : `
+    <video class="s27-vid s27-vid-b" muted playsinline preload="metadata" aria-hidden="true">
+      <source src="/video/finale-hevc.mov" type="video/quicktime" />
+      <source src="/video/finale.webm" type="video/webm" />
+    </video>`;
+const CL_FRAMES = 30;
+const CL_URLS = Array.from(
+  { length: CL_FRAMES },
+  (_, i) => `/assets/classic-frames/cl-${String(i).padStart(2, "0")}.webp`,
+);
+/* the classic sequence finishes exactly where its fade-out begins */
+const CL_END = 0.3;
+
 const desktop = `
-  <div class="s27-hero"><img class="s27-bg" src="${AD}/img1920Screen2701.webp" alt=""></div>
-  <img class="s27-still" src="${BD}/imgStillsIt322.webp" alt="">
+  <div class="s27-hero"><div class="s27-hero-in">
+    <img class="s27-bg" src="${AD}/img1920Screen2701.webp" alt="">${VID("a")}
+  </div></div>
+  <div class="s27-still-g">
+    <img class="s27-still" src="${BD}/imgStillsIt322.webp" alt="">${VID("b")}
+  </div>
   <div class="s27-text">
     <h2 class="s27-title gtx gtx--peach">The Classic Returns</h2>
     <p class="s27-tagline">Calling all VITURE Pro owners</p>
@@ -54,10 +103,12 @@ const desktop = `
   </div>`;
 
 const mobile = `
-  <div class="s27-hero-m">
-    <img src="${AM}/imgHeroStill4000000024.webp" alt="">
+  <div class="s27-hero-m"><div class="s27-hero-in">
+    <img src="${AM}/imgHeroStill4000000024.webp" alt="">${VID("a")}
+  </div></div>
+  <div class="s27-still-g">
+    <img class="s27-still-m" src="${BM}/imgStillsIt322.webp" alt="">${VID("b")}
   </div>
-  <img class="s27-still-m" src="${BM}/imgStillsIt322.webp" alt="">
   <div class="s27-text-m">
     <h2 class="s27-title-m gtx gtx--peach">The Classic<br>Returns</h2>
     <p class="s27-tagline-m">Calling all VITURE Pro owners</p>
@@ -109,6 +160,103 @@ export const s27: Section = {
     // and onEnter retires the entrance outright.
     let intro: gsap.core.Timeline | null = null;
 
+    /* ---- transparent product videos (round 19) -----------------------
+     * Play-once-per-arrival lifecycle, per state:
+     *   A (classic) plays when the section arrives in the viewport (it is
+     *     already alive through the entrance, cf. s16b), then holds its
+     *     last frame; every fresh viewport re-entry replays it.
+     *   B (finale) fires on the pinned scrub's FORWARD crossing into the
+     *     reveal window (B_ON, just after the still-group starts
+     *     fading in at 0.46) and holds; scrubbing back below B_OFF re-arms
+     *     it AND resets it to its transparent frame 0, so the next forward
+     *     crossing replays the reveal — and a stale held frame can never
+     *     linger under a scrub-back (hysteresis so jitter at the threshold
+     *     can't machine-gun restarts).
+     * No ghost double-exposure is possible by construction: each video
+     * lives INSIDE its state's fading group (.s27-hero-in / .s27-still-g),
+     * so the scrub's existing autoAlpha choreography clips both the video
+     * and its fallback img together.
+     * Loading follows the lazyvideo proximity contract (±1 viewport →
+     * preload auto + load(); rect-based, NOT IntersectionObserver — see
+     * lib/lazyvideo.ts header for why). Reduced motion: videos never load
+     * or play; the baked design stills stay (imgs are only hidden by
+     * .s27-live once a video actually presents frames). */
+    const vidsB = Array.from(el.querySelectorAll<HTMLVideoElement>(".s27-vid-b"));
+    const allVids = vidsB;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    // the fallback img hides only when its sibling video ACTUALLY presents
+    // frames — a stalled/failed video leaves the baked still in place
+    for (const v of allVids)
+      v.addEventListener("playing", () =>
+        v.parentElement!.classList.add("s27-live"),
+      );
+    const B_ON = 0.48; // forward crossing: still-group fade-in is underway
+    const B_OFF = 0.42; // re-arm + reset below this (hysteresis gap)
+    const bState = { live: false }; // shared with the per-breakpoint scrubs
+    const playFromStart = (vids: HTMLVideoElement[]) => {
+      if (reduced) return;
+      for (const v of vids) {
+        if (v.offsetParent === null) continue; // hidden breakpoint twin
+        try {
+          if (v.currentTime > 0.001) v.currentTime = 0;
+        } catch {
+          /* metadata not ready yet — play() starts from 0 anyway */
+        }
+        v.play().catch(() => {});
+      }
+    };
+    const parkAtStart = (vids: HTMLVideoElement[]) => {
+      for (const v of vids) {
+        if (!v.paused) v.pause();
+        try {
+          if (v.currentTime > 0.001) v.currentTime = 0;
+        } catch {
+          /* not loaded — already at 0 */
+        }
+      }
+    };
+
+    /* ---- classic (A) frame-sequence canvas (round 20) -----------------
+     * The pinned scrub maps p∈[0, CL_END] → frame 0..29 (clamped, held at
+     * 29 through A's fade-out window), so scrolling back plays the asset
+     * backwards frame-exactly — cf. s03. Both breakpoint canvases share
+     * one store; the baked hero img hides (.s27-live) after the first
+     * paint. Reduced motion: frames never load, the baked img stays. */
+    const clCanvases = Array.from(
+      el.querySelectorAll<HTMLCanvasElement>("canvas.s27-vid-a"),
+    );
+    const clStore = reduced ? null : mountFrameStore(el, ctx, CL_URLS);
+    let clIndex = 0; // wanted frame (scrub-owned)
+    const clPaint = () => {
+      if (!clStore) return;
+      for (const c of clCanvases) {
+        const painted = Number(c.dataset.frame ?? -1);
+        if (painted === clIndex) continue;
+        if (!clStore.loaded[clIndex]) continue; // repainted via onLoad
+        const g = c.getContext("2d");
+        if (!g) continue;
+        g.clearRect(0, 0, c.width, c.height);
+        g.drawImage(clStore.frames[clIndex], 0, 0, c.width, c.height);
+        c.dataset.frame = String(clIndex);
+        c.parentElement!.classList.add("s27-live");
+      }
+    };
+    clStore?.onLoad.add((i) => {
+      if (i === clIndex) clPaint();
+    });
+    const clSync = (p: number) => {
+      clIndex = Math.max(
+        0,
+        Math.min(
+          CL_FRAMES - 1,
+          Math.round((p / CL_END) * (CL_FRAMES - 1)),
+        ),
+      );
+      clPaint();
+    };
+
     // Pinned finale (per breakpoint so matchMedia rebuilds cleanly):
     // rest plateau on the Classic hero (0–0.28); the A-copy rolls out
     // upward, the hero cross-blends into the "Five years" still underneath
@@ -123,14 +271,18 @@ export const s27: Section = {
         isMobile ? ".stage--m" : ".stage--d",
       )!;
       const q = (s: string) => stage.querySelectorAll<HTMLElement>(s);
-      // the scrub owns the INNER hero image; the entrance owns the wrapper
+      // the scrub owns the INNER hero group; the entrance owns the wrapper
       // (.s27-hero / .s27-hero-m) — separate elements, so the time-based
       // entrance and the scrubbed cross-blend can never write to the same
       // property (round 9: they used to share one element, and whichever
       // rendered last "won" the resting frame — a fast ride into the pin
       // rested as a double exposure the user couldn't scroll away).
-      const heroSel = isMobile ? ".s27-hero-m img" : ".s27-bg";
-      const stillSel = isMobile ? ".s27-still-m" : ".s27-still";
+      // round 19: the scrub owns the GROUP wrappers (img + alpha video
+      // together) — .s27-hero-in / .s27-still-g — so the cross-blend clips
+      // each state's video with its baked still in one write, and the
+      // fallback imgs' opacity stays free for the .s27-live swap
+      const heroSel = ".s27-hero-in";
+      const stillSel = ".s27-still-g";
       const copyASel = isMobile ? ".s27-text-m" : ".s27-text";
       const flareSel = isMobile ? ".s27-flare--m" : ".s27-flare";
       const copyBSel = isMobile ? ".s27-title-b-m" : ".s27-title-b";
@@ -168,17 +320,20 @@ export const s27: Section = {
         { opacity: 0, y: -56, duration: 0.14, ease: "power1.in" },
         0.28,
       )
-        .fromTo(
-          q(stillSel),
-          { autoAlpha: 0, scale: 1.06, transformOrigin: "50% 50%" },
-          { autoAlpha: 1, scale: 1, duration: 0.3 },
-          0.32,
-        )
+        // client round 20: NO overlap — the classic pair is fully gone
+        // (hero out by 0.42) before the anniversary still starts rising at
+        // 0.46; the 0.42–0.46 beat is a clean dark field between states
         .fromTo(
           q(heroSel),
           { autoAlpha: 1, scale: 1, transformOrigin: "50% 50%" },
-          { autoAlpha: 0, scale: 1.04, duration: 0.26 },
-          0.36,
+          { autoAlpha: 0, scale: 1.04, duration: 0.12, ease: "power1.in" },
+          0.3,
+        )
+        .fromTo(
+          q(stillSel),
+          { autoAlpha: 0, scale: 1.06, transformOrigin: "50% 50%" },
+          { autoAlpha: 1, scale: 1, duration: 0.18, ease: "power1.out" },
+          0.46,
         )
         // the lens-flare crop inside the bar belongs to state A only (the
         // Screen-28 design bar carries no flare) — it rides the hero's
@@ -188,23 +343,42 @@ export const s27: Section = {
         .fromTo(
           q(flareSel),
           { opacity: 1 },
-          { opacity: 0, duration: 0.26 },
-          0.36,
+          { opacity: 0, duration: 0.12 },
+          0.3,
         )
         .fromTo(
           q(copyBSel),
           { opacity: 0, y: 56 },
           { opacity: 1, y: 0, duration: 0.16, ease: "power1.out" },
-          0.48,
+          0.54,
         )
         .fromTo(
           q(specsSel),
           { opacity: 0, y: 32 },
           // rests at the design's 60% white — the roll lands on 0.6, not 1
           { opacity: 0.6, y: 0, duration: 0.14, ease: "power1.out" },
-          0.56,
+          0.62,
         )
         .to({}, { duration: 0.3 }, 0.7);
+      // ---- finale-video trigger (round 19) ----
+      // pure function of scrub progress, evaluated on every timeline write
+      // (real scrolls, scrub catch-up, AND the QA harness's programmatic
+      // progress(p) jump): forward crossing fires the one-shot reveal,
+      // dropping back below B_OFF re-arms and parks it on transparent
+      // frame 0 so state A can never see a stale held finale frame.
+      const syncB = () => {
+        const p = tl.progress();
+        clSync(p); // classic frame follows the scrub — backwards included
+        if (p >= B_ON && !bState.live) {
+          bState.live = true;
+          playFromStart(vidsB);
+        } else if (p < B_OFF && bState.live) {
+          bState.live = false;
+          parkAtStart(vidsB);
+        }
+      };
+      tl.eventCallback("onUpdate", syncB);
+      syncB(); // breakpoint rebuild mid-pin: settle to the current progress
     };
     mm.add("(min-width: 641px)", build(false));
     mm.add("(max-width: 640px)", build(true));
@@ -240,6 +414,51 @@ export const s27: Section = {
           { opacity: 0, y: 36, duration: 0.9 },
           0.36
         );
+    }
+
+    // ---- video load/arrival driver (round 19) ----
+    if (reduced) {
+      // poster-still mode: never fetch or play — the baked imgs carry both
+      // states (cf. lib/lazyvideo reduced-motion contract)
+      for (const v of allVids) {
+        v.preload = "none";
+        v.autoplay = false;
+        v.removeAttribute("autoplay");
+      }
+    } else {
+      let loaded = false;
+      let wasVisible = false;
+      const update = () => {
+        const vh = window.innerHeight;
+        const r = el.getBoundingClientRect();
+        const near = r.bottom > -vh && r.top < vh * 2; // ±1 viewport preload
+        const visible = r.bottom > 0 && r.top < vh;
+        if (near && !loaded) {
+          loaded = true;
+          for (const v of allVids) {
+            v.preload = "auto";
+            v.load();
+          }
+        }
+        if (visible && !wasVisible) {
+          // fresh arrival: the classic (A) canvas needs no replay — it is
+          // a pure function of scrub progress now; if the pin currently
+          // rests in state B (e.g. a reload or return at the page
+          // bottom), replay the finale reveal — "replay on fresh
+          // re-arrivals"
+          if (bState.live) playFromStart(vidsB);
+        } else if (!visible && wasVisible) {
+          // offscreen: suspend everything — re-entry replays from 0
+          for (const v of allVids) if (!v.paused) v.pause();
+        }
+        wasVisible = visible;
+      };
+      // same rect-based listener trio as lib/lazyvideo (NOT
+      // IntersectionObserver — see that module's header for why)
+      ctx.lenis.on("scroll", update);
+      window.addEventListener("scroll", update, { passive: true });
+      ctx.ScrollTrigger.addEventListener("refresh", update);
+      update();
     }
   },
 };

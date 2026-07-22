@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { mountLazyVideo } from "../../lib/lazyvideo";
+import { prepareText, revealText, scrubWordArrival } from "../../lib/textfx";
 
 /* s16b — merged pinned page (former s16b + s17, client round 5):
  * ONE background for both states (client round 18): the sleek sequence
@@ -64,25 +65,27 @@ export const s16b: Section = {
       // The video bg is entrance-only territory now — the pinned scrub no
       // longer touches its opacity (single bg for both states), so the two
       // can't fight (cf. s03).
-      // clearProps on the copy: the headline is gradient-clipped text and must
-      // not keep an inline transform at rest (compositor-layer "ghost" hazard).
-      ctx.gsap
+      // Copy-a arrives in the ambient word-cascade (lib/textfx.ts): plain
+      // inline opacity from prepareText, revealText clearProps on complete —
+      // no gradient-clipped text ever rests on an inline transform
+      // (compositor-layer "ghost" hazard, same armor as before).
+      const titlesA = Array.from(
+        el.querySelectorAll<HTMLElement>(".s16b-copy-a .s16b-title"),
+      );
+      const subsA = Array.from(
+        el.querySelectorAll<HTMLElement>(".s16b-copy-a .s16b-sub"),
+      );
+      for (const t of titlesA) prepareText(t, { stagger: 0.08 });
+      for (const s of subsA) prepareText(s, { mode: "block" });
+      const entrance = ctx.gsap
         .timeline({ scrollTrigger: { trigger: el, start: "top 85%" } })
         .from(
           el.querySelectorAll(".s16b-photo"),
           { opacity: 0, scale: 1.04, duration: 1.2, ease: "power2.out" },
           0
-        )
-        .from(
-          el.querySelectorAll(".s16b-copy-a .s16b-title"),
-          { opacity: 0, y: 36, duration: 1.2, ease: "power3.out", clearProps: "all" },
-          0.15
-        )
-        .from(
-          el.querySelectorAll(".s16b-copy-a .s16b-sub"),
-          { opacity: 0, y: 36, duration: 1.2, ease: "power3.out", clearProps: "all" },
-          0.3
         );
+      for (const t of titlesA) entrance.add(revealText(t), 0.15);
+      for (const s of subsA) entrance.add(revealText(s), 0.7);
     }
 
     // Scrubbed drift on the video bg while the section scrolls into place: it
@@ -147,6 +150,15 @@ export const s16b: Section = {
         { opacity: 1, y: 0, duration: 0.16, ease: "power1.out" },
         0.5,
       ).to({}, { duration: 0.34 }, 0.66);
+      // ambient roll-IN flavor (lib/textfx.ts): the incoming headline's
+      // words cascade inside the container's arrival window. Sequencing is
+      // untouched — the container fromTo above still owns the roll and the
+      // visibility driver below still owns paint gating; words hold plain
+      // inline opacity at scrub rest like every other scrub-owned prop.
+      scrubWordArrival(tl, q1(".s16b-copy-b .s16b-title"), 0.5, {
+        window: 0.16,
+        y: 30,
+      });
       // ---- visibility driver (round-16 hunt) ----
       // Beat semantics preserved from round 8: copy-a paints only below
       // 0.44, copy-b only from 0.475 (gap ≥ 0.03 — the two can never paint

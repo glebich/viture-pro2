@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { prepareText, revealText } from "../../lib/textfx";
 
 const wrap = (m: boolean) => `
   <div class="s25-wrap${m ? " s25-wrap--m" : ""}">
@@ -14,16 +15,15 @@ export const s25: Section = {
     <div class="stage stage--m">${wrap(true)}</div>
   `,
   init(el, ctx) {
-    ctx.gsap
-      .timeline({
-        scrollTrigger: { trigger: el, start: "top 78%" },
-        defaults: { ease: "power3.out" },
-      })
-      .from(el.querySelectorAll(".s25-label"), { opacity: 0, y: 24, duration: 0.8 })
-      .from(
-        el.querySelectorAll(".s25-title"),
-        { opacity: 0, y: 36, duration: 0.9 },
-        0.12
-      );
+    // Ambient text language (lib/textfx.ts): title words condense in with a
+    // slow drift + blur; the label follows as a soft block fade.
+    const q = (s: string) => Array.from(el.querySelectorAll<HTMLElement>(s));
+    for (const t of q(".s25-title")) prepareText(t);
+    for (const l of q(".s25-label")) prepareText(l, { mode: "block" });
+    const tl = ctx.gsap.timeline({
+      scrollTrigger: { trigger: el, start: "top 78%" },
+    });
+    for (const t of q(".s25-title")) tl.add(revealText(t), 0);
+    for (const l of q(".s25-label")) tl.add(revealText(l), 0.5);
   },
 };

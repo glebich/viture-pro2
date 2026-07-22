@@ -18,6 +18,15 @@
   pointer-events: none;
 }
 
+/* round 19: inner group = baked still + transparent product video — the
+   pinned scrub cross-blends THIS wrapper (autoAlpha), the entrance owns
+   .s27-hero(-m), and the imgs' own opacity belongs to the .s27-live swap
+   below — three writers, three disjoint targets. */
+.s27-hero-in {
+  position: absolute;
+  inset: 0;
+}
+
 .s27-bg {
   position: absolute;
   inset: 0;
@@ -27,9 +36,18 @@
   pointer-events: none;
 }
 
-/* state-B still (Screen-28) — hidden at rest, the pinned scrub blends it in.
-   The harvest code carries blur(30px) on it, but the design export shows it
-   sharp — the effect is disabled in the design, so no filter here. */
+/* state-B group (Screen-28 still + finale video) — hidden at rest, the
+   pinned scrub blends the whole group in. */
+.s27-still-g {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* state-B still (Screen-28). The harvest code carries blur(30px) on it, but
+   the design export shows it sharp — the effect is disabled in the design,
+   so no filter here. */
 .s27-still {
   position: absolute;
   inset: 0;
@@ -37,7 +55,45 @@
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+}
+
+/* ---- transparent product videos (round 19) ----
+   Full-frame 1920×1080 alpha renders of ONLY the product; each element rect
+   maps the video's product alpha bbox onto its design still's product bbox
+   (registration math in index.ts). The imgs stay as pre-load / reduced-
+   motion fallbacks and fade out the moment the sibling video first presents
+   frames (.s27-live set on the group by the 'playing' listener) — the two
+   product poses differ slightly, so stacking them would rim-ghost. */
+.s27-vid {
+  position: absolute;
+  pointer-events: none;
+}
+
+.s27-hero-in img,
+.s27-still-g img {
+  transition: opacity 0.25s ease;
+}
+
+.s27-hero-in.s27-live img,
+.s27-still-g.s27-live img {
   opacity: 0;
+}
+
+/* classic: uniform scale 0.9701, product centers registered */
+.stage--d .s27-vid-a {
+  left: -52.7px;
+  top: 17.9px;
+  width: 1862.6px;
+  height: 1047.7px;
+}
+
+/* finale: uniform scale 0.8145, product width + top edge registered
+   (the design product's bottom is cropped by the frame) */
+.stage--d .s27-vid-b {
+  left: 187.1px;
+  top: 267.7px;
+  width: 1563.8px;
+  height: 879.7px;
 }
 
 .s27-text {
@@ -306,7 +362,7 @@
 
 /* state-B still, mobile (Screen-27-01b design rect: left −22.93%, width
    146.13%, center-y at 50% − 107.5px → static top = 144.4px so the scrub
-   owns the transform channel) */
+   owns the transform channel; rest-hidden state lives on .s27-still-g) */
 .s27-still-m {
   position: absolute;
   left: -22.93%;
@@ -315,7 +371,26 @@
   height: auto;
   top: 144.4px;
   pointer-events: none;
-  opacity: 0;
+}
+
+/* mobile video rects — the desktop registration mapped through each state's
+   measured design transform:
+   A: hero img = 1920-frame at (−209.2, 0) 835.9×471.0 inside the hero
+      window (scale ≈ 0.4354/0.4361) → element in-window
+   B: still img = 1920-frame at (−86.0, 144.4) 548.0×308.25 in stage px
+      (scale 0.28542) → element in-stage */
+.stage--m .s27-vid-a {
+  left: -232.2px;
+  top: 7.8px;
+  width: 811px;
+  height: 456.9px;
+}
+
+.stage--m .s27-vid-b {
+  left: -32.6px;
+  top: 220.8px;
+  width: 446.4px;
+  height: 251.1px;
 }
 
 .s27-text-m {

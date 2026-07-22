@@ -36,10 +36,9 @@
     #0f1531 30%,
     #0a0d16 35%,
     #0a0d16 72%,
-    #22315c 79%,
-    #6883b4 86%,
-    #aec2e2 93%,
-    #d9e5f6 100%
+    #0e1526 82%,
+    #16244a 92%,
+    #101a33 100%
   );
 }
 
@@ -55,11 +54,9 @@
     #0f1531 30%,
     #0a0d16 35%,
     #0a0d16 58%,
-    #23345f 66%,
-    #4f6a9f 74%,
-    #8aa3cc 83%,
-    #c3d2ec 92%,
-    #d9e5f6 100%
+    #101a33 70%,
+    #1b2d5a 82%,
+    #131f3e 100%
   );
   opacity: 0;
 }
@@ -76,10 +73,9 @@
     #0f1531 26%,
     #0a0d16 30%,
     #0a0d16 70%,
-    #22315c 77%,
-    #6883b4 85%,
-    #aec2e2 93%,
-    #d9e5f6 100%
+    #0e1526 80%,
+    #16244a 91%,
+    #101a33 100%
   );
 }
 
@@ -95,11 +91,9 @@
     #0f1531 26%,
     #0a0d16 30%,
     #0a0d16 55%,
-    #23345f 63%,
-    #4f6a9f 72%,
-    #8aa3cc 82%,
-    #c3d2ec 91%,
-    #d9e5f6 100%
+    #101a33 67%,
+    #1b2d5a 80%,
+    #131f3e 100%
   );
   opacity: 0;
 }
@@ -113,35 +107,10 @@
   z-index: 1;
 }
 
-/* hero glasses slot — round 17: a one-shot 1920×1080 sequence <video>
-   (16:9 = box aspect, so cover never crops) — DOF is baked into the asset.
-   The mp4 is OPAQUE on a pure-black studio field (the old webp render was
-   transparent), so the box edges would cut hard lines across the blue veil
-   bands — feather them with a mask. Ramp widths sit inside the video's own
-   black margins (content bbox 296..1603 × 98..955 of 1920×1080 ⇒ margins
-   15.4/16.5/9.1/11.6%), so the glasses themselves are never touched. */
-.s03-prod--glasses,
-.s03-prod--glasses-m {
-  -webkit-mask-image: linear-gradient(
-      90deg,
-      transparent 0,
-      #fff 11.5%,
-      #fff 88.5%,
-      transparent 100%
-    ),
-    linear-gradient(180deg, transparent 0, #fff 7%, #fff 89.5%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(
-      90deg,
-      transparent 0,
-      #fff 11.5%,
-      #fff 88.5%,
-      transparent 100%
-    ),
-    linear-gradient(180deg, transparent 0, #fff 7%, #fff 89.5%, transparent 100%);
-  mask-composite: intersect;
-}
-
+/* hero glasses slot — round 18: a scroll-scrubbed TRANSPARENT frame
+   sequence painted on a 1920×1080 <canvas> (16:9 = box aspect, so the CSS
+   stretch is a uniform scale). The glasses float directly on the veil like
+   the old transparent webp render — DOF baked into the frames. */
 .s03-prod--glasses {
   left: 245.35px;
   top: 156px;

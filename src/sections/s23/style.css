@@ -8,6 +8,8 @@
   top: -845px;
   width: 8309px;
   height: 2279px;
+  /* scrubbed parallax drift lives on this wrapper (transform-only) */
+  will-change: transform;
 }
 .s23-bg img {
   width: 100%;
@@ -36,6 +38,8 @@
   top: -674px;
   width: 1872px;
   height: 1790px;
+  /* scrubbed parallax drift lives on this wrapper (transform-only) */
+  will-change: transform;
 }
 .s23m-bg img {
   width: 100%;

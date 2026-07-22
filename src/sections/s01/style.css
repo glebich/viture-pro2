@@ -1,16 +1,18 @@
 /* ---------- s01 — hero-photo loader (client round 10) ---------- */
 
-/* stage fill is transparent: the photo stage sits at the bottom, the warm
-   fluid veil dissolves above it, and the counter/line-art stages stay on
-   top so the count is always readable */
+/* stage fill is transparent: inside the content stage the photo sits at
+   the bottom, the warm fluid veil dissolves above it and the line art draws
+   on top; the counter stages stay above everything (incl. the feather) so
+   the count is always readable */
 #s01 .stage {
   background: transparent;
 }
 
 /* hero photo — the design's composed model portrait (Figma 224:3905 ==
    the original harvest hero, public/assets/1920_Screen-01-01/imgBg11.webp).
-   Lives inside a stage per breakpoint so it scales with the same cover
-   math as the line art above it; center cover gives the mobile crop. */
+   Sibling of the veil and the line art INSIDE the same stage per breakpoint
+   (registration architecture — see s01/index.ts): one shared transform
+   chain end-to-end; center cover gives the mobile crop. */
 .s01-photo {
   position: absolute;
   inset: -2px;
@@ -20,7 +22,10 @@
   will-change: transform;
 }
 
-/* full-bleed loader fluid veil (above the photo, below the counter) */
+/* loader fluid veil — INSIDE each breakpoint stage, above the photo and
+   below the line art (the stage covers the viewport, so the veil still
+   reads full-bleed); one canvas per breakpoint, the visible one is driven
+   (see s01/index.ts) */
 .s01-veil {
   position: absolute;
   inset: 0;
@@ -35,13 +40,15 @@
      softening is needed to melt the film grain; 1px ate the fine detail */
   filter: blur(0.5px);
 }
-/* slow-breathing warm glow accent over the fluid */
+/* slow-breathing warm glow accent over the fluid — sized in stage units
+   (1382px == 72vmax at the 1920×1080 design size) now that it lives inside
+   the scaled stage */
 .s01-glowfx {
   position: absolute;
   left: 50%;
   top: 58%;
-  width: 72vmax;
-  height: 72vmax;
+  width: 1382px;
+  height: 1382px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(
@@ -66,20 +73,13 @@
   will-change: transform;
 }
 
-/* glasses line-art — the official 474×158 outline art (see s01/index.ts)
-   mapped onto the photo's glasses in the 1920×1080 design space: box
-   660,318 → 1232,509 keeps the source aspect (572 × 190.7).
-   The scale(0.98) is a deliberate registration bias (client round: outline
-   "feels too big"): the trace sits ~2% INSIDE the frame edge, which reads
-   tighter against the photo's soft frame highlight. */
+/* glasses line-art — the official 506×158 outline art. Its left/top/width/
+   height are NOT here: both breakpoint boxes are DERIVED in s01/index.ts
+   from the measured photo frame (x 683–1215 / y 332–505 at 1920×1080) and
+   written as inline styles, so registration cannot drift by hand-editing
+   one side. */
 .s01-glasses {
   position: absolute;
-  left: 691px;
-  top: 334px;
-  width: 515px;
-  height: 169px;
-  transform: scale(0.98);
-  transform-origin: center center;
   pointer-events: none;
   overflow: visible;
 }
@@ -91,36 +91,14 @@
   filter: drop-shadow(0 0 5px rgba(255, 200, 150, 0.8))
     drop-shadow(0 0 18px rgba(255, 160, 90, 0.45));
 }
-/* stroke weights: the source art's 1.5 / 1 / 0.5 hierarchy scaled ×1.5 so
-   the frame reads ~2-3 display px once the 474-unit viewBox stretches to
-   the 572-design-px box */
-.s01-draw--outer,
-.s01-draw--rim {
+/* stroke weights: the source art's 1.5 / 1 hierarchy scaled ×1.5 so the
+   frame reads ~2-3 display px once the 506-unit viewBox stretches to the
+   522-design-px box */
+.s01-draw--outer {
   stroke-width: 2.25;
 }
-.s01-draw--bridge,
-.s01-draw--detail {
+.s01-draw--bridge {
   stroke-width: 1.5;
-}
-.s01-draw--hair {
-  stroke-width: 0.75;
-}
-/* VITURE V logomark inside the right lens — a solid fill (per reference),
-   not a stroke; it condenses in near the end of the count */
-.s01-logo {
-  opacity: 0;
-}
-.s01-logo path {
-  fill: rgba(255, 244, 232, 0.95);
-}
-
-/* mobile: the same design-space art mapped onto the photo's center-crop
-   (image cover scale 0.7505, x offset −533 — see s01/index.ts note) */
-.s01-glasses--m {
-  left: -15px;
-  top: 251px;
-  width: 387px;
-  height: 127px;
 }
 
 /* bottom feather: fades in late so s01's photo foot darkens into the exact

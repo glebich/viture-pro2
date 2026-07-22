@@ -1,6 +1,7 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { mountLazyVideo } from "../../lib/lazyvideo";
+import { prepareText, revealText, scrubWordArrival } from "../../lib/textfx";
 
 /* Backdrop is identical across the three states — referenced once from -01.
    The center media render differs per state. */
@@ -133,6 +134,10 @@ export const s24: Section = {
           /* text roll: up + out, then up + in, trailing the card */
           .fromTo(texts[i], { y: 0, autoAlpha: 1 }, { y: -40, autoAlpha: 0, duration: 0.18, ease: "power2.in" }, t + 0.02)
           .fromTo(texts[i + 1], { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.22, ease: "power3.out" }, t + 0.3);
+        /* ambient roll-IN flavor (lib/textfx.ts): headline + sub words
+           cascade as one flow inside the container's arrival window — the
+           container fromTo above keeps owning sequencing/visibility */
+        scrubWordArrival(tl, texts[i + 1], t + 0.3, { window: 0.26, y: 22 });
       };
       push(0); /* Gaming -> Entertainment */
       push(1); /* Entertainment -> Productivity */
@@ -155,11 +160,17 @@ export const s24: Section = {
     mm.add("(max-width: 640px)", () => {
       const m = el.querySelector<HTMLElement>(".stage--m")!;
       const $ = (sel: string) => m.querySelector<HTMLElement>(sel)!;
-      gsap
+      // ambient text language (lib/textfx.ts): headline words condense in,
+      // the sub follows as a soft block fade
+      const mh = $(".s24m-headline");
+      const ms = $(".s24m-sub");
+      prepareText(mh, { y: 20 });
+      prepareText(ms, { mode: "block" });
+      const mTl = gsap
         .timeline({ scrollTrigger: { trigger: el, start: "top 78%" } })
-        .from($(".s24m-backdrop"), { opacity: 0, scale: 1.04, duration: 0.9, ease: "power3.out" }, 0)
-        .from($(".s24m-media"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.12)
-        .from($(".s24m-text"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.24);
+        .from($(".s24m-backdrop"), { opacity: 0, scale: 1.04, duration: 1.3, ease: "sine.out" }, 0)
+        .from($(".s24m-media"), { opacity: 0, y: 32, duration: 1.2, ease: "power2.out" }, 0.12);
+      mTl.add(revealText(mh), 0.3).add(revealText(ms), 0.75);
     });
 
     syncVideos = mountLazyVideo(el, ctx, {

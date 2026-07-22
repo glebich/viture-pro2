@@ -1,5 +1,6 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
+import { prepareText, revealText, scrubWordArrival } from "../../lib/textfx";
 
 /* Asset dirs — shared constants (ellipse, glow, buttons) are referenced from
    one canonical copy; per-state product renders come from their own dirs. */
@@ -177,11 +178,22 @@ export const s22: Section = {
          a fast fling can never land on the pin's first frame with the
          chrome mid-fade. */
       let intro: gsap.core.Timeline | null = null;
-      if (!qaProgress)
+      if (!qaProgress) {
+        // ambient text language (lib/textfx.ts): slide 1's headline words
+        // condense in while the chrome soft-fades — the pin's onEnter
+        // force-completes the whole timeline (revealText clearProps
+        // included), so a fling still lands on fully assembled chrome
+        const h1 = copies[0].querySelector<HTMLElement>(".s22-headline")!;
+        const sub1 = copies[0].querySelector<HTMLElement>(".s22-sub")!;
+        prepareText(h1, { y: 22 });
+        prepareText(sub1, { mode: "block" });
         intro = gsap
           .timeline({ scrollTrigger: { trigger: el, start: "top 45%" } })
-          .from(glow, { opacity: 0, duration: 0.9, ease: "power3.out" }, 0)
-          .from($(".s22-collection"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.08);
+          .from(glow, { opacity: 0, duration: 1.2, ease: "sine.out" }, 0)
+          .from($(".s22-collection"), { opacity: 0, y: 28, duration: 1.1, ease: "power2.out" }, 0.08)
+          .add(revealText(h1), 0.12)
+          .add(revealText(sub1), 0.6);
+      }
 
       /* scrubbed master timeline: labels s0..s4 at integer positions,
          one unit per state transition (4 transitions -> end +=500%;
@@ -229,6 +241,15 @@ export const s22: Section = {
           .fromTo(copies[i + 1], { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.22, ease: "power3.out" }, t + 0.32)
           /* counter: odometer digit roll */
           .fromTo(odoStrip, { y: -ODO * i }, { y: -ODO * (i + 1), duration: 0.3, ease: "power2.inOut" }, t + 0.12);
+        /* ambient roll-IN flavor (lib/textfx.ts): the incoming headline's
+           words cascade inside the container's arrival window — the
+           container fromTo above keeps owning sequencing/visibility */
+        scrubWordArrival(
+          tl,
+          copies[i + 1].querySelector<HTMLElement>(".s22-headline")!,
+          t + 0.32,
+          { window: 0.22, y: 26 },
+        );
       };
       slide(0);
       slide(1);
@@ -321,12 +342,19 @@ export const s22: Section = {
           );
       }
 
-      gsap
+      // ambient text language (lib/textfx.ts): dock + copy chrome soft-fade
+      // while the headline words condense in and the price follows
+      const mh = $(".s22m-headline");
+      const mPrice = $(".s22m-price");
+      prepareText(mh, { y: 20 });
+      prepareText(mPrice, { mode: "block" });
+      const mIntro = gsap
         .timeline({ scrollTrigger: { trigger: el, start: "top 78%" } })
-        .from($(".s22m-glow"), { opacity: 0, duration: 0.9, ease: "power3.out" }, 0)
-        .from($(".s22m-dock"), { opacity: 0, y: 40, duration: 0.9, ease: "power3.out" }, 0.12)
-        .from($(".s22m-copy"), { opacity: 0, y: 36, duration: 0.9, ease: "power3.out" }, 0.2)
-        .from($(".s22m-next"), { opacity: 0, duration: 0.7, ease: "power3.out" }, 0.32);
+        .from($(".s22m-glow"), { opacity: 0, duration: 1.2, ease: "sine.out" }, 0)
+        .from($(".s22m-dock"), { opacity: 0, y: 34, duration: 1.2, ease: "power2.out" }, 0.12)
+        .from($(".s22m-copy"), { opacity: 0, duration: 0.9, ease: "sine.out" }, 0.2)
+        .from($(".s22m-next"), { opacity: 0, duration: 0.9, ease: "sine.out" }, 0.5);
+      mIntro.add(revealText(mh), 0.3).add(revealText(mPrice), 0.8);
 
       /* the top chrome block sits in the veil's zone (y 112+): its entrance
          waits until the front-loaded compress above has cleared it, so the

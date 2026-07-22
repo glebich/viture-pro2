@@ -1,7 +1,24 @@
 import "./style.css";
 import type { Section } from "../../lib/section";
 import { createGlassText, type GlassText } from "../../lib/glasstext";
-import { mountLazyVideo } from "../../lib/lazyvideo";
+import { mountFrameStore } from "../../lib/frameseq";
+
+/* Round 18 — the Five Years glasses are a SCROLL-SCRUBBED alpha frame
+ * sequence (client: tied to scroll, plays backwards when scrolling back,
+ * frame-smooth). 30 transparent 1920×1080 WebP frames drawn onto a canvas
+ * that is BOTH the visible DOM layer in the glasses slot AND the glass
+ * shader's composition layer; the pin's scrub progress maps directly to a
+ * frame index, so bidirectional scrubbing and exact per-position frames
+ * fall out for free. Frames preload eagerly once the section is within a
+ * viewport (rect-based, cf. lazyvideo). Reduced motion: static final frame. */
+const FRAME_COUNT = 30;
+const frameUrl = (i: number) =>
+  `/assets/fy-frames/fy-${String(i).padStart(2, "0")}.webp`;
+/* scrub range of state A that carries the sequence: frames 0→29 across
+ * p 0→FRAME_END; beyond, the last frame holds while the swap choreography
+ * takes over (glasses fade toward the dock earlier on mobile) */
+const FRAME_END_D = 0.35;
+const FRAME_END_M = 0.3;
 
 /* ---------- s03 — "Five Years" glass journey ----------
  * One pinned page merging the former s03 (glasses render) and s04 (Mobile
@@ -34,11 +51,13 @@ const BG_GLASSES_D: Array<[number, string]> = [
   [0.255, "#1b2868"],
   [0.3, "#0f1531"],
   [0.35, "#0a0d16"],
+  /* round 20 (client: "too blue in the bottom") — the bright blue-white
+   * bloom is replaced by a subtle deep-navy glow that ends DARK, meeting
+   * s05's near-black top (#080911) without a seam */
   [0.72, "#0a0d16"],
-  [0.79, "#22315c"],
-  [0.86, "#6883b4"],
-  [0.93, "#aec2e2"],
-  [1.0, "#d9e5f6"],
+  [0.82, "#0e1526"],
+  [0.92, "#16244a"],
+  [1.0, "#101a33"],
 ];
 const BG_DOCK_D: Array<[number, string]> = [
   [0.0, "#b8cdea"],
@@ -50,11 +69,9 @@ const BG_DOCK_D: Array<[number, string]> = [
   [0.3, "#0f1531"],
   [0.35, "#0a0d16"],
   [0.58, "#0a0d16"],
-  [0.66, "#23345f"],
-  [0.74, "#4f6a9f"],
-  [0.83, "#8aa3cc"],
-  [0.92, "#c3d2ec"],
-  [1.0, "#d9e5f6"],
+  [0.7, "#101a33"],
+  [0.82, "#1b2d5a"],
+  [1.0, "#131f3e"],
 ];
 const BG_GLASSES_M: Array<[number, string]> = [
   [0.0, "#b8cdea"],
@@ -66,10 +83,9 @@ const BG_GLASSES_M: Array<[number, string]> = [
   [0.26, "#0f1531"],
   [0.3, "#0a0d16"],
   [0.7, "#0a0d16"],
-  [0.77, "#22315c"],
-  [0.85, "#6883b4"],
-  [0.93, "#aec2e2"],
-  [1.0, "#d9e5f6"],
+  [0.8, "#0e1526"],
+  [0.91, "#16244a"],
+  [1.0, "#101a33"],
 ];
 const BG_DOCK_M: Array<[number, string]> = [
   [0.0, "#b8cdea"],
@@ -81,11 +97,9 @@ const BG_DOCK_M: Array<[number, string]> = [
   [0.26, "#0f1531"],
   [0.3, "#0a0d16"],
   [0.55, "#0a0d16"],
-  [0.63, "#23345f"],
-  [0.72, "#4f6a9f"],
-  [0.82, "#8aa3cc"],
-  [0.91, "#c3d2ec"],
-  [1.0, "#d9e5f6"],
+  [0.67, "#101a33"],
+  [0.8, "#1b2d5a"],
+  [1.0, "#131f3e"],
 ];
 
 /* Product placements, design px (also the glass-shader layer rects) */
@@ -106,7 +120,7 @@ export const s03: Section = {
     <div class="s03-inner">
       <div class="s03-veil"></div>
       <div class="s03-veil s03-veil--dock"></div>
-      <video class="s03-prod s03-prod--glasses" muted playsinline preload="auto" poster="/video/fiveyears-poster.jpg" src="/video/fiveyears-seq.mp4" aria-hidden="true"></video>
+      <canvas class="s03-prod s03-prod--glasses" width="1920" height="1080" aria-hidden="true"></canvas>
       <img class="s03-prod s03-prod--dock" src="${A_D4}/imgMobileDock.webp" alt="" />
       <p class="s03-big cap-trim">Five Years</p>
       <div class="s03-exit"></div>
@@ -116,7 +130,7 @@ export const s03: Section = {
     <div class="s03-inner">
       <div class="s03-veil s03-veil--m"></div>
       <div class="s03-veil s03-veil--dock-m"></div>
-      <video class="s03-prod s03-prod--glasses-m" muted playsinline preload="auto" poster="/video/fiveyears-poster.jpg" src="/video/fiveyears-seq.mp4" aria-hidden="true"></video>
+      <canvas class="s03-prod s03-prod--glasses-m" width="1920" height="1080" aria-hidden="true"></canvas>
       <img class="s03-prod s03-prod--dock-m" src="${A_MB}/imgMobileDock.webp" alt="" />
       <p class="s03-big s03-big--m cap-trim">Five Years</p>
       <div class="s03-exit"></div>
@@ -126,12 +140,18 @@ export const s03: Section = {
     const { gsap } = ctx;
     const mm = gsap.matchMedia();
 
-    // Round 17: state A's glasses render is a one-shot 30fps sequence video
-    // (client: "starts playing once you scroll through it, then stops, no
-    // loop"). lazyvideo playOnce owns the lifecycle — restart from 0 on
-    // each viewport entry (the pin starts ON state A, so arrival = play),
-    // hold the last frame after 'ended', poster under reduced motion.
-    mountLazyVideo(el, ctx, { playOnce: true });
+    // Shared frame store (round 18): eager preload of all 30 alpha frames
+    // once the section is within ±1 viewport; both breakpoint builds draw
+    // from it.
+    const store = mountFrameStore(
+      el,
+      ctx,
+      Array.from({ length: FRAME_COUNT }, (_, i) => frameUrl(i)),
+    );
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     // QA harness freezes scrubbed timelines at a fixed progress; entrance
     // from-states would then stick, so skip them in that mode (cf. s10).
@@ -144,9 +164,10 @@ export const s03: Section = {
         isMobile ? ".stage--m" : ".stage--d",
       )!;
       const inner = stage.querySelector<HTMLElement>(".s03-inner")!;
-      const prodA = stage.querySelector<HTMLVideoElement>(
+      const prodA = stage.querySelector<HTMLCanvasElement>(
         isMobile ? ".s03-prod--glasses-m" : ".s03-prod--glasses",
       )!;
+      const prodACtx = prodA.getContext("2d")!;
       const prodB = stage.querySelector<HTMLImageElement>(
         isMobile ? ".s03-prod--dock-m" : ".s03-prod--dock",
       )!;
@@ -196,11 +217,46 @@ export const s03: Section = {
         fresnel: 0.055,
         streak: 0.19,
         flow: isMobile ? 16 : 30,
+        /* round 20: crystal facets tried and REVERTED per client ("get back
+           to previous version") — crack stays 0/off; the liquid-lens look
+           above is the approved one */
         onReady() {
           // WebGL path live — retire the flat CSS watermark
           big.style.visibility = "hidden";
         },
       });
+
+      // ---- scroll-scrubbed frame drawing (round 18) ----
+      // The scrub progress maps to a frame index (0→29 across p 0→FRAME_END,
+      // clamped — held at 29 beyond); the frame is drawn into the slot
+      // canvas, which doubles as the glass shader's composition layer, and
+      // the shader background is re-uploaded whenever the index changes.
+      // Backwards scrolling maps to lower indices — bidirectional for free.
+      const frameEnd = isMobile ? FRAME_END_M : FRAME_END_D;
+      let curFrame = -1;
+      let drawnFrame = -1;
+      const frameFor = (p: number) =>
+        reducedMotion
+          ? FRAME_COUNT - 1
+          : Math.max(
+              0,
+              Math.min(
+                FRAME_COUNT - 1,
+                Math.round((p / frameEnd) * (FRAME_COUNT - 1)),
+              ),
+            );
+      const drawFrame = () => {
+        if (curFrame < 0 || drawnFrame === curFrame || !store.loaded[curFrame])
+          return;
+        prodACtx.clearRect(0, 0, prodA.width, prodA.height);
+        prodACtx.drawImage(store.frames[curFrame], 0, 0);
+        drawnFrame = curFrame;
+        glass?.invalidateBg();
+      };
+      const loadHook = (i: number) => {
+        if (i === curFrame) drawFrame();
+      };
+      store.onLoad.add(loadHook);
 
       // One driver object: the visible DOM products and the glass shader's
       // background layers stay in perfect sync (same alpha/offset/scale).
@@ -220,6 +276,9 @@ export const s03: Section = {
         sB: 1.04,
       };
       const apply = () => {
+        const f = frameFor(st.p);
+        if (f !== curFrame) curFrame = f;
+        drawFrame();
         gsap.set(prodA, {
           autoAlpha: st.aA,
           x: st.dxA,
@@ -318,44 +377,8 @@ export const s03: Section = {
           );
       }
 
-      // Live refraction (round 17): while the sequence video plays, the
-      // shader's background composition must re-upload every presented
-      // frame so the view THROUGH the letters shows the live sequence
-      // (glasstext only recomposites on layer-state changes otherwise).
-      // requestVideoFrameCallback fires exactly once per new frame (30/s)
-      // and stops on its own when playback stops; rAF fallback polls while
-      // playing. Both re-arm on 'play', and 'pause'/'ended' push one final
-      // sync so the held last frame is what the glass refracts. glasstext's
-      // IntersectionObserver already gates the actual draw to near-viewport.
-      const ac = new AbortController();
-      let raf = 0;
-      const bump = () => glass?.invalidateBg();
-      const vfc = (
-        prodA as HTMLVideoElement & {
-          requestVideoFrameCallback?: (cb: () => void) => number;
-        }
-      ).requestVideoFrameCallback?.bind(prodA);
-      const loop = () => {
-        bump();
-        if (prodA.paused || prodA.ended) return;
-        if (vfc) vfc(loop);
-        else raf = requestAnimationFrame(loop);
-      };
-      prodA.addEventListener(
-        "play",
-        () => {
-          cancelAnimationFrame(raf);
-          if (vfc) vfc(loop);
-          else raf = requestAnimationFrame(loop);
-        },
-        { signal: ac.signal },
-      );
-      prodA.addEventListener("pause", bump, { signal: ac.signal });
-      prodA.addEventListener("ended", bump, { signal: ac.signal });
-
       return () => {
-        ac.abort();
-        cancelAnimationFrame(raf);
+        store.onLoad.delete(loadHook);
         glass?.destroy();
       };
     };

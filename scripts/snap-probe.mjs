@@ -60,6 +60,22 @@ const cases = [
   { name: "s16b unpin tail near s18 (end+0.75vh)", rest: pins.s16b.end + 0.75 * vh, expect: secs.s18 },
 ];
 
+// --- interior pin anchors (client round 12): the s06 card plateaus are
+// registered magnet targets (see src/sections/s06 CARD_ANCHOR_A/B: state-A
+// plateau centre p=0.77, state-B p=0.95). Rests within the ±35%vh catch
+// window of an anchor glide onto it; unanchored deep-pin rests still stay.
+{
+  const len = pins.s06.end - pins.s06.start;
+  const at = (p) => pins.s06.start + p * len;
+  cases.push(
+    { name: "s06 card anchor from below (p=0.71)", rest: at(0.71), expect: at(0.77) },
+    { name: "s06 card anchor from above (p=0.83)", rest: at(0.83), expect: at(0.77) },
+    { name: "s06 state-B anchor (p=0.92)", rest: at(0.92), expect: at(0.95) },
+    { name: "s06 mid mask-zoom no anchor (p=0.40)", rest: at(0.4), stay: true },
+    { name: "s06 exact card anchor (p=0.77)", rest: at(0.77), stay: true },
+  );
+}
+
 const results = [];
 for (const c of cases) {
   const dir = 1; // wheel down into the rest position
