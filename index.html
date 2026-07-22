@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VITURE Pro 2 — See the Unseen</title>
     <meta name="description" content="VITURE Pro 2 XR Glasses. Your personal giant screen, everywhere." />
+    <!-- perf round: the loader photo is the LCP and the above-fold text
+         (counter 300, nav 400/500) sits behind font-display:block — preload
+         all four so first paint never waits on a CSS-discovered fetch -->
+    <link rel="preload" as="image" href="/assets/1920_Screen-01-01/imgBg11.webp" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/SeasonSans-Light.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/SeasonSans-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/SeasonSans-Medium.woff2" crossorigin />
     <link rel="stylesheet" href="/src/styles/base.css" />
   </head>
   <body>

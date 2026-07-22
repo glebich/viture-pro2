@@ -99,11 +99,29 @@ const qaSections = qaOnly
   : (sections as Section[]);
 
 const mainEl = document.getElementById("sections")!;
+// perf round: below-fold sections get loading="lazy" decoding="async"
+// stamped into their <img> tags BEFORE innerHTML parses them — otherwise
+// the browser starts fetching all ~36MB of section imagery at load. The
+// above-fold set stays eager: s01/s02 are the opening viewport and s03's
+// product renders gate the glass shader's texture build (imageReady), so
+// deferring them would delay the etch to a near-arrival flash. Browsers
+// begin fetching lazy images 1–2 viewports out, well ahead of any pinned
+// choreography that needs them.
+const EAGER = new Set(["s01", "s02", "s03"]);
+// Videos also lose the autoplay ATTRIBUTE below the fold: Chrome fetches
+// autoplay-attributed media aggressively (often in full) even far
+// offscreen. Playback isn't affected — lib/lazyvideo and each section's
+// own choreography call play() explicitly on proximity/visibility; the
+// attribute only served as a declarative fallback.
+const lazyImgs = (html: string) =>
+  html
+    .replace(/<img(?![^>]*\bloading=)/g, '<img loading="lazy" decoding="async"')
+    .replace(/(<video\b[^>]*?)\sautoplay/g, "$1");
 for (const s of qaSections) {
   const el = document.createElement("section");
   el.className = "screen";
   el.id = s.id;
-  el.innerHTML = s.html;
+  el.innerHTML = EAGER.has(s.id) ? s.html : lazyImgs(s.html);
   mainEl.appendChild(el);
 }
 // init after all are in the DOM so cross-section triggers can resolve

@@ -8,19 +8,19 @@ import sharp from "sharp";
 mkdirSync("qa/textfx/isolate", { recursive: true });
 const BASE = "http://localhost:5173";
 const SHOTS = [
-  ["s02", "", 4200, "d"], ["s05", "", 4200, "d"], ["s20", "", 4200, "d"],
-  ["s21", "", 4200, "d"], ["s23", "", 5200, "d"], ["s25", "", 4200, "d"],
-  ["s26", "", 4200, "d"],
-  ["s16b", "&progress=0", 3200, "d"], ["s16b", "&progress=1", 3200, "d"],
-  ["s14", "&progress=1", 3200, "d"],
-  ["s22", "&progress=0", 3200, "d"], ["s22", "&progress=0.25", 3200, "d"],
-  ["s22", "&progress=0.5", 3200, "d"], ["s22", "&progress=0.75", 3200, "d"],
-  ["s22", "&progress=1", 3200, "d"],
-  ["s24", "&progress=0", 3200, "d"], ["s24", "&progress=0.5", 3200, "d"],
-  ["s24", "&progress=1", 3200, "d"],
-  ["s02", "", 4200, "m"], ["s21", "", 4200, "m"], ["s22", "", 4200, "m"],
-  ["s24", "", 4200, "m"], ["s23", "", 5200, "m"], ["s14", "&progress=1", 3200, "m"],
-  ["s16b", "&progress=1", 3200, "m"],
+  ["s02", "", 5000, "d"], ["s05", "", 5000, "d"], ["s20", "", 5000, "d"],
+  ["s21", "", 5000, "d"], ["s23", "", 5600, "d"], ["s25", "", 5000, "d"],
+  ["s26", "", 5000, "d"],
+  ["s16b", "&progress=0", 5000, "d"], ["s16b", "&progress=1", 5000, "d"],
+  ["s14", "&progress=1", 5000, "d"],
+  ["s22", "&progress=0", 5000, "d"], ["s22", "&progress=0.25", 5000, "d"],
+  ["s22", "&progress=0.5", 5000, "d"], ["s22", "&progress=0.75", 5000, "d"],
+  ["s22", "&progress=1", 5000, "d"],
+  ["s24", "&progress=0", 5000, "d"], ["s24", "&progress=0.5", 5000, "d"],
+  ["s24", "&progress=1", 5000, "d"],
+  ["s02", "", 5000, "m"], ["s21", "", 5000, "m"], ["s22", "", 5000, "m"],
+  ["s24", "", 5000, "m"], ["s23", "", 5600, "m"], ["s14", "&progress=1", 5000, "m"],
+  ["s16b", "&progress=1", 5000, "m"],
 ];
 
 const browser = await chromium.launch();
@@ -33,7 +33,7 @@ const cap = async (id, query, wait, bp, variant, out) => {
   page.on("console", (m) => m.type() === "error" && errors.push(m.text().slice(0, 160)));
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 160)));
   await page.goto(`${BASE}/?only=${id}${query}${variant}`, { waitUntil: "networkidle" });
-  await page.addStyleTag({ content: "#fluid-bg, video { visibility: hidden !important; }" });
+  await page.addStyleTag({ content: "#fluid-bg, video, #site-header { visibility: hidden !important; }" });
   await page.waitForTimeout(wait);
   await page.screenshot({ path: out });
   if (errors.length) console.log(`  !! ${out}: ${errors.join(" | ")}`);

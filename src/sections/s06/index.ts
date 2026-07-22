@@ -103,11 +103,15 @@ const stageHtml = (bp: "d" | "m") => {
   // behind the mask (.s06-vid — the post-handoff surface) and once
   // screen-locked INSIDE the mask (.s06-mvid) so the loop is already playing
   // through the letters during travel+zoom and the handoff has zero jump.
+  // preload="none" (perf round): with "metadata" Chrome opportunistically
+  // buffered the ENTIRE 1.9MB loop ×2 at page load, five viewports early —
+  // lib/lazyvideo upgrades to preload="auto"+load() one viewport out, so
+  // the loop is still warm before the pin can possibly show it.
   const vid = (cls: string) => `<div class="${cls}"><video
         muted
         loop
         playsinline
-        preload="metadata"
+        preload="none"
         poster="/video/main-poster.jpg"
         src="/video/main-screen.mp4"
         aria-hidden="true"
