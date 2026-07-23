@@ -238,12 +238,23 @@ export const s15: Section = {
     let raf = 0;
     let last = 0;
     let acc = 0;
+    // round 22 (client): a 4s BREAK on the rest pose before every replay —
+    // armed on each arrival at frame 29 (intro landing + every completed
+    // ping-pong pass); stepping stays paused while it runs down
+    const HOLD_MS = 4000;
+    let holdMs = 0;
     const loop = (t: number) => {
       raf = requestAnimationFrame(loop);
       if (last === 0) last = t;
       let dt = t - last;
       last = t;
       if (dt > 250) dt = STEP;
+      if (holdMs > 0) {
+        holdMs -= dt;
+        acc = 0;
+        draw();
+        return;
+      }
       acc += dt;
       let steps = 0;
       while (acc >= STEP && steps < 3) {
@@ -253,6 +264,10 @@ export const s15: Section = {
         }
         acc -= STEP;
         steps++;
+        if (idx === N - 1) {
+          holdMs = HOLD_MS;
+          break;
+        }
       }
       draw();
     };
