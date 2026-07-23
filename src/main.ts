@@ -6,6 +6,7 @@ import type { Section, SectionCtx } from "./lib/section";
 import { sections } from "./sections";
 import { header } from "./sections/header";
 import { mountPaginator } from "./lib/paginator";
+import { mountScrollHint } from "./lib/scrollhint";
 import { createFluid, SECTION_PALETTES, SECTION_CALMS } from "./lib/fluid";
 import type { FluidBlend } from "./lib/fluid";
 import { mountScrollFx } from "./lib/scrollfx";
@@ -268,6 +269,7 @@ if (!qaOnly && !qaParams.has("nofx")) mountScrollFx(lenis, gsap);
 // window.scrollTo natively, which never arms it anyway).
 if (!qaOnly && !qaParams.has("nosnap")) mountSnap(lenis, gsap);
 
+mountScrollHint();
 const paginator = mountPaginator(
   (sections as Section[]).map((s) => s.id),
   (id) => {
