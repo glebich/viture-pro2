@@ -156,24 +156,27 @@
 
 /* ----- mobile: vertical card stack (Figma: left 40 / top 112 / gap 10),
    scrollable in place so the clipped cards stay reachable ----- */
+/* round 21 (client: "impossible to scroll thru blocks" on mobile) — the
+   rail was an overflow-y:auto INNER scroller, so touch swipes over a card
+   scrolled the rail instead of the page and the visitor stalled here. Now
+   the rail only clips; the page's own scroll drives .s26-stack through it
+   via a pinned scrub (see index.ts) — swiping anywhere always moves the
+   page. */
 .s26-rail {
   position: absolute;
   left: 40px;
   top: 112px;
   bottom: 0;
   width: 295px;
+  overflow: hidden;
+}
+
+.s26-stack {
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  touch-action: pan-y;
-}
-
-.s26-rail::-webkit-scrollbar {
-  display: none;
+  will-change: transform;
 }
 
 .s26-rail .s26-card {

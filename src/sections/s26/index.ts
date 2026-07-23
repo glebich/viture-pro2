@@ -179,7 +179,7 @@ const rowsD = `
   <div class="s26-row s26-row--2">${cardsD.slice(4).map((c) => card(c, false)).join("")}</div>`;
 
 const railM = `
-  <div class="s26-rail">${cardsM.map((c) => card(c, true)).join("")}</div>`;
+  <div class="s26-rail"><div class="s26-stack">${cardsM.map((c) => card(c, true)).join("")}</div></div>`;
 
 export const s26: Section = {
   id: "s26",
@@ -219,6 +219,45 @@ export const s26: Section = {
     el.querySelectorAll<HTMLElement>(".stage--m .s26-card").forEach((c, i) => {
       const h = c.querySelector<HTMLElement>(".s26-heading");
       if (h) tl.add(revealText(h), 0.35 + i * 0.08);
+    });
+
+    /* round 21 — mobile card rail rides the PAGE scroll (pinned scrub)
+       instead of an inner overflow scroller: touch swipes over a card used
+       to scroll the rail (or die on it entirely under Lenis) and visitors
+       could not get past this section. The pin length equals the stack's
+       clipped overflow so the scroll speed through the cards matches the
+       finger 1:1; y/offsets are layout px (the stage's cover-scale rides
+       ABOVE them via transform, and the function-based end re-derives the
+       real-px length from the live scale on every refresh). */
+    const mm = ctx.gsap.matchMedia();
+    mm.add("(max-width: 640px)", () => {
+      const rail = el.querySelector<HTMLElement>(".s26-rail");
+      const stack = el.querySelector<HTMLElement>(".s26-stack");
+      if (!rail || !stack) return;
+      const overflow = () =>
+        Math.max(0, stack.offsetHeight - rail.offsetHeight);
+      const scale = () => {
+        const r = stack.getBoundingClientRect();
+        return stack.offsetHeight > 0 ? r.height / stack.offsetHeight : 1;
+      };
+      if (overflow() <= 0) return;
+      ctx.gsap.fromTo(
+        stack,
+        { y: 0 },
+        {
+          y: () => -overflow(),
+          ease: "none",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: el,
+            start: "top top",
+            end: () => "+=" + Math.round(overflow() * scale()),
+            pin: true,
+            scrub: 0.4,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
     });
 
     /* ambient hover halo follows the cursor slightly (desktop pointers only).
