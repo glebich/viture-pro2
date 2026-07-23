@@ -10,7 +10,7 @@ export function mountScrollHint(): void {
   el.id = "scrollhint";
   el.setAttribute("aria-hidden", "true");
   el.innerHTML = `
-    <svg width="26" height="40" viewBox="0 0 26 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="16" height="24.6" viewBox="0 0 26 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="1.25" y="1.25" width="23.5" height="37.5" rx="11.75"
         stroke="#fff" stroke-width="2.5" />
       <rect class="sh-dot" x="10.75" y="9" width="4.5" height="6" rx="2.25"

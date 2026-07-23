@@ -20,22 +20,33 @@
 }
 
 #scrollhint .sh-dot {
-  animation: sh-drift 2s cubic-bezier(0.4, 0, 0.4, 1) infinite;
+  animation: sh-drift 2.6s infinite;
 }
 
+/* one soft breath per cycle: the dot condenses in at the top, glides down
+   on an eased curve, dissolves near the base, then the glyph rests a beat
+   before the next pass — no hard restart edge */
 @keyframes sh-drift {
   0% {
     transform: translateY(0);
     opacity: 0;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.3, 1);
   }
-  18% {
+  16% {
     opacity: 1;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
   }
-  62% {
+  58% {
+    transform: translateY(8px);
     opacity: 1;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  80% {
+    transform: translateY(11px);
+    opacity: 0;
   }
   100% {
-    transform: translateY(9px);
+    transform: translateY(11px);
     opacity: 0;
   }
 }
