@@ -204,11 +204,13 @@ export const s15: Section = {
         if (idx < N - 1) {
           nIdx = idx + 1;
         } else {
-          // intro done — splice into the anim. anim[0] ≈ static[29]
-          // (45dB PSNR), so start at 1 to keep the motion continuous
+          // intro done — splice into the anim. Round 22 (client asset
+          // replacement): static and anim are the SAME clip (ASSET_6),
+          // so the seamless splice is to REVERSE off the shared frame 29
+          // — the ping-pong now runs back 28→0, then forward 1→29, …
           nPhase = "anim";
-          nIdx = 1;
-          nDir = 1;
+          nIdx = N - 2;
+          nDir = -1;
         }
       } else {
         nIdx = idx + dir;
