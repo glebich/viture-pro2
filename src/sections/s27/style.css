@@ -69,6 +69,17 @@
   pointer-events: none;
 }
 
+/* round 21: the classic canvas is drag-scrubbable (right = forward,
+   left = backward) — pan-y keeps vertical touch scrolling on the page */
+canvas.s27-vid-a {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: pan-y;
+}
+canvas.s27-vid-a:active {
+  cursor: grabbing;
+}
+
 .s27-hero-in img,
 .s27-still-g img {
   transition: opacity 0.25s ease;

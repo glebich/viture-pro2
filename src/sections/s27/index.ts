@@ -246,16 +246,64 @@ export const s27: Section = {
     clStore?.onLoad.add((i) => {
       if (i === clIndex) clPaint();
     });
-    const clSync = (p: number) => {
+    /* round 21: drag-to-scrub on top of the scroll drive — drag RIGHT
+       plays forward, LEFT backward (client-specified, opposite of the
+       diopter dial). The drag holds an additive frame offset; once the
+       visitor scrolls again the offset eases back out so the scroll
+       choreography (fade-out at CL_END) re-takes the exact design frame. */
+    let clDrag = 0; // additive drag offset, fractional frames
+    let clScrollIdx = 0;
+    let clLastP = -1;
+    const clApply = () => {
       clIndex = Math.max(
         0,
-        Math.min(
-          CL_FRAMES - 1,
-          Math.round((p / CL_END) * (CL_FRAMES - 1)),
-        ),
+        Math.min(CL_FRAMES - 1, Math.round(clScrollIdx + clDrag)),
       );
       clPaint();
     };
+    const clSync = (p: number) => {
+      clScrollIdx = Math.max(
+        0,
+        Math.min(CL_FRAMES - 1, (p / CL_END) * (CL_FRAMES - 1)),
+      );
+      if (clLastP >= 0 && Math.abs(p - clLastP) > 0.0005 && clDrag !== 0) {
+        // scroll moved: bleed the drag offset away over a few ticks
+        clDrag *= 0.75;
+        if (Math.abs(clDrag) < 0.5) clDrag = 0;
+      }
+      clLastP = p;
+      clApply();
+    };
+    if (!reduced)
+      for (const c of clCanvases) {
+        let dragging = false;
+        let lastX = 0;
+        c.addEventListener("pointerdown", (e) => {
+          dragging = true;
+          lastX = e.clientX;
+          try {
+            c.setPointerCapture(e.pointerId);
+          } catch {
+            /* pointer already released */
+          }
+        });
+        c.addEventListener("pointermove", (e) => {
+          if (!dragging) return;
+          clDrag += (e.clientX - lastX) / 9; // right = forward
+          // clamp the ACCUMULATOR to the reachable range so a drag past
+          // either end doesn't bank dead travel the visitor must re-drag
+          // through before the frames respond again
+          clDrag = Math.max(
+            -clScrollIdx,
+            Math.min(CL_FRAMES - 1 - clScrollIdx, clDrag),
+          );
+          lastX = e.clientX;
+          clApply();
+        });
+        const end = () => (dragging = false);
+        c.addEventListener("pointerup", end);
+        c.addEventListener("pointercancel", end);
+      }
 
     // Pinned finale (per breakpoint so matchMedia rebuilds cleanly):
     // rest plateau on the Classic hero (0–0.28); the A-copy rolls out

@@ -80,6 +80,17 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+  /* round 21 (client): every slide's product 20% smaller. The scale lives
+     on the INNER img — GSAP owns the wrapper's transform (handoff x/
+     rotation), so a wrapper scale would be clobbered mid-transition. */
+  transform: scale(0.8);
+  transform-origin: 50% 50%;
+}
+/* bottom-grounded renders shrink about their base so they stay seated on
+   the ramp instead of floating */
+.s22-img--1 img,
+.s22-img--3 img {
+  transform-origin: 50% 100%;
 }
 .s22-cover {
   object-fit: cover;
@@ -348,6 +359,8 @@
   height: 100%;
   object-position: bottom;
   pointer-events: none;
+  transform: scale(0.8); /* round 21: match the desktop 20% reduction */
+  transform-origin: 50% 100%;
 }
 .s22m-copy {
   position: absolute;
