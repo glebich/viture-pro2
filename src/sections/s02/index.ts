@@ -43,6 +43,37 @@ export const s02: Section = {
     </div>
   </div>`,
   init(el, ctx) {
+    const sharedBgId = "s02-s03-fixedbg";
+    let sharedBg = document.getElementById(sharedBgId) as HTMLDivElement | null;
+    if (!sharedBg) {
+      sharedBg = document.createElement("div");
+      sharedBg.id = sharedBgId;
+      sharedBg.setAttribute("aria-hidden", "true");
+      const app = document.getElementById("app");
+      if (app?.parentNode) app.parentNode.insertBefore(sharedBg, app);
+      else document.body.prepend(sharedBg);
+    }
+    const setSharedBg = (active: boolean) => {
+      document.body.classList.toggle("s02-s03-bg-active", active);
+    };
+    const s03 = document.getElementById("s03");
+    if (s03) {
+      ctx.ScrollTrigger.create({
+        trigger: el,
+        start: "top top",
+        endTrigger: s03,
+        // tiny overlap with s03's own pin trigger: paginator jumps can land
+        // exactly on the boundary tick where neither trigger reports active
+        // yet, flashing the global fluid/noise for one frame.
+        end: "top+=1 top",
+        onEnter: () => setSharedBg(true),
+        onEnterBack: () => setSharedBg(true),
+        onLeave: () => setSharedBg(false),
+        onLeaveBack: () => setSharedBg(false),
+        onRefresh: (self) => setSharedBg(self.isActive),
+      });
+    }
+
     // Ambient text language (see lib/textfx.ts): the headline condenses in
     // word by word (slow drift + soft blur), the badge and subline follow as
     // whole-block soft fades — unhurried, riding the ambient fluid in.

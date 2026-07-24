@@ -9,7 +9,6 @@ import { mountPaginator } from "./lib/paginator";
 import { mountScrollHint } from "./lib/scrollhint";
 import { createFluid, SECTION_PALETTES, SECTION_CALMS } from "./lib/fluid";
 import type { FluidBlend } from "./lib/fluid";
-import { mountScrollFx } from "./lib/scrollfx";
 import { mountSnap } from "./lib/snap";
 // imported after the section modules so its base-fill overrides land last
 import "./styles/fluid.css";
@@ -43,6 +42,24 @@ const lenis = new Lenis({
   wheelMultiplier: 0.95,
   smoothWheel: true,
 });
+
+const resetToTop = () => {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  lenis.scrollTo(0, { immediate: true, force: true });
+};
+// Some browsers restore scroll after early startup code has already run.
+// Re-assert top-of-page on load/pageshow so a reload always restarts the
+// landing from the intro instead of replaying animations mid-page.
+requestAnimationFrame(() => requestAnimationFrame(resetToTop));
+window.addEventListener("load", resetToTop, { once: true });
+window.addEventListener("pageshow", resetToTop);
+window.addEventListener("beforeunload", () => {
+  history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+});
+
 lenis.on("scroll", ScrollTrigger.update);
 gsap.ticker.add((time) => lenis.raf(time * 1000));
 gsap.ticker.lagSmoothing(0);
@@ -260,8 +277,6 @@ if (isWebKit && !qaOnly && !qaParams.has("nocull")) {
 // the shear read as "images aren't straight"). Skipped in the ?only= QA
 // harness — screenshots there must be transform-pristine (scrollfx also
 // self-gates on touch + prefers-reduced-motion).
-if (!qaOnly && !qaParams.has("nofx")) mountScrollFx(lenis, gsap);
-
 // Section magnetism (client round 11): when the scroll rests with a fold
 // mid-viewport near a section boundary, glide onto the boundary so every
 // screen presents full-frame — see src/lib/snap.ts for the full contract.
