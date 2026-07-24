@@ -1,7 +1,6 @@
 /* ---------- s03 — "Five Years" glass journey (glasses → Mobile Dock) ---------- */
 
-#s03 .stage {
-  background: #0a0d16;
+#s02 .stage {
   overflow: hidden;
 }
 
@@ -9,6 +8,7 @@
 .s03-inner {
   position: absolute;
   inset: 0;
+  z-index: 1;
 }
 
 /* round-9 veil: the top opens on a TALL, BRIGHT ice-blue bloom — light
@@ -23,79 +23,19 @@
    variant (taller bottom bloom) sits on top and cross-fades in with the
    product swap. */
 .s03-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    #b8cdea 0%,
-    #96aede 4%,
-    #6e88d4 8%,
-    #4560c0 13%,
-    #2a3f97 20%,
-    #1b2868 25.5%,
-    #0f1531 30%,
-    #0a0d16 35%,
-    #0a0d16 72%,
-    #0e1526 82%,
-    #16244a 92%,
-    #101a33 100%
-  );
+  display: none;
 }
 
 .s03-veil--dock {
-  background: linear-gradient(
-    180deg,
-    #b8cdea 0%,
-    #96aede 4%,
-    #6e88d4 8%,
-    #4560c0 13%,
-    #2a3f97 20%,
-    #1b2868 25.5%,
-    #0f1531 30%,
-    #0a0d16 35%,
-    #0a0d16 58%,
-    #101a33 70%,
-    #1b2d5a 82%,
-    #131f3e 100%
-  );
-  opacity: 0;
+  display: none;
 }
 
 .s03-veil--m {
-  background: linear-gradient(
-    180deg,
-    #b8cdea 0%,
-    #96aede 3.5%,
-    #6e88d4 7%,
-    #4560c0 11%,
-    #2a3f97 17%,
-    #1b2868 22%,
-    #0f1531 26%,
-    #0a0d16 30%,
-    #0a0d16 70%,
-    #0e1526 80%,
-    #16244a 91%,
-    #101a33 100%
-  );
+  display: none;
 }
 
 .s03-veil--dock-m {
-  background: linear-gradient(
-    180deg,
-    #b8cdea 0%,
-    #96aede 3.5%,
-    #6e88d4 7%,
-    #4560c0 11%,
-    #2a3f97 17%,
-    #1b2868 22%,
-    #0f1531 26%,
-    #0a0d16 30%,
-    #0a0d16 55%,
-    #101a33 67%,
-    #1b2d5a 80%,
-    #131f3e 100%
-  );
-  opacity: 0;
+  display: none;
 }
 
 /* product renders — explicit left/top (no CSS transforms: GSAP drives
@@ -112,7 +52,7 @@
    stretch is a uniform scale). The glasses float directly on the veil like
    the old transparent webp render — DOF baked into the frames. */
 .s03-prod--glasses {
-  left: 245.35px;
+  left: 277.35px;
   top: 156px;
   width: 1365.3px;
   height: 768px;
@@ -129,7 +69,7 @@
 }
 
 .s03-prod--glasses-m {
-  left: -199.15px;
+  left: -143.15px;
   top: 150px;
   width: 661.3px;
   height: 372px;
@@ -145,26 +85,28 @@
 /* giant watermark — CSS fallback; the WebGL glass canvas replaces it */
 .s03-big {
   position: absolute;
-  left: 1631px;
+  left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 400px;
-  font-weight: 400;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.06);
-  white-space: nowrap;
-  text-align: center;
+  width: 1540px;
+  height: 276.4px;
+  object-fit: contain;
   z-index: 2;
 }
 
 .s03-big--m {
-  left: 549.5px;
+  left: 50%;
   top: calc(50% + 0.5px);
-  font-size: 240px;
+  width: 660px;
+  height: 118.5px;
 }
 
 .s03-inner .glasstext-canvas {
-  z-index: 3;
+  z-index: 2;
+}
+
+#s02 .s02-content {
+  z-index: 4;
 }
 
 /* release dissolve — matches s05's dark field so the unpin is seamless */

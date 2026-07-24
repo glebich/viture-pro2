@@ -75,8 +75,7 @@ export function mountScrollFx(lenis: Lenis, gsap: typeof Gsap): void {
     const cs = getComputedStyle(document.documentElement);
     const s = parseFloat(cs.getPropertyValue("--s")) || 1;
     const sh = parseFloat(cs.getPropertyValue("--stage-h")) || 1080;
-    const f = 1 + (2.1 * Math.abs(lag)) / (sh * s);
-    const value = `translateY(${lag.toFixed(2)}px) translate(-50%, -50%) scale(calc(var(--s) * ${f.toFixed(5)}))`;
+    const value = `translateY(${lag.toFixed(2)}px) translate(-50%, -50%) scale(var(--s))`;
     const near = new Set<HTMLElement>();
     for (const { section, stages } of entries) {
       if (!stages.length) continue;

@@ -75,6 +75,12 @@ export interface GlassTextConfig {
   fontWeight?: string;
   /** Design px. */
   fontSize: number;
+  /** Optional alpha-mask image source; when present, the glass silhouette
+   *  is built from this asset instead of rasterized text. */
+  maskImage?: string | HTMLImageElement;
+  /** Optional design-space size for `maskImage`. */
+  maskWidth?: number;
+  maskHeight?: number;
   /** Initial text center, design px. */
   x: number;
   y: number;
@@ -400,6 +406,15 @@ function drawable(src: LayerSource) {
   if (isVideo(src)) return src.readyState >= 2 && src.videoWidth > 0;
   if (src instanceof HTMLCanvasElement) return src.width > 0;
   return src.complete && src.naturalWidth > 0;
+}
+
+function ownMaskImage(src: string | HTMLImageElement | undefined) {
+  if (!src) return null;
+  if (typeof src !== "string") return src;
+  const img = new Image();
+  img.decoding = "async";
+  img.src = src;
+  return img;
 }
 
 /* ---------- exact euclidean distance transform (Felzenszwalb) ---------- */
@@ -781,8 +796,9 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
     if (active) draw();
   };
 
-  // ---- async texture build (font + device images) ----
+  // ---- async texture build (font/image mask + device images) ----
   const fontSpec = `${cfg.fontWeight ?? "400"} ${cfg.fontSize}px ${cfg.fontFamily}`;
+  const maskImage = ownMaskImage(cfg.maskImage);
   const fontLoaded = document.fonts
     ? document.fonts.load(fontSpec, cfg.text).then(
         () => undefined,
@@ -812,6 +828,7 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
 
   Promise.all([
     fontLoaded,
+    maskImage ? imageReady(maskImage) : undefined,
     ...cfg.layers.map((l) =>
       l.image instanceof HTMLImageElement ? imageReady(l.image) : undefined,
     ),
@@ -834,14 +851,28 @@ export function createGlassText(cfg: GlassTextConfig): GlassText | null {
     const asc = met.actualBoundingBoxAscent || cfg.fontSize * mres * 0.74;
     const desc = met.actualBoundingBoxDescent || cfg.fontSize * mres * 0.06;
     const pad = Math.ceil(blurR * 2 + 8 + cfg.fontSize * mres * 0.06);
-    const mw = Math.ceil(met.width + pad * 2);
-    const mh = Math.ceil(asc + desc + pad * 2);
+    const maskDesignW = cfg.maskWidth ??
+      (maskImage ? maskImage.naturalWidth : met.width / mres);
+    const maskDesignH = cfg.maskHeight ??
+      (maskImage ? maskImage.naturalHeight : (asc + desc) / mres);
+    const mw = Math.ceil(maskDesignW * mres + pad * 2);
+    const mh = Math.ceil(maskDesignH * mres + pad * 2);
     const mask = canvas2d(mw, mh);
     const mc = mask.getContext("2d")!;
-    mc.font = probe.font;
-    mc.fillStyle = "#fff";
-    mc.textBaseline = "alphabetic";
-    mc.fillText(cfg.text, pad, mh / 2 + (asc - desc) / 2);
+    if (maskImage) {
+      mc.drawImage(
+        maskImage,
+        pad,
+        pad,
+        maskDesignW * mres,
+        maskDesignH * mres,
+      );
+    } else {
+      mc.font = probe.font;
+      mc.fillStyle = "#fff";
+      mc.textBaseline = "alphabetic";
+      mc.fillText(cfg.text, pad, mh / 2 + (asc - desc) / 2);
+    }
 
     // two-channel field: R = crisp sd, A = wide lowpassed sd
     const sdf = maskToSdf(mask);

@@ -1,7 +1,9 @@
+import "../s02/style.css";
 import "./style.css";
 import type { Section } from "../../lib/section";
-import { createGlassText, type GlassText } from "../../lib/glasstext";
 import { mountFrameStore } from "../../lib/frameseq";
+import { prepareText, revealText } from "../../lib/textfx";
+import { createLiquidGlass } from "../../lib/liquidglass";
 
 /* Round 18 — the Five Years glasses are a SCROLL-SCRUBBED alpha frame
  * sequence (client: tied to scroll, plays backwards when scrolling back,
@@ -19,7 +21,6 @@ const frameUrl = (i: number) =>
  * takes over (glasses fade toward the dock earlier on mobile) */
 const FRAME_END_D = 0.35;
 const FRAME_END_M = 0.3;
-
 /* ---------- s03 — "Five Years" glass journey ----------
  * One pinned page merging the former s03 (glasses render) and s04 (Mobile
  * Dock render): the liquid-glass watermark travels across the screen while
@@ -28,8 +29,12 @@ const FRAME_END_M = 0.3;
  * dissolving the veil into s05's dark field (#080911).
  */
 
+const A_D2 = "/assets/1920_Screen-02-01";
+const A_M2 = "/assets/375_Screen-02-01";
 const A_D4 = "/assets/1920_Screen-04-01";
 const A_MB = "/assets/375_Screen-03-01b";
+const FIVE_YEARS = "/assets/1920_Screen-03-01/Five_Years.png";
+const FIVE_YEARS_SVG = "/assets/1920_Screen-03-01/Five_Years.svg";
 
 /* Vertical background colors — round 9 (client: "same problem here", the
  * live top band read as a thin dim royal-blue strip on black). The design
@@ -103,36 +108,119 @@ const BG_DOCK_M: Array<[number, string]> = [
 ];
 
 /* Product placements, design px (also the glass-shader layer rects) */
-const RECT_GLASSES_D: [number, number, number, number] = [245.35, 156, 1365.3, 768];
+const RECT_GLASSES_D: [number, number, number, number] = [277.35, 156, 1365.3, 768];
 const RECT_DOCK_D: [number, number, number, number] = [510.9, 241.9, 907, 667.2];
-const RECT_GLASSES_M: [number, number, number, number] = [-199.15, 150, 661.3, 372];
+const RECT_GLASSES_M: [number, number, number, number] = [-143.15, 150, 661.3, 372];
 const RECT_DOCK_M: [number, number, number, number] = [-33, 244, 441, 324];
 
-/* Text-center journey (matches Figma Screen-03-01 → Screen-04-01) */
-const X_FROM_D = 1631;
-const X_TO_D = 251;
-const X_M = 549.5;
+/* FY asset should stay screen-centered on both breakpoints. */
+const X_START_D = 2740;
+const X_END_D = 740;
+const X_START_M = 740;
+const X_END_M = 150;
+
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const smooth01 = (t: number) =>
+  t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+const mixOklch = (
+  from: [number, number, number],
+  to: [number, number, number],
+  t: number,
+) =>
+  `oklch(${lerp(from[0], to[0], t).toFixed(3)} ${lerp(from[1], to[1], t).toFixed(3)} ${lerp(from[2], to[2], t).toFixed(1)})`;
+
+function buildBgGradient(phase: number) {
+  const t = smooth01(Math.max(0, Math.min(1, phase)));
+  const stops = [
+    { pos: lerp(0, 0, t), color: mixOklch([0.14, 0.02, 260], [0.08, 0.015, 258], t) },
+    { pos: lerp(22, 30, t), color: mixOklch([0.14, 0.021, 259], [0.085, 0.018, 257], t) },
+    { pos: lerp(45, 58, t), color: mixOklch([0.14, 0.02, 260], [0.09, 0.02, 256], t) },
+    { pos: lerp(58, 72, t), color: mixOklch([0.24, 0.08, 258], [0.12, 0.05, 252], t) },
+    { pos: lerp(70, 84, t), color: mixOklch([0.54, 0.1, 255], [0.08, 0.04, 248], t) },
+    { pos: lerp(84, 94, t), color: mixOklch([0.68, 0.06, 249], [0.055, 0.018, 249], t) },
+    { pos: 100, color: mixOklch([0.82, 0.03, 245], [0.04, 0.005, 250], t) },
+  ];
+  return `linear-gradient(180deg, ${stops.map((s) => `${s.color} ${s.pos.toFixed(1)}%`).join(", ")})`;
+}
+
+function paintBg(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  phase: number,
+) {
+  const t = smooth01(Math.max(0, Math.min(1, phase)));
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  const stops: Array<[number, string]> = [
+    [lerp(0, 0, t) / 100, mixOklch([0.14, 0.02, 260], [0.08, 0.015, 258], t)],
+    [lerp(22, 30, t) / 100, mixOklch([0.14, 0.021, 259], [0.085, 0.018, 257], t)],
+    [lerp(45, 58, t) / 100, mixOklch([0.14, 0.02, 260], [0.09, 0.02, 256], t)],
+    [lerp(58, 72, t) / 100, mixOklch([0.24, 0.08, 258], [0.12, 0.05, 252], t)],
+    [lerp(70, 84, t) / 100, mixOklch([0.54, 0.1, 255], [0.08, 0.04, 248], t)],
+    [lerp(84, 94, t) / 100, mixOklch([0.68, 0.06, 249], [0.055, 0.018, 249], t)],
+    [1, mixOklch([0.82, 0.03, 245], [0.04, 0.005, 250], t)],
+  ];
+  for (const [offset, color] of stops) g.addColorStop(offset, color);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+}
 
 export const s03: Section = {
-  id: "s03",
+  id: "s02",
   html: `
   <div class="stage stage--d">
+    <div class="s02-bg">
+      <div class="s02-bgfill" aria-hidden="true"></div>
+    </div>
+    <div class="s02-content">
+      <div class="s02-text">
+        <div class="s02-badge cap-trim">The Anniversary Collection · 8.6.2026</div>
+        <h1 class="s02-title gtx gtx--ice cap-trim">
+          <span class="s02-strong">Five years</span> in the making.<br />A premium only you can feel.
+        </h1>
+        <p class="s02-sub cap-trim">Specs step back. The experience steps up.</p>
+      </div>
+      <div class="s02-scroll">
+        <div class="s02-pullline" aria-hidden="true">
+          <span class="s02-pullline-shaft"></span>
+          <span class="s02-pullline-dot"></span>
+        </div>
+      </div>
+    </div>
     <div class="s03-inner">
       <div class="s03-veil"></div>
       <div class="s03-veil s03-veil--dock"></div>
       <canvas class="s03-prod s03-prod--glasses" width="1920" height="1080" aria-hidden="true"></canvas>
       <img class="s03-prod s03-prod--dock" src="${A_D4}/imgMobileDock.webp" alt="" />
-      <p class="s03-big cap-trim">Five Years</p>
+      <img class="s03-big" src="${FIVE_YEARS}" alt="Five Years" />
       <div class="s03-exit"></div>
     </div>
   </div>
   <div class="stage stage--m">
+    <div class="s02-bg">
+      <div class="s02-bgfill" aria-hidden="true"></div>
+    </div>
+    <div class="s02-content s02-content--m">
+      <div class="s02-text s02-text--m">
+        <div class="s02-badge s02-badge--m cap-trim">The Anniversary Collection · 8.6.2026</div>
+        <h1 class="s02-title s02-title--m gtx gtx--ice cap-trim">
+          <span class="s02-strong">Five years</span> in the making. A premium only you can feel.
+        </h1>
+        <p class="s02-sub s02-sub--m cap-trim">Specs step back. The experience steps up.</p>
+      </div>
+      <div class="s02-scroll s02-scroll--m">
+        <div class="s02-pullline s02-pullline--m" aria-hidden="true">
+          <span class="s02-pullline-shaft"></span>
+          <span class="s02-pullline-dot"></span>
+        </div>
+      </div>
+    </div>
     <div class="s03-inner">
       <div class="s03-veil s03-veil--m"></div>
       <div class="s03-veil s03-veil--dock-m"></div>
       <canvas class="s03-prod s03-prod--glasses-m" width="1920" height="1080" aria-hidden="true"></canvas>
       <img class="s03-prod s03-prod--dock-m" src="${A_MB}/imgMobileDock.webp" alt="" />
-      <p class="s03-big s03-big--m cap-trim">Five Years</p>
+      <img class="s03-big s03-big--m" src="${FIVE_YEARS}" alt="Five Years" />
       <div class="s03-exit"></div>
     </div>
   </div>`,
@@ -159,10 +247,31 @@ export const s03: Section = {
       import.meta.env.DEV &&
       new URLSearchParams(location.search).has("progress");
 
+    const q = (s: string) => Array.from(el.querySelectorAll<HTMLElement>(s));
+    for (const t of q(".s02-title")) prepareText(t);
+    for (const b of q(".s02-badge")) prepareText(b, { mode: "block" });
+    for (const p of q(".s02-sub")) prepareText(p, { mode: "block" });
+    const introTl = ctx.gsap.timeline({
+      scrollTrigger: { trigger: el, start: "top 78%" },
+    });
+    for (const t of q(".s02-title")) introTl.add(revealText(t), 0);
+    for (const b of q(".s02-badge")) introTl.add(revealText(b), 0.45);
+    for (const p of q(".s02-sub")) introTl.add(revealText(p), 0.65);
+    introTl.from(
+      q(".s02-scroll"),
+      { opacity: 0, duration: 1.2, ease: "sine.out" },
+      1.0,
+    );
+
     const build = (isMobile: boolean) => () => {
       const stage = el.querySelector<HTMLElement>(
         isMobile ? ".stage--m" : ".stage--d",
       )!;
+      const bg = stage.querySelector<HTMLElement>(".s02-bg")!;
+      const content = stage.querySelector<HTMLElement>(".s02-content")!;
+      const text = stage.querySelector<HTMLElement>(".s02-text")!;
+      const line = stage.querySelector<HTMLElement>(".s02-pullline")!;
+      const bgFill = stage.querySelector<HTMLElement>(".s02-bgfill")!;
       const inner = stage.querySelector<HTMLElement>(".s03-inner")!;
       const prodA = stage.querySelector<HTMLCanvasElement>(
         isMobile ? ".s03-prod--glasses-m" : ".s03-prod--glasses",
@@ -179,52 +288,19 @@ export const s03: Section = {
 
       const stageW = isMobile ? 375 : 1920;
       const stageH = isMobile ? 812 : 1080;
-      const xFrom = isMobile ? X_M : X_FROM_D;
+      const xFrom = isMobile ? X_START_M : X_START_D;
 
-      const glass: GlassText | null = createGlassText({
+      const glassWidth = isMobile ? 660 : 1540;
+      const glassHeight = isMobile ? 118.5 : 276.4;
+      const liquidGlass = createLiquidGlass({
         host: inner,
-        stageW,
-        stageH,
-        text: "Five Years",
-        fontFamily: '"Season Sans", sans-serif',
-        fontWeight: "400",
-        fontSize: isMobile ? 240 : 400,
         x: xFrom,
         y: stageH / 2 + 0.5,
-        bgStops: isMobile ? BG_GLASSES_M : BG_GLASSES_D,
-        bgStopsB: isMobile ? BG_DOCK_M : BG_DOCK_D,
-        layers: [
-          {
-            image: prodA,
-            rect: isMobile ? RECT_GLASSES_M : RECT_GLASSES_D,
-          },
-          { image: prodB, rect: isMobile ? RECT_DOCK_M : RECT_DOCK_D },
-        ],
-        /* transmission-glass params (round 6 base, round 9 presence bump:
-           the etch read as a ghost at rest — raise the milky lift ~+37%,
-           push the lens displacement so product edges seen through glyphs
-           bend clearly, and widen the hairline so displaced letter edges
-           stay crisp; ca unchanged — no rainbow noise) */
-        shift: isMobile ? 6 : 8,
-        magnify: isMobile ? 1.07 : 1.065,
-        thick: isMobile ? 15 : 24,
-        refract: isMobile ? 17 : 26,
-        ca: 0.015,
-        frost: isMobile ? 5 : 7,
-        lift: 0.041,
-        edge: isMobile ? 1.9 : 2.6,
-        spec: 0.32,
-        fresnel: 0.055,
-        streak: 0.19,
-        flow: isMobile ? 16 : 30,
-        /* round 20: crystal facets tried and REVERTED per client ("get back
-           to previous version") — crack stays 0/off; the liquid-lens look
-           above is the approved one */
-        onReady() {
-          // WebGL path live — retire the flat CSS watermark
-          big.style.visibility = "hidden";
-        },
+        width: glassWidth,
+        height: glassHeight,
+        maskUrl: FIVE_YEARS_SVG,
       });
+      big.style.visibility = "hidden";
 
       // ---- scroll-scrubbed frame drawing (round 18) ----
       // The scrub progress maps to a frame index (0→29 across p 0→FRAME_END,
@@ -251,7 +327,6 @@ export const s03: Section = {
         prodACtx.clearRect(0, 0, prodA.width, prodA.height);
         prodACtx.drawImage(store.frames[curFrame], 0, 0);
         drawnFrame = curFrame;
-        glass?.invalidateBg();
       };
       const loadHook = (i: number) => {
         if (i === curFrame) drawFrame();
@@ -266,19 +341,34 @@ export const s03: Section = {
         // shader's streak rest-envelope is zero exactly at 0 and 1, so the
         // entrance/release plateaus show clean streak-free glass (round 8)
         p: 0,
-        aA: 1,
+        aA: 0,
         dxA: 0,
         dyA: 0,
-        sA: 1,
+        sA: 1.5,
         aB: 0,
         dxB: isMobile ? 0 : 110,
         dyB: isMobile ? 70 : 40,
         sB: 1.04,
+        lineH: isMobile ? 72 : 128,
+        lineB: 0,
+        lineA: 1,
+        bgT: 0,
+        sceneY: 0,
       };
+      const stretchedLineH = isMobile ? 220 : 300;
       const apply = () => {
         const f = frameFor(st.p);
         if (f !== curFrame) curFrame = f;
         drawFrame();
+        bgFill.style.background = buildBgGradient(st.bgT);
+        gsap.set(bg, { y: st.sceneY });
+        gsap.set(content, { y: st.sceneY });
+        gsap.set(inner, { y: st.sceneY });
+        gsap.set(line, {
+          height: st.lineH,
+          bottom: st.lineB,
+          autoAlpha: st.lineA,
+        });
         gsap.set(prodA, {
           autoAlpha: st.aA,
           x: st.dxA,
@@ -291,47 +381,11 @@ export const s03: Section = {
           y: st.dyB,
           scale: st.sB,
         });
-        // veil state follows the dock: bottom bloom grows as B fades in,
-        // mirrored 1:1 into the glass shader's refraction gradient
         gsap.set(veilDock, { opacity: st.aB });
-        if (glass) {
-          glass.setX(st.x);
-          glass.setProgress(st.p); // travelling streak + refraction flow
-          glass.setBgMix(st.aB);
-          glass.setLayer(0, {
-            alpha: st.aA,
-            dx: st.dxA,
-            dy: st.dyA,
-            scale: st.sA,
-          });
-          glass.setLayer(1, {
-            alpha: st.aB,
-            dx: st.dxB,
-            dy: st.dyB,
-            scale: st.sB,
-          });
-          glass.render();
-        } else {
-          gsap.set(big, { x: st.x - xFrom });
-        }
+        liquidGlass.setX(st.x);
+        liquidGlass.setOpacity(Math.max(st.aA, st.aB));
       };
       apply();
-
-      if (!qaFixed && !isMobile) {
-        // entrance animates the WRAPPER only — the products and the CSS
-        // fallback are written every scrub tick by apply(), and a from()
-        // tween on the same elements would fight it (and win) after a
-        // fast scroll jump, freezing product A at full opacity
-        gsap.from(inner, {
-          scrollTrigger: { trigger: el, start: "top 78%" },
-          autoAlpha: 0,
-          y: 40,
-          scale: 1.02,
-          transformOrigin: "50% 50%",
-          ease: "power3.out",
-          duration: 1,
-        });
-      }
 
       // Pinned journey: glass text travel leads; the product swap happens
       // mid-travel behind it (A dissolves out before B is fully in — no
@@ -342,9 +396,10 @@ export const s03: Section = {
         scrollTrigger: {
           trigger: el,
           start: "top top",
-          end: isMobile ? "+=150%" : "+=300%",
+          end: isMobile ? "+=290%" : "+=460%",
           pin: true,
           scrub: 0.6,
+          onRefresh: apply,
         },
         defaults: { ease: "none" },
       });
@@ -353,33 +408,56 @@ export const s03: Section = {
         // swap lands EARLY: the dock must be fully lit by mid-pin (the
         // flagged 0.5 frame is a "dock state" beat — a late fade left it
         // at ~6% alpha, a near-empty washed frame)
-        tl.to(st, { x: X_TO_D, duration: 0.85 }, 0)
-          .to(st, { p: 1, duration: 1 }, 0)
-          .to(st, { aA: 0, dxA: -90, dyA: -30, sA: 0.97, duration: 0.13 }, 0.22)
-          .to(st, { aB: 1, dxB: 0, dyB: 0, sB: 1, duration: 0.13 }, 0.36)
+        tl.to(st, { lineH: stretchedLineH, duration: 0.18 }, 0)
+          .to(st, { bgT: 1, duration: 0.92 }, 0)
+          .to(text, { autoAlpha: 0, y: -120, duration: 0.2 }, 0)
+          .to(
+            st,
+            { lineH: 0, lineB: stretchedLineH, lineA: 0, duration: 0.12 },
+            0.18,
+          )
+          .to(content, { autoAlpha: 0, duration: 0.08 }, 0.24)
+          .to(st, { aA: 1, sA: 1, duration: 0.18 }, 0.02)
+          .to(st, { x: X_END_D, duration: 1.02 }, 0.26)
+          .to(st, { p: 1, duration: 0.48 }, 0.18)
+          .to(st, { aA: 0, dxA: -90, dyA: -30, sA: 0.97, duration: 0.13 }, 0.7)
+          .to(st, { aB: 1, dxB: 0, dyB: 0, sB: 1, duration: 0.13 }, 0.8)
+          .to(st, { sceneY: -180, duration: 0.18 }, 1.24)
           .fromTo(
             exit,
             { autoAlpha: 0 },
             { autoAlpha: 1, duration: 0.14, ease: "power1.in" },
-            0.86,
+            1.28,
           );
       } else {
         // vertical version of the swap under a static glass line — dock
         // fully in by mid-pin, same as desktop
-        tl.to(st, { p: 1, duration: 1 }, 0)
-          .to(st, { aA: 0, dyA: -50, sA: 0.97, duration: 0.18 }, 0.14)
-          .to(st, { aB: 1, dyB: 0, sB: 1, duration: 0.16 }, 0.34)
+        tl.to(st, { lineH: stretchedLineH, duration: 0.18 }, 0)
+          .to(st, { bgT: 1, duration: 0.92 }, 0)
+          .to(text, { autoAlpha: 0, y: -84, duration: 0.2 }, 0)
+          .to(
+            st,
+            { lineH: 0, lineB: stretchedLineH, lineA: 0, duration: 0.12 },
+            0.18,
+          )
+          .to(content, { autoAlpha: 0, duration: 0.08 }, 0.24)
+          .to(st, { aA: 1, sA: 1, duration: 0.18 }, 0.02)
+          .to(st, { x: X_END_M, duration: 1.02 }, 0.26)
+          .to(st, { p: 1, duration: 0.48 }, 0.18)
+          .to(st, { aA: 0, dyA: -50, sA: 0.97, duration: 0.18 }, 0.7)
+          .to(st, { aB: 1, dyB: 0, sB: 1, duration: 0.16 }, 0.8)
+          .to(st, { sceneY: -140, duration: 0.18 }, 1.24)
           .fromTo(
             exit,
             { autoAlpha: 0 },
             { autoAlpha: 1, duration: 0.16, ease: "power1.in" },
-            0.84,
+            1.28,
           );
       }
 
       return () => {
         store.onLoad.delete(loadHook);
-        glass?.destroy();
+        liquidGlass.destroy();
       };
     };
 

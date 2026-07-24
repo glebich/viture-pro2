@@ -1,7 +1,6 @@
 import { s01 } from "./s01";
-import { s02 } from "./s02";
 import { s03 } from "./s03";
-// s04 merged into s03 per client review round 2 (one pinned glass journey)
+// s02 + s03 + s04 merged into one pinned glass journey per client review
 import { s05 } from "./s05";
 import { s06 } from "./s06";
 // s07 + s08 merged into s06's pinned sequence per client review round 2
@@ -26,7 +25,7 @@ import { s26 } from "./s26";
 import { s27 } from "./s27"; // s28 merged into s27's pinned page per client review round 7
 
 export const sections = [
-  s01, s02, s03, s05, s06,
+  s01, s03, s05, s06,
   s11, s14, s15, s16b, s18, s20,
   s21, s22, s23, s24, s25, s26, s27,
 ];
