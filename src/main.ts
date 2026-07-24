@@ -229,14 +229,12 @@ createFluid(fluidCanvas, {
 // `content-visibility: auto` to keep offscreen sections unpainted, but
 // Safari/WebKit doesn't reliably skip painting them — it keeps rasterizing
 // dozens of 75-150px blur layers and tanks scroll to ~20fps. Fallback:
-// an IntersectionObserver (±1.5 viewport margin) sets `visibility: hidden`
-// on far-offscreen sections. Layout is untouched, so scroll geometry and
-// ScrollTrigger positions are unaffected.
+// far-offscreen sections get `visibility: hidden`; layout is untouched, so
+// scroll geometry and ScrollTrigger positions are unaffected.
 //
 // Pinned-section safety: while a section is pinned it sits inside the
-// viewport (GSAP transforms it within its pin-spacer), so the observer sees
-// it as intersecting and never hides it. As a belt-and-braces guard we also
-// refuse to hide any section whose pinning ScrollTrigger is active.
+// viewport (GSAP transforms it within its pin-spacer), so its live rect
+// keeps it visible for exactly as long as GSAP holds it on screen.
 // ---------------------------------------------------------------------------
 if (isWebKit && !qaOnly && !qaParams.has("nocull")) {
   // Scroll-driven rather than IntersectionObserver: GSAP reparents pinned

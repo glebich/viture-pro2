@@ -264,13 +264,27 @@ export const s26: Section = {
        Only two CSS custom props are written per move — the halo itself is a
        pre-rendered gradient that fades via opacity, so no layout/blur cost. */
     if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      el.querySelectorAll<HTMLElement>(".stage--d .s26-card").forEach((card) => {
-        let rect: DOMRect | null = null;
+      const cards = Array.from(
+        el.querySelectorAll<HTMLElement>(".stage--d .s26-card"),
+      );
+      const rects = new WeakMap<HTMLElement, DOMRect | null>();
+      // round 24 ("jumping"): the rect cached at pointerenter went STALE
+      // the moment the page scrolled under the cursor — the halo then
+      // leapt to offsets computed against the old card position. Any
+      // scroll invalidates every cache; pointermove refetches lazily.
+      const invalidate = () => cards.forEach((c) => rects.set(c, null));
+      ctx.lenis.on("scroll", invalidate);
+      window.addEventListener("scroll", invalidate, { passive: true });
+      cards.forEach((card) => {
         card.addEventListener("pointerenter", () => {
-          rect = card.getBoundingClientRect();
+          rects.set(card, card.getBoundingClientRect());
         });
         card.addEventListener("pointermove", (e: PointerEvent) => {
-          if (!rect) rect = card.getBoundingClientRect();
+          let rect = rects.get(card);
+          if (!rect) {
+            rect = card.getBoundingClientRect();
+            rects.set(card, rect);
+          }
           const rx = (e.clientX - rect.left) / rect.width - 0.5;
           const ry = (e.clientY - rect.top) / rect.height - 0.5;
           /* clamped design-px offsets from the card centre */
@@ -278,7 +292,7 @@ export const s26: Section = {
           card.style.setProperty("--gy", `${Math.max(-34, Math.min(34, ry * 68)).toFixed(1)}px`);
         });
         card.addEventListener("pointerleave", () => {
-          rect = null; /* keep last --gx/--gy so the halo fades out in place */
+          rects.set(card, null); /* halo fades out in place */
         });
       });
     }

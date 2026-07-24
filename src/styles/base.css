@@ -128,7 +128,11 @@ p {
   height: 100svh;
   overflow: hidden;
   /* keep offscreen sections unpainted — the page carries dozens of
-     large blur/blend layers and rasterizing them all stalls the GPU */
+     large blur/blend layers and rasterizing them all stalls the GPU.
+     (Round 24: briefly replaced by the rect culler on all engines while
+     chasing a "backward jump" report — that turned out to be a synthetic-
+     touch probe artifact, and dropping c-v cost half the desktop frame
+     rate, so it's back. The culler remains the WebKit-only fallback.) */
   content-visibility: auto;
   contain-intrinsic-size: auto 100vh;
 }

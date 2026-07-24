@@ -72,14 +72,11 @@
     transition: border-color 350ms cubic-bezier(0.33, 1, 0.68, 1);
   }
 
-  .stage--d .s26-crisp img {
-    transition: filter 350ms cubic-bezier(0.33, 1, 0.68, 1);
-  }
-
-  .stage--d .s26-card:hover {
-    z-index: 1; /* halo spills over neighbours as light, not under them */
-  }
-
+  /* round 24 (client: "flickering and jumping"): the hover used to flip
+     z-index AND toggle a brightness() filter — both retarget compositing
+     layers over the backdrop-filter frost, which reads as a flicker/jump
+     (worst in Safari). The hover is now transition-only properties on
+     stable layers: halo opacity, clip lift, border color. */
   .stage--d .s26-card:hover .s26-halo {
     opacity: 1;
   }
@@ -90,10 +87,6 @@
 
   .stage--d .s26-card:hover .s26-frost {
     border-color: rgba(255, 255, 255, 0.14);
-  }
-
-  .stage--d .s26-card:hover .s26-crisp img {
-    filter: brightness(1.05);
   }
 }
 
