@@ -96,20 +96,32 @@ export const s20: Section = {
     });
     // Both clips are baked appear→shine→dissolve beats (frame 0 empty,
     // final frames dissolving), so they play in TIME, one after the other
-    // — shade one, then shade two, looping while the section is on screen
-    // (each clip's fade-out flows into the next one's fade-in, so the
-    // loop seam is invisible). Offscreen suspends; re-entry restarts at
-    // the first shade. rAF at 30fps with an accumulator (cf. s15).
+    // — shade one, then shade two, looping while the section is on screen.
+    // Round 24 (client: "flickering too quickly — one asset show, pause,
+    // another one"): each shade RESTS 4s at its fully-present peak frame
+    // (22 / 52, measured — the dissolve starts right after) before its
+    // fade-out hands over to the next shade's fade-in. Offscreen
+    // suspends; re-entry restarts at the first shade. rAF at 30fps with
+    // an accumulator (cf. s15).
     const STEP = 1000 / 30;
+    const HOLD_MS = 4000;
+    const HOLD_FRAMES = [22, 52];
     let raf = 0;
     let last = 0;
     let acc = 0;
+    let holdMs = 0;
     const loop = (t: number) => {
       raf = requestAnimationFrame(loop);
       if (last === 0) last = t;
       let dt = t - last;
       last = t;
       if (dt > 250) dt = STEP;
+      if (holdMs > 0) {
+        holdMs -= dt;
+        acc = 0;
+        paint();
+        return;
+      }
       acc += dt;
       while (acc >= STEP) {
         acc -= STEP;
@@ -119,6 +131,10 @@ export const s20: Section = {
           break; // hold until the next frame is decodable
         }
         idx = n;
+        if (HOLD_FRAMES.includes(idx)) {
+          holdMs = HOLD_MS;
+          break;
+        }
       }
       paint();
     };
