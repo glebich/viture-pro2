@@ -52,8 +52,8 @@ const cases = [
   // --- mid-section beyond catch: must not move ---
   { name: "s25 mid-section (+0.50vh)", rest: secs.s25 + 0.5 * vh, stay: true },
   // --- pins ---
-  { name: "s03 pin inside first 35%vh (+0.20vh)", rest: pins.s03.start + 0.2 * vh, expect: pins.s03.start },
-  { name: "s03 pin deep inside (mid-range)", rest: (pins.s03.start + pins.s03.end) / 2, stay: true },
+  { name: "s02 pin inside first 35%vh (+0.20vh)", rest: pins.s02.start + 0.2 * vh, expect: pins.s02.start },
+  { name: "s02 pin deep inside (mid-range)", rest: (pins.s02.start + pins.s02.end) / 2, stay: true },
   { name: "s22 pin deep inside (+2vh)", rest: pins.s22.start + 2 * vh, stay: true },
   { name: "s22 pin start from s21 above (-0.20vh)", rest: secs.s22 - 0.2 * vh, expect: secs.s22 },
   { name: "s16b unpin tail mid (end+0.50vh)", rest: pins.s16b.end + 0.5 * vh, stay: true },
@@ -117,7 +117,7 @@ for (const c of cases) {
 
 // --- pin traversal: wheel through the s03 pin, must progress past it and
 // NOT be yanked back to the start ---
-await page.evaluate((y) => window.scrollTo(0, y), Math.round(pins.s03.start));
+await page.evaluate((y) => window.scrollTo(0, y), Math.round(pins.s02.start));
 await page.waitForTimeout(400);
 await page.mouse.move(960, 540);
 for (let i = 0; i < 14; i++) {
@@ -126,9 +126,9 @@ for (let i = 0; i < 14; i++) {
 }
 await page.waitForTimeout(2500);
 const yAfter = await page.evaluate(() => window.__viture.lenis.scroll);
-const traversed = yAfter > pins.s03.start + 2 * vh;
-console.log(`${traversed ? "PASS" : "FAIL"}  s03 pin traversal  y=${yAfter.toFixed(0)} (start=${pins.s03.start.toFixed(0)}, end=${pins.s03.end.toFixed(0)})`);
-results.push({ name: "s03 pin traversal", pass: traversed });
+const traversed = yAfter > pins.s02.start + 2 * vh;
+console.log(`${traversed ? "PASS" : "FAIL"}  s02 pin traversal  y=${yAfter.toFixed(0)} (start=${pins.s02.start.toFixed(0)}, end=${pins.s02.end.toFixed(0)})`);
+results.push({ name: "s02 pin traversal", pass: traversed });
 
 const failed = results.filter((r) => !r.pass);
 console.log(`\n${results.length - failed.length}/${results.length} passed; console errors: ${errors.length}`);

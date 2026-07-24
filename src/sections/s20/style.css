@@ -46,6 +46,44 @@
   /* asset fills the Figma box edge-to-edge (fill, not cover) */
   object-fit: fill;
   pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* full-stage art layer: the entrance tween transforms THIS wrapper, and
+   because it is inset:0 the photo/canvas keep their stage-space coords
+   (a transformed element becomes its children's containing block) */
+.s20-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* round 23: scroll-driven two-asset alpha sequence. The canvas is a full
+   1920×1080 bitmap whose CSS box maps the assets' union product bbox
+   (356,64)-(1689,984) uniformly into the design photo box (center-matched,
+   scale 0.5641 desktop / 0.2198 mobile) — so the shades land exactly where
+   the old photo art sat. The photo hides on first paint (.s20-live). */
+.s20-seq {
+  position: absolute;
+  pointer-events: none;
+}
+
+.s20-art.s20-live .s20-photo {
+  opacity: 0;
+}
+
+.s20-seq-d {
+  left: 767.2px;
+  top: 244.4px;
+  width: 1083.2px;
+  height: 609.3px;
+}
+
+.s20-seq-m {
+  left: -37.3px;
+  top: 141.3px;
+  width: 422px;
+  height: 237.4px;
 }
 
 /* Desktop */
